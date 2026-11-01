@@ -1,26 +1,110 @@
 @import "tailwindcss";
+@import "@fontsource-variable/manrope";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------- Identidade Nivela 3D ----------
+   Petróleo #182B30 · Grafite #343B40 · Sálvia #647A70 · Areia #C5B79E · Off-white #F5F3EE */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #f5f3ee;
+  --surface: #ffffff;
+  --surface-2: #faf9f6;
+  --border: #e4e0d6;
+  --text: #182b30;
+  --text-2: #343b40;
+  --muted: #6b7378;
+  --primary: #4f6359;
+  --primary-hover: #435449;
+  --primary-soft: #e6ece8;
+  --on-primary: #ffffff;
+  --sage: #647a70;
+  --sand: #c5b79e;
+  --sand-soft: #f1ebdf;
+  --positive: #3f7a5a;
+  --negative: #b4533f;
+  --negative-soft: #f6e4df;
+}
+
+.dark {
+  --bg: #10191c;
+  --surface: #182b30;
+  --surface-2: #1d3237;
+  --border: #2a4046;
+  --text: #f5f3ee;
+  --text-2: #dcd9d1;
+  --muted: #9aa8a8;
+  --primary: #8fa69a;
+  --primary-hover: #a3b8ad;
+  --primary-soft: #23383a;
+  --on-primary: #10191c;
+  --sage: #8fa69a;
+  --sand: #c5b79e;
+  --sand-soft: #2a3532;
+  --positive: #7fbf98;
+  --negative: #e08a74;
+  --negative-soft: #3a2723;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-ink: var(--text);
+  --color-ink-2: var(--text-2);
+  --color-muted: var(--muted);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-on-primary: var(--on-primary);
+  --color-sage: var(--sage);
+  --color-sand: var(--sand);
+  --color-sand-soft: var(--sand-soft);
+  --color-positive: var(--positive);
+  --color-negative: var(--negative);
+  --color-negative-soft: var(--negative-soft);
+  --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Componentes base */
+@utility card {
+  @apply rounded-2xl border border-line bg-surface;
+}
+@utility label {
+  @apply mb-1.5 block text-sm font-semibold text-ink-2;
+}
+@utility hint {
+  @apply mt-1 text-xs text-muted;
+}
+@utility input {
+  @apply w-full rounded-xl border border-line bg-surface px-3.5 py-2.5 text-[15px] text-ink outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/15;
+}
+@utility btn {
+  @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[15px] font-semibold transition disabled:cursor-not-allowed disabled:opacity-60;
+}
+@utility btn-primary {
+  @apply btn bg-primary text-on-primary hover:bg-primary-hover;
+}
+@utility btn-ghost {
+  @apply btn border border-line bg-surface text-ink-2 hover:bg-surface-2;
+}
+@utility btn-danger {
+  @apply btn text-negative hover:bg-negative-soft;
+}
+@utility tnum {
+  font-variant-numeric: tabular-nums;
 }
