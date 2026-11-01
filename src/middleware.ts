@@ -26,7 +26,7 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isPublic = PUBLIC.some((p) => path === p || path.startsWith(p + "/"));
+  const isPublic = path === "/" || PUBLIC.some((p) => path === p || path.startsWith(p + "/"));
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
@@ -42,5 +42,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|brand/|.*\\.(?:svg|png|jpg|jpeg|webp|ico)$).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|brand/|landing/|.*\\.(?:svg|png|jpg|jpeg|webp|ico)$).*)"],
 };
