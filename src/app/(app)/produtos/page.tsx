@@ -57,7 +57,33 @@ export default async function ProductsPage({
             </form>
           </div>
 
-          <div className="card overflow-x-auto">
+          <ul className="card divide-y divide-line sm:hidden">
+            {products.map((p) => {
+              const r = evaluatePrice(p.sale_price, p.unit_cost);
+              const bad = p.sale_price > 0 && r.profit < 0;
+              return (
+                <li key={p.id}>
+                  <Link href={`/produtos/${p.id}`} className="flex items-center justify-between gap-3 px-4 py-3.5">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold">{p.name}</p>
+                      <p className="tnum text-sm text-muted">
+                        {p.category ? `${p.category} · ` : ""}custo {money(p.unit_cost)}
+                      </p>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="tnum font-bold">{p.sale_price > 0 ? money(p.sale_price) : "—"}</p>
+                      {p.sale_price > 0 && (
+                        <p className={`tnum text-sm font-semibold ${bad ? "text-negative" : "text-positive"}`}>
+                          {money(r.profit)} · {pct(r.marginPct)}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="card hidden overflow-x-auto sm:block">
             <table className="w-full min-w-[640px] text-left">
               <thead className="border-b border-line text-xs font-bold uppercase tracking-wide text-muted">
                 <tr>

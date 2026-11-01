@@ -15,6 +15,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Logo, LogoMark } from "@/components/Logo";
+import { PhoneCarousel } from "@/components/PhoneCarousel";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { CHECKOUT_LINKS } from "@/lib/plans";
 
@@ -81,6 +82,16 @@ const FAQ = [
   ["Posso mudar de plano depois?", "Pode. Você começa no plano que fizer sentido hoje e muda quando o negócio crescer."],
 ];
 
+const SLIDES = [
+  { src: "/landing/cel-calculadora.webp", title: "Preço certo na hora", text: "Peso, tempo e canal de venda: o Nivela mostra o preço e o seu lucro." },
+  { src: "/landing/cel-painel.webp", title: "Lucro real do mês", text: "Faturamento, taxas, custos e o que sobrou no seu bolso." },
+  { src: "/landing/cel-insumos.webp", title: "Insumos na conta", text: "Argola, ímã, embalagem: cada peça com seu custo completo." },
+  { src: "/landing/cel-produtos.webp", title: "Catálogo com margem", text: "Veja quais peças dão lucro e quais dão prejuízo." },
+  { src: "/landing/cel-vendas.webp", title: "Vendas em segundos", text: "Registre cada venda e o lucro aparece na hora." },
+  { src: "/landing/cel-impressoras.webp", title: "Sua impressora na lista", text: "Escolha o modelo e o consumo de energia vem preenchido." },
+  { src: "/landing/cel-painel-escuro.webp", title: "Tema claro ou escuro", text: "Do jeito que for mais confortável para você." },
+];
+
 const checkout = (id: "iniciante" | "profissional" | "empresa") => CHECKOUT_LINKS[id] || "/cadastro";
 
 function Shot({ src, alt, w = 2880, h = 1800, className = "", priority = false }: { src: string; alt: string; w?: number; h?: number; className?: string; priority?: boolean }) {
@@ -113,6 +124,7 @@ export default function Landing() {
           <Link href="/" aria-label="Nivela 3D"><Logo size={28} /></Link>
           <nav className="hidden items-center gap-7 text-[15px] font-semibold text-ink-2 md:flex">
             <a href="#como-funciona" className="hover:text-primary">Como funciona</a>
+            <a href="#no-celular" className="hover:text-primary">No celular</a>
             <a href="#recursos" className="hover:text-primary">Recursos</a>
             <a href="#planos" className="hover:text-primary">Planos</a>
             <a href="#perguntas" className="hover:text-primary">Perguntas</a>
@@ -204,6 +216,36 @@ export default function Landing() {
               })}
             </ol>
             <Shot src="/landing/calculadora.webp" alt="Calculadora de preço do Nivela 3D com detalhamento de custos" />
+          </div>
+        </section>
+
+        {/* ---------- No celular ---------- */}
+        <section id="no-celular" className="scroll-mt-20 border-t border-line bg-surface">
+          <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
+            <div className="max-w-2xl">
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">No seu celular</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Calcule o preço ali mesmo, do lado da impressora</h2>
+              <p className="mt-3 text-lg text-muted">O Nivela 3D foi feito para o celular. Abra no navegador e use como um aplicativo — sem instalar nada.</p>
+            </div>
+            <div className="mt-12 grid items-start gap-12 lg:grid-cols-[300px_1fr]">
+              <div className="mx-auto w-[78%] max-w-[300px] lg:w-full">
+                <div className="overflow-hidden rounded-[2.4rem] border-[7px] border-[#182B30] bg-[#182B30] shadow-[0_30px_70px_-20px_rgba(24,43,48,0.55)]">
+                  <video
+                    src="/landing/demo.mp4"
+                    poster="/landing/demo-poster.jpg"
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    className="block aspect-[9/16] w-full rounded-[1.9rem] object-cover"
+                    aria-label="Vídeo mostrando o Nivela 3D calculando o preço de uma peça no celular"
+                  />
+                </div>
+                <p className="mt-3 text-center text-sm text-muted">Veja em 15 segundos</p>
+              </div>
+              <PhoneCarousel slides={SLIDES} />
+            </div>
           </div>
         </section>
 

@@ -53,7 +53,35 @@ export default async function SalesPage({
               <Receipt className="shrink-0 text-sage" /> Nenhuma venda em {period.label}.
             </div>
           ) : (
-            <div className="card overflow-x-auto">
+            <>
+            <ul className="card divide-y divide-line sm:hidden">
+              {rows.map((s) => (
+                <li key={s.id} className="flex items-center gap-3 px-4 py-3.5">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate font-semibold">
+                      {s.quantity > 1 && <span className="text-muted">{s.quantity}× </span>}
+                      {s.description}
+                    </p>
+                    <p className="text-sm text-muted">
+                      {fmtDate(s.sold_at)} · {(s.channel_id && channelName.get(s.channel_id)) || "Sem canal"}
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="tnum font-semibold">{money(s.t.revenue)}</p>
+                    <p className={`tnum text-sm font-semibold ${s.t.profit < 0 ? "text-negative" : "text-positive"}`}>lucro {money(s.t.profit)}</p>
+                  </div>
+                  <DeleteButton id={s.id} action={deleteSale} label="" confirmText="Remover esta venda?" />
+                </li>
+              ))}
+              <li className="flex justify-between bg-surface-2 px-4 py-3.5 font-bold">
+                <span>Total do mês</span>
+                <span className="tnum text-right">
+                  {money(total.revenue)}
+                  <span className={`block text-sm ${total.profit < 0 ? "text-negative" : "text-positive"}`}>lucro {money(total.profit)}</span>
+                </span>
+              </li>
+            </ul>
+            <div className="card hidden overflow-x-auto sm:block">
               <table className="w-full min-w-[600px] text-left">
                 <thead className="border-b border-line text-xs font-bold uppercase tracking-wide text-muted">
                   <tr>
@@ -95,6 +123,7 @@ export default async function SalesPage({
                 </tfoot>
               </table>
             </div>
+            </>
           )}
         </section>
         <SaleForm products={products} channels={channels} today={todayISO()} />
