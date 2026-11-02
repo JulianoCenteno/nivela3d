@@ -5,6 +5,10 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     "/api/conteudos/[code]": ["./private/materiais/**/*"],
   },
+  // Imagens de divulgação (checkout) podem ser lidas por outros sites.
+  async headers() {
+    return [{ source: "/dh/:path*", headers: [{ key: "Access-Control-Allow-Origin", value: "*" }] }];
+  },
 };
 
 export default nextConfig;
