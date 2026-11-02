@@ -24,12 +24,16 @@ export interface MaterialRow {
   type: string;
   color: string | null;
   price_per_kg: number;
+  stock_g: number;
+  min_stock_g: number;
 }
 export interface SupplyRow {
   id: string;
   name: string;
   unit: string;
   unit_price: number;
+  stock_qty: number;
+  min_qty: number;
 }
 export interface ChannelRow {
   id: string;
@@ -51,6 +55,8 @@ export interface ProductRow {
   sale_price: number;
   notes: string | null;
   supplies: { supply_id: string; qty: number }[];
+  stock_qty: number;
+  min_qty: number;
 }
 export interface SaleRow {
   id: string;
@@ -78,16 +84,28 @@ function nums<T>(rows: Record<string, unknown>[] | null, keys: string[]): T[] {
 
 export const getContext = cache(async () => {
   const { supabase, user } = await requireUser();
-  const [{ data: plan }, { data: profile }] = await Promise.all([
+  // Liga convites de equipe pendentes para este e-mail (barato: só atualiza se houver).
+  await supabase.rpc("accept_invites");
+  const [{ data: plan }, { data: profile }, { data: account }, { data: role }] = await Promise.all([
     supabase.rpc("my_plan"),
     supabase.from("profiles").select("name, email, created_at").eq("id", user.id).single(),
+    supabase.rpc("account_id"),
+    supabase.rpc("my_role"),
   ]);
-  return { supabase, user, plan: (plan ?? "nenhum") as PlanId, profile };
+  return {
+    supabase,
+    user,
+    plan: (plan ?? "nenhum") as PlanId,
+    profile,
+    /** Conta onde os dados ficam: a do dono da equipe ou a própria. */
+    accountId: (account as string | null) ?? user.id,
+    role: ((role as string | null) ?? "dono") as "dono" | "membro",
+  };
 });
 
 export async function getSettings(): Promise<Settings> {
-  const { supabase, user } = await getContext();
-  const { data } = await supabase.from("settings").select("*").eq("user_id", user.id).maybeSingle();
+  const { supabase, accountId } = await getContext();
+  const { data } = await supabase.from("settings").select("*").eq("user_id", accountId).maybeSingle();
   const [s] = nums<Settings>(data ? [data] : [], [
     "energy_price_kwh",
     "labor_per_hour",
@@ -96,7 +114,7 @@ export async function getSettings(): Promise<Settings> {
   ]);
   return (
     s ?? {
-      user_id: user.id,
+      user_id: accountId,
       business_name: null,
       energy_price_kwh: 0.95,
       labor_per_hour: 20,
@@ -115,7 +133,7 @@ export async function getPrinters() {
 export async function getMaterials() {
   const { supabase } = await getContext();
   const { data } = await supabase.from("materials").select("*").order("created_at");
-  return nums<MaterialRow>(data, ["price_per_kg"]);
+  return nums<MaterialRow>(data, ["price_per_kg", "stock_g", "min_stock_g"]);
 }
 
 export async function getChannels() {
@@ -134,6 +152,8 @@ export async function getProducts() {
     "extra_costs",
     "unit_cost",
     "sale_price",
+    "stock_qty",
+    "min_qty",
   ]);
 }
 
@@ -149,5 +169,5 @@ export async function getSales(from?: string, to?: string) {
 export async function getSupplies() {
   const { supabase } = await getContext();
   const { data } = await supabase.from("supplies").select("*").order("name");
-  return nums<SupplyRow>(data, ["unit_price"]);
+  return nums<SupplyRow>(data, ["unit_price", "stock_qty", "min_qty"]);
 }

@@ -1,3 +1,4 @@
+import { requireOwner } from "@/lib/guard";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DeleteButton } from "@/components/DeleteButton";
 import { dv, Field, Flash, PageHeader } from "@/components/ui";
@@ -12,6 +13,7 @@ export default async function SettingsPage({
 }: {
   searchParams: Promise<{ ok?: string; erro?: string }>;
 }) {
+  await requireOwner();
   const sp = await searchParams;
   const [s, channels] = await Promise.all([getSettings(), getChannels()]);
 

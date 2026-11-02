@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { calcCost, suppliesCost, type SupplyUse } from "@/lib/calc";
 import { getContext, getMaterials, getPrinters, getSettings, getSupplies } from "@/lib/data";
 import { fnum, friendlyError, fstr } from "@/lib/format";
+import { autoDeductSale } from "./gestao-actions";
 
 const back = (path: string, kind: "ok" | "erro", msg: string): never => {
   revalidatePath("/", "layout");
@@ -13,9 +14,9 @@ const back = (path: string, kind: "ok" | "erro", msg: string): never => {
 
 // ---------------- Configurações ----------------
 export async function saveSettings(fd: FormData) {
-  const { supabase, user } = await getContext();
+  const { supabase, accountId } = await getContext();
   const { error } = await supabase.from("settings").upsert({
-    user_id: user.id,
+    user_id: accountId,
     business_name: fstr(fd, "business_name"),
     energy_price_kwh: fnum(fd, "energy_price_kwh", 0.95),
     labor_per_hour: fnum(fd, "labor_per_hour"),
@@ -29,10 +30,10 @@ export async function saveSettings(fd: FormData) {
 
 // ---------------- Canais ----------------
 export async function saveChannel(fd: FormData) {
-  const { supabase, user } = await getContext();
+  const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
-    user_id: user.id,
+    user_id: accountId,
     name: fstr(fd, "name") ?? "Canal",
     fee_pct: Math.min(fnum(fd, "fee_pct"), 90),
     fee_fixed: fnum(fd, "fee_fixed"),
@@ -52,10 +53,10 @@ export async function deleteChannel(fd: FormData) {
 
 // ---------------- Impressoras ----------------
 export async function savePrinter(fd: FormData) {
-  const { supabase, user } = await getContext();
+  const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
-    user_id: user.id,
+    user_id: accountId,
     name: fstr(fd, "name") ?? "Impressora",
     power_watts: fnum(fd, "power_watts", 150),
     purchase_price: fnum(fd, "purchase_price"),
@@ -77,10 +78,10 @@ export async function deletePrinter(fd: FormData) {
 
 // ---------------- Materiais ----------------
 export async function saveMaterial(fd: FormData) {
-  const { supabase, user } = await getContext();
+  const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
-    user_id: user.id,
+    user_id: accountId,
     name: fstr(fd, "name") ?? "Material",
     type: fstr(fd, "type") ?? "PLA",
     color: fstr(fd, "color"),
@@ -101,10 +102,10 @@ export async function deleteMaterial(fd: FormData) {
 
 // ---------------- Insumos ----------------
 export async function saveSupply(fd: FormData) {
-  const { supabase, user } = await getContext();
+  const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
-    user_id: user.id,
+    user_id: accountId,
     name: fstr(fd, "name") ?? "Insumo",
     unit: fstr(fd, "unit") ?? "un",
     unit_price: fnum(fd, "unit_price"),
@@ -160,11 +161,11 @@ async function computeUnitCost(fd: FormData, uses: SupplyUse[]) {
 }
 
 export async function saveProduct(fd: FormData) {
-  const { supabase, user } = await getContext();
+  const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const uses = parseSupplyUses(fd);
   const row = {
-    user_id: user.id,
+    user_id: accountId,
     name: fstr(fd, "name") ?? "Produto",
     category: fstr(fd, "category"),
     printer_id: fstr(fd, "printer_id"),
@@ -228,7 +229,7 @@ export async function recalcAllProducts() {
 
 // ---------------- Vendas ----------------
 export async function saveSale(fd: FormData) {
-  const { supabase, user } = await getContext();
+  const { supabase, accountId } = await getContext();
   const productId = fstr(fd, "product_id");
   const channelId = fstr(fd, "channel_id");
 
@@ -246,7 +247,7 @@ export async function saveSale(fd: FormData) {
   if (unitPrice <= 0) back("/vendas", "erro", "Informe o preço de venda.");
 
   const row = {
-    user_id: user.id,
+    user_id: accountId,
     product_id: productId,
     channel_id: channelId,
     description: fstr(fd, "description") ?? product?.name ?? "Venda avulsa",
@@ -261,6 +262,7 @@ export async function saveSale(fd: FormData) {
   };
   const { error } = await supabase.from("sales").insert(row);
   if (error) back("/vendas", "erro", friendlyError(error.message));
+  await autoDeductSale(productId, quantity, row.description);
   back("/vendas", "ok", "Venda registrada.");
 }
 

@@ -1,3 +1,4 @@
+import { requireOwner } from "@/lib/guard";
 import { Check } from "lucide-react";
 import { PageHeader } from "@/components/ui";
 import { getContext } from "@/lib/data";
@@ -6,6 +7,7 @@ import { CHECKOUT_LINKS, PLANS, planInfo } from "@/lib/plans";
 export const metadata = { title: "Meu plano" };
 
 export default async function PlanPage() {
+  await requireOwner();
   const { plan, supabase, user } = await getContext();
   const { data: sub } = await supabase.from("subscriptions").select("*").maybeSingle();
   const current = planInfo(plan);

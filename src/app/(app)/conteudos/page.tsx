@@ -1,3 +1,4 @@
+import { requireOwner } from "@/lib/guard";
 import { BadgePercent, Download, ExternalLink, FileText, Gift, LayoutTemplate, Lock, ShoppingBag } from "lucide-react";
 import Link from "next/link";
 import { Flash, PageHeader } from "@/components/ui";
@@ -14,6 +15,7 @@ const BONUSES = [
 ];
 
 export default async function ContentsPage({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
+  await requireOwner();
   const sp = await searchParams;
   const { supabase, plan } = await getContext();
   const { data } = await supabase.from("purchases").select("product").eq("status", "active");

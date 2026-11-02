@@ -36,7 +36,7 @@ export const PLANS: Record<Exclude<PlanId, "nenhum">, PlanInfo> = {
       "Tudo do Iniciante",
       "Até 5 impressoras",
       "200 produtos",
-      "Pedidos, estoque e orçamentos (em breve)",
+      "Orçamentos, pedidos e estoque",
       "Relatórios completos",
     ],
   },
@@ -50,7 +50,8 @@ export const PLANS: Record<Exclude<PlanId, "nenhum">, PlanInfo> = {
       "Tudo do Profissional",
       "Até 15 impressoras",
       "Produtos ilimitados",
-      "Equipe e automações (em breve)",
+      "Equipe com até 5 pessoas",
+      "Automações: link de orçamento, baixa de estoque e alertas de prazo",
       "Suporte prioritário",
     ],
   },
@@ -66,4 +67,12 @@ export const CHECKOUT_LINKS: Record<"iniciante" | "profissional" | "empresa", st
 export function planInfo(id: string | null | undefined): PlanInfo | null {
   if (!id || id === "nenhum") return null;
   return PLANS[id as keyof typeof PLANS] ?? null;
+}
+
+export type Feature = "gestao" | "automacoes" | "equipe";
+
+/** O que cada plano libera (espelha public.plan_has no banco). */
+export function hasFeature(plan: PlanId, f: Feature): boolean {
+  if (f === "gestao") return plan === "teste" || plan === "profissional" || plan === "empresa";
+  return plan === "empresa";
 }

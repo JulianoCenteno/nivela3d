@@ -1,15 +1,20 @@
-import { Calculator, Check, Package, Printer, Receipt, Settings, Spool } from "lucide-react";
+import { requireOwner } from "@/lib/guard";
+import { AlarmClock, AlertTriangle, Calculator, Check, Package, Printer, Receipt, Settings, Spool } from "lucide-react";
 import Link from "next/link";
 import { MonthNav } from "@/components/MonthNav";
 import { PageHeader, Stat } from "@/components/ui";
 import { saleTotals } from "@/lib/calc";
-import { getContext, getMaterials, getPrinters, getProducts, getSales, getSettings } from "@/lib/data";
+import { getContext, getMaterials, getPrinters, getProducts, getSales, getSettings, getSupplies } from "@/lib/data";
+import { getOrders } from "@/lib/gestao-data";
+import { deadlineInfo } from "@/lib/orders";
+import { hasFeature } from "@/lib/plans";
 import { money, number, pct } from "@/lib/format";
-import { fmtDate, monthRange } from "@/lib/period";
+import { fmtDate, monthRange, todayISO } from "@/lib/period";
 
 export const metadata = { title: "Painel" };
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ mes?: string }> }) {
+  await requireOwner();
   const sp = await searchParams;
   const period = monthRange(sp.mes);
   const [{ profile }, sales, printers, materials, products, settings] = await Promise.all([
@@ -69,6 +74,19 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     { done: sales.length > 0, label: "Registre uma venda", href: "/vendas", icon: Receipt },
   ];
   const pending = steps.filter((s) => !s.done).length;
+
+  // Alertas (automação do plano Empresa): prazos e estoque baixo
+  const ctx = await getContext();
+  const auto = hasFeature(ctx.plan, "automacoes");
+  const today = todayISO();
+  const [orders, supplies] = auto ? await Promise.all([getOrders(), getSupplies()]) : [[], []];
+  const late = orders.map((o) => ({ o, d: deadlineInfo(o, today) })).filter((x) => x.d);
+  const lowStock = auto
+    ? [
+        ...materials.filter((m) => (m.min_stock_g > 0 && m.stock_g <= m.min_stock_g) || m.stock_g < 0).map((m) => m.name),
+        ...supplies.filter((s) => (s.min_qty > 0 && s.stock_qty <= s.min_qty) || s.stock_qty < 0).map((s) => s.name),
+      ]
+    : [];
   const first = (profile?.name || "").split(" ")[0];
 
   return (
@@ -78,6 +96,27 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         description="Quanto entrou, quanto saiu e quanto realmente sobrou."
         action={<MonthNav base="/painel" ym={period.ym} label={period.label} />}
       />
+
+      {(late.length > 0 || lowStock.length > 0) && (
+        <section className="mb-8 grid gap-4 md:grid-cols-2">
+          {late.length > 0 && (
+            <Link href="/pedidos" className="block rounded-2xl border border-[#E8C9A8] bg-[#FBF1E6] p-5 hover:border-[#d9a77a] dark:border-[#5a4632] dark:bg-[#2b241c]">
+              <p className="flex items-center gap-2 font-bold"><AlarmClock size={18} /> Prazos de entrega</p>
+              <ul className="mt-2 space-y-1 text-[15px]">
+                {late.slice(0, 4).map(({ o, d }) => (
+                  <li key={o.id}><b className={d!.level === "atrasado" ? "text-negative" : ""}>{d!.text}</b> · nº {o.number} · {o.customer_name}</li>
+                ))}
+              </ul>
+            </Link>
+          )}
+          {lowStock.length > 0 && (
+            <Link href="/estoque" className="block rounded-2xl bg-negative-soft p-5 text-negative">
+              <p className="flex items-center gap-2 font-bold"><AlertTriangle size={18} /> Estoque baixo</p>
+              <p className="mt-2 text-[15px]">{lowStock.slice(0, 6).join(" · ")}</p>
+            </Link>
+          )}
+        </section>
+      )}
 
       {pending > 0 && (
         <section className="card mb-8 p-6">

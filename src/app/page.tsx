@@ -60,7 +60,7 @@ const PLANS = [
     price: "39,90",
     annual: "R$ 399/ano",
     desc: "Controle seus pedidos, custos e lucros em um só lugar.",
-    features: ["Tudo do Iniciante", "Até 5 impressoras", "Até 200 produtos", "Insumos e canais de venda ilimitados", "Relatórios completos", "Pedidos, estoque e orçamentos (em breve)"],
+    features: ["Tudo do Iniciante", "Até 5 impressoras", "Até 200 produtos", "Insumos e canais de venda ilimitados", "Relatórios completos", "Orçamentos, pedidos e estoque"],
     featured: true,
   },
   {
@@ -69,7 +69,7 @@ const PLANS = [
     price: "79,90",
     annual: "R$ 799/ano",
     desc: "Mais controle financeiro e operacional para crescer com segurança.",
-    features: ["Tudo do Profissional", "Até 15 impressoras", "Produtos ilimitados", "Equipe e automações (em breve)", "Suporte prioritário"],
+    features: ["Tudo do Profissional", "Até 15 impressoras", "Produtos ilimitados", "Equipe com até 5 pessoas", "Link de orçamento: o cliente aprova e vira pedido", "Baixa automática de estoque e alertas de prazo", "Suporte prioritário"],
   },
 ];
 
