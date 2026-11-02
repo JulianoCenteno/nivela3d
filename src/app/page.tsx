@@ -8,8 +8,11 @@ import {
   Paperclip,
   Printer,
   Receipt,
+  Search,
+  ShieldCheck,
   Smartphone,
   Sparkles,
+  TrendingUp,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -20,22 +23,28 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { CHECKOUT_LINKS } from "@/lib/plans";
 
 export const metadata: Metadata = {
-  title: "Nivela 3D — Gestão e precificação para impressão 3D",
+  title: "Nivela 3D — Descubra quanto realmente sobra em cada impressão",
   description:
-    "Descubra quanto cobrar por cada peça 3D, registre suas vendas e veja quanto realmente sobra no seu bolso. Teste grátis por 7 dias.",
+    "Vender mais não significa lucrar mais. Com o Raio-X do Lucro 3D você encontra os custos escondidos, cobra o preço certo e vê o lucro real de cada peça. Teste grátis por 7 dias.",
 };
 
-const HIDDEN_COSTS = [
-  "Filamento",
-  "Energia",
-  "Desgaste da impressora",
-  "Manutenção",
-  "Peças que falham",
-  "Sua hora de trabalho",
-  "Argolas, ímãs, embalagem",
-  "Taxa da Shopee e do Mercado Livre",
-  "Frete",
-];
+// Exemplo ilustrativo do Vazamento Invisível de Lucro (valores fictícios).
+const LEAK = [
+  ["Filamento", 8],
+  ["Energia", 2],
+  ["Desgaste da máquina", 3],
+  ["Tempo de trabalho", 8],
+  ["Embalagem", 3],
+  ["Taxas de venda", 8],
+  ["Perdas e desperdícios", 4],
+] as const;
+
+const XRAY = [
+  [Search, "Revele", "Identifique os custos que estavam passando despercebidos: energia, desgaste, falhas, sua hora, insumos e taxas — peça por peça."],
+  [Calculator, "Precifique", "Simule o preço de venda com a margem que você quer, já com a comissão da Shopee, do Mercado Livre ou de onde você vender."],
+  [ShieldCheck, "Proteja", "Registre cada venda com o preço que você cobrou de verdade, a taxa e o frete. Veja na hora se um desconto ou uma taxa comeu sua margem."],
+  [TrendingUp, "Evolua", "Descubra quais produtos e categorias deixam mais dinheiro no seu bolso e quais só dão trabalho."],
+] as const;
 
 const PLANS = [
   {
@@ -43,15 +52,15 @@ const PLANS = [
     name: "Iniciante",
     price: "19,90",
     annual: "R$ 199/ano",
-    desc: "Para quem está começando a vender.",
-    features: ["Calculadora completa", "1 impressora", "Até 30 produtos", "Registro de vendas e painel de lucro", "Bônus e Clube de Ofertas"],
+    desc: "Pare de precificar no achismo e descubra quanto cobrar.",
+    features: ["Raio-X do Lucro 3D completo", "1 impressora", "Até 30 produtos", "Registro de vendas e painel de lucro", "Bônus e Clube de Ofertas"],
   },
   {
     id: "profissional" as const,
     name: "Profissional",
     price: "39,90",
     annual: "R$ 399/ano",
-    desc: "Para quem já vende todo mês e quer controle total.",
+    desc: "Controle seus pedidos, custos e lucros em um só lugar.",
     features: ["Tudo do Iniciante", "Até 5 impressoras", "Até 200 produtos", "Insumos e canais de venda ilimitados", "Relatórios completos", "Pedidos, estoque e orçamentos (em breve)"],
     featured: true,
   },
@@ -60,14 +69,14 @@ const PLANS = [
     name: "Empresa",
     price: "79,90",
     annual: "R$ 799/ano",
-    desc: "Para operações com várias máquinas.",
+    desc: "Mais controle financeiro e operacional para crescer com segurança.",
     features: ["Tudo do Profissional", "Até 15 impressoras", "Produtos ilimitados", "Equipe e automações (em breve)", "Suporte prioritário"],
   },
 ];
 
 const BONUSES = [
-  ["Guia Primeiras Vendas 3D", "Como começar a vender suas peças com segurança."],
-  ["Checklist de Impressão Sem Desperdício", "Evite erros que jogam filamento e dinheiro fora."],
+  ["Primeiras Vendas com Lucro", "Como começar a vender suas peças sem deixar dinheiro na mesa."],
+  ["Checklist Antidesperdício", "Evite as falhas que jogam filamento, tempo e lucro fora."],
   ["20 Ideias de Produtos para Vender", "Inspiração por categoria e por público."],
   ["Modelos de Mensagens para Clientes", "Responda orçamentos e acompanhe pedidos sem travar."],
   ["Clube de Ofertas 3D", "Promoções selecionadas de filamentos, peças e ferramentas."],
@@ -76,6 +85,7 @@ const BONUSES = [
 const FAQ = [
   ["Preciso instalar alguma coisa?", "Não. O Nivela 3D funciona direto no navegador, no computador e no celular. É só criar sua conta e começar."],
   ["Funciona com a minha impressora?", "Sim. Funciona com impressoras de filamento (FDM) e de resina. Já trazemos uma lista com os principais modelos — Bambu Lab, Creality, Elegoo, Anycubic, Prusa e outros — com o consumo de energia preenchido."],
+  ["O que é o Raio-X do Lucro 3D?", "É o método do Nivela 3D para enxergar quanto realmente sobra em cada impressão: revelar todos os custos da peça, precificar com a margem certa, conferir o lucro real de cada venda e descobrir quais produtos valem a pena."],
   ["Como o preço sugerido é calculado?", "Somamos material, energia, desgaste e manutenção da impressora, uma margem para falhas, sua mão de obra e os insumos da peça. Depois aplicamos a comissão do canal onde você vai vender e a margem de lucro que você escolher."],
   ["Preciso de cartão para testar?", "Não. Você cria a conta e usa grátis por 7 dias. Se gostar, escolhe um plano."],
   ["Meus dados ficam protegidos?", "Sim. Cada conta acessa somente os próprios dados, protegidos por regras de segurança no banco de dados."],
@@ -141,22 +151,22 @@ export default function Landing() {
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-12 lg:grid-cols-[1.05fr_1fr] lg:pb-24 lg:pt-20">
           <div>
             <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-primary">
-              <LogoMark size={16} /> Gestão para quem vende impressão 3D
+              <LogoMark size={16} /> Raio-X do Lucro 3D
             </p>
             <h1 className="mt-6 text-[2.5rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.6rem]">
-              Você sabe quanto <span className="text-sage">realmente ganha</span> em cada impressão 3D?
+              Sua impressora 3D pode estar <span className="text-sage">vendendo muito e lucrando pouco.</span> E você nem percebeu.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-              Pare de calcular preços no improviso. Com o Nivela 3D você organiza seus custos, descobre o preço certo de cada
-              peça e acompanha quanto sobra no seu bolso — tudo em um só lugar.
+              Descubra quanto realmente sobra em cada impressão e pare de definir seus preços no achismo. Com o Raio-X do
+              Lucro 3D você encontra os custos escondidos, cobra com segurança e vê quais peças realmente compensam.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link href="/cadastro" className="btn-primary px-6 py-3.5 text-base">
-                Começar teste grátis de 7 dias <ArrowRight size={18} />
+                Quero descobrir meu lucro real <ArrowRight size={18} />
               </Link>
               <a href="#planos" className="btn-ghost px-6 py-3.5 text-base">Ver planos</a>
             </div>
-            <p className="mt-4 text-sm text-muted">Sem cartão de crédito no teste · Planos a partir de R$ 19,90/mês</p>
+            <p className="mt-4 text-sm text-muted">7 dias grátis, sem cartão · Depois, a partir de R$ 19,90/mês</p>
           </div>
 
           <div className="relative pb-6 pl-[16%]">
@@ -169,53 +179,112 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* ---------- Custos escondidos ---------- */}
+        {/* ---------- Big Idea + Vazamento Invisível de Lucro ---------- */}
         <section className="border-y border-line bg-surface">
-          <div className="mx-auto max-w-6xl px-5 py-14 text-center">
-            <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">O preço de uma peça é muito mais que o filamento</h2>
-            <p className="mx-auto mt-3 max-w-2xl text-muted">
-              Quando esses custos ficam de fora, a peça que parecia lucrativa pode estar dando prejuízo. O Nivela 3D coloca
-              tudo na conta para você.
-            </p>
-            <ul className="mx-auto mt-8 flex max-w-4xl flex-wrap justify-center gap-2.5">
-              {HIDDEN_COSTS.map((c) => (
-                <li key={c} className="inline-flex items-center gap-1.5 rounded-full border border-line bg-bg px-4 py-2 text-[15px] font-semibold text-ink-2">
-                  <Check size={16} className="text-sage" /> {c}
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1.05fr] lg:py-24">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">A verdade que pouca gente fala</p>
+              <h2 className="mt-2 text-3xl font-extrabold leading-tight tracking-tight sm:text-[2.6rem]">Vender mais não significa lucrar mais.</h2>
+              <p className="mt-5 text-lg leading-relaxed text-muted">
+                O segredo não é só imprimir mais peças. É saber quanto realmente sobra em cada venda. A maioria calcula o
+                filamento e esquece o resto — e é aí que o dinheiro escapa sem ninguém ver.
+              </p>
+              <div className="mt-7 rounded-2xl border border-line bg-bg p-6">
+                <p className="text-sm font-bold uppercase tracking-wider text-[#B4533C] dark:text-[#E08A72]">O problema tem nome</p>
+                <p className="mt-1 text-xl font-extrabold">Vazamento Invisível de Lucro 3D</p>
+                <p className="mt-2 leading-relaxed text-muted">
+                  É todo o dinheiro que fica de fora da conta: energia, desgaste da máquina, peças que falham, sua hora de
+                  trabalho, argolas e embalagem, taxa do marketplace. Cada item parece pequeno. Somados, eles decidem se você
+                  está lucrando ou só trabalhando de graça.
+                </p>
+              </div>
+            </div>
+
+            <div className="card p-6 sm:p-8">
+              <p className="text-sm font-semibold text-muted">Exemplo: uma peça vendida por</p>
+              <p className="tnum text-4xl font-extrabold tracking-tight">R$ 50,00</p>
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                <div className="rounded-xl bg-surface-2 p-4">
+                  <p className="text-sm font-semibold text-muted">Quem só conta o filamento acha que ganha</p>
+                  <p className="tnum mt-1 text-2xl font-extrabold text-muted line-through decoration-2">R$ 42,00</p>
+                </div>
+                <div className="rounded-xl bg-primary p-4 text-on-primary">
+                  <p className="text-sm font-semibold opacity-80">O lucro real é</p>
+                  <p className="tnum mt-1 text-2xl font-extrabold">R$ 14,00</p>
+                </div>
+              </div>
+              <ul className="mt-6 divide-y divide-line">
+                {LEAK.map(([label, value]) => (
+                  <li key={label} className="flex items-center gap-3 py-2.5 text-[15px]">
+                    <span className="flex-1 font-semibold text-ink-2">{label}</span>
+                    <span className="h-2 rounded-full bg-sage/70" style={{ width: `${value * 9}px` }} />
+                    <span className="tnum w-20 text-right font-bold">R$ {value.toFixed(2).replace(".", ",")}</span>
+                  </li>
+                ))}
+                <li className="flex items-center justify-between py-3 font-extrabold">
+                  <span>Custo real da peça</span>
+                  <span className="tnum">R$ 36,00</span>
                 </li>
-              ))}
-            </ul>
+              </ul>
+              <p className="mt-3 text-xs text-muted">Valores fictícios, só para ilustrar. No Nivela você vê os números das suas peças.</p>
+            </div>
           </div>
         </section>
 
-        {/* ---------- Como funciona ---------- */}
-        <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-20 lg:py-28">
+        {/* ---------- Frase de autoridade ---------- */}
+        <section className="mx-auto max-w-4xl px-5 pt-20 text-center lg:pt-24">
+          <p className="text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl">
+            “Quem leva a impressão 3D a sério não trabalha no achismo.{" "}
+            <span className="text-sage">Trabalha com números.”</span>
+          </p>
+        </section>
+
+        {/* ---------- Raio-X do Lucro 3D (mecanismo) ---------- */}
+        <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-16 lg:py-24">
           <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-wider text-sage">Como funciona</p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Do primeiro cálculo ao lucro do mês em 3 passos</h2>
+            <p className="text-sm font-bold uppercase tracking-wider text-sage">A solução</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Raio-X do Lucro 3D</h2>
+            <p className="mt-3 text-lg leading-relaxed text-muted">
+              Não é só uma calculadora. É o método do Nivela 3D que acompanha a peça do orçamento até a venda e mostra, em
+              números, quanto ficou no seu bolso. Quatro etapas:
+            </p>
           </div>
           <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_1.35fr] lg:items-center">
-            <ol className="space-y-8">
-              {[
-                [Printer, "Cadastre sua impressora e seu filamento", "Escolha seu modelo numa lista com as impressoras mais vendidas e informe quanto paga no quilo do filamento. Leva 2 minutos."],
-                [Calculator, "Calcule o preço de cada peça", "Informe peso e tempo do fatiador. O Nivela soma todos os custos, aplica a taxa do marketplace e mostra o preço que garante a sua margem."],
-                [Receipt, "Registre as vendas e veja o lucro real", "Cada venda entra no painel com taxas, custos e frete descontados. No fim do mês você sabe exatamente quanto sobrou."],
-              ].map(([Icon, title, text], i) => {
+            <ol className="space-y-7">
+              {XRAY.map(([Icon, title, text], i) => {
                 const I = Icon as typeof Printer;
                 return (
-                  <li key={i} className="flex gap-4">
+                  <li key={title} className="flex gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
                       <I size={22} />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-sage">Passo {i + 1}</p>
-                      <h3 className="text-lg font-bold">{title as string}</h3>
-                      <p className="mt-1 leading-relaxed text-muted">{text as string}</p>
+                      <p className="text-sm font-bold text-sage">{i + 1}. {title}</p>
+                      <p className="mt-1 leading-relaxed text-muted">{text}</p>
                     </div>
                   </li>
                 );
               })}
             </ol>
-            <Shot src="/landing/calculadora.webp" alt="Calculadora de preço do Nivela 3D com detalhamento de custos" />
+            <Shot src="/landing/calculadora.webp" alt="Raio-X do Lucro 3D: custo completo da peça, preço sugerido e lucro" />
+          </div>
+          <div className="mt-14 grid gap-4 rounded-3xl border border-line bg-surface p-6 sm:grid-cols-3 sm:p-8">
+            {[
+              [Printer, "Cadastre impressora e filamento", "Escolha seu modelo numa lista com 39 impressoras. Leva 2 minutos."],
+              [Calculator, "Faça o Raio-X da peça", "Peso e tempo do fatiador: o Nivela revela o custo completo e o preço certo."],
+              [Receipt, "Registre as vendas", "Veja o lucro real do mês, já com taxas, custos e frete descontados."],
+            ].map(([Icon, t, d], i) => {
+              const I = Icon as typeof Printer;
+              return (
+                <div key={t as string} className="flex gap-3">
+                  <I size={20} className="mt-0.5 shrink-0 text-sage" />
+                  <div>
+                    <p className="font-bold">Passo {i + 1}: {t as string}</p>
+                    <p className="text-[15px] text-muted">{d as string}</p>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </section>
 
@@ -224,7 +293,7 @@ export default function Landing() {
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="max-w-2xl">
               <p className="text-sm font-bold uppercase tracking-wider text-sage">No seu celular</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Calcule o preço ali mesmo, do lado da impressora</h2>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">O Raio-X ali mesmo, do lado da impressora</h2>
               <p className="mt-3 text-lg text-muted">O Nivela 3D foi feito para o celular. Abra no navegador e use como um aplicativo — sem instalar nada.</p>
             </div>
             <div className="mt-12 grid items-start gap-12 lg:grid-cols-[300px_1fr]">
@@ -254,7 +323,7 @@ export default function Landing() {
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="max-w-2xl">
               <p className="text-sm font-bold uppercase tracking-wider text-[#8FA69A]">Por dentro do app</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Tudo o que você precisa para cuidar do seu negócio</h2>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Tudo para fechar o vazamento e cuidar do seu lucro</h2>
               <p className="mt-3 text-lg text-[#F5F3EE]/70">Feito para ser simples: botões grandes, linguagem clara e funciona igual no computador e no celular.</p>
             </div>
 
@@ -309,12 +378,12 @@ export default function Landing() {
           </div>
           <div>
             <p className="text-sm font-bold uppercase tracking-wider text-sage">Para quem é</p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Do primeiro chaveiro vendido à sua própria fazenda de impressão</h2>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Para quem quer transformar impressão 3D em negócio de verdade</h2>
             <ul className="mt-8 space-y-4">
               {[
                 ["Está começando", "e quer cobrar o preço certo desde a primeira venda."],
                 ["Já vende nos marketplaces", "e quer saber quanto sobra depois das taxas."],
-                ["Tem várias impressoras", "e precisa enxergar o resultado de cada produto e categoria."],
+                ["Pensa em comprar outra impressora", "e quer saber antes se está lucrando bem com as que já tem."],
               ].map(([b, t]) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary"><Check size={14} /></span>
@@ -322,7 +391,7 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <Link href="/cadastro" className="btn-primary mt-9 px-6 py-3.5 text-base">Quero testar grátis <ArrowRight size={18} /></Link>
+            <Link href="/cadastro" className="btn-primary mt-9 px-6 py-3.5 text-base">Fazer o Raio-X das minhas peças <ArrowRight size={18} /></Link>
           </div>
         </section>
 
@@ -331,7 +400,7 @@ export default function Landing() {
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-sm font-bold uppercase tracking-wider text-sage">Planos</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Escolha o plano do tamanho do seu negócio</h2>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Comece a cuidar dos seus lucros a partir de R$ 19,90/mês</h2>
               <p className="mt-3 text-lg text-muted">Todos os planos incluem os bônus e o Clube de Ofertas 3D. No plano anual você paga o equivalente a 10 meses.</p>
             </div>
             <div className="mt-14 grid gap-6 lg:grid-cols-3 lg:items-stretch">
@@ -422,12 +491,12 @@ export default function Landing() {
         <section className="px-5 py-20">
           <div className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] bg-[#182B30] px-8 py-14 text-center text-[#F5F3EE] sm:px-14">
             <h2 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Cada impressão conta.<br />
-              <span className="text-[#8FA69A]">Cada lucro também.</span>
+              Sua impressora produz peças.<br />
+              <span className="text-[#8FA69A]">O Nivela ajuda você a transformar isso em lucro.</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-[#F5F3EE]/70">Em poucos minutos você cadastra sua impressora, calcula sua primeira peça e enxerga sua margem.</p>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-[#F5F3EE]/70">Em poucos minutos você faz o Raio-X da sua primeira peça e descobre quanto realmente sobra. Cada impressão conta. Cada lucro também.</p>
             <Link href="/cadastro" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#8FA69A] px-7 py-4 text-base font-bold text-[#10191C] transition hover:bg-[#A3B8AD]">
-              Começar teste grátis <ArrowRight size={18} />
+              Quero descobrir meu lucro real <ArrowRight size={18} />
             </Link>
           </div>
         </section>

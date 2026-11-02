@@ -7,8 +7,8 @@ import { checkoutFor, EXTRAS } from "@/lib/extras";
 export const metadata = { title: "Meus conteúdos" };
 
 const BONUSES = [
-  ["Guia Primeiras Vendas 3D", "Como começar a vender suas peças com segurança."],
-  ["Checklist de Impressão Sem Desperdício", "Evite erros que jogam filamento e dinheiro fora."],
+  ["Primeiras Vendas com Lucro", "Como começar a vender suas peças sem deixar dinheiro na mesa."],
+  ["Checklist Antidesperdício", "Evite as falhas que jogam filamento, tempo e lucro fora."],
   ["20 Ideias de Produtos para Vender", "Inspiração por categoria e por público."],
   ["Modelos de Mensagens para Clientes", "Respostas rápidas para orçamentos e pedidos."],
 ];
