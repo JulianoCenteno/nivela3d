@@ -81,3 +81,7 @@ export function checkoutFor(code: ExtraCode): string | undefined {
   };
   return map[code] || undefined;
 }
+
+/** Combo "leve todos" (checkout próprio com super desconto). */
+export const COMBO = { price: "R$ 29,90", fullPrice: "R$ 55,60" };
+export const comboCheckout = () => process.env.NEXT_PUBLIC_CHECKOUT_BUMP_COMBO;

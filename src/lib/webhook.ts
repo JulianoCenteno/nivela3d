@@ -105,8 +105,23 @@ export function addCycle(from: Date, cycle: Cycle): Date {
 const EXTRA_CODES = ["bump_mockups", "bump_etiquetas", "bump_mensagens", "bump_guia"];
 
 /** Identifica um order bump pelo mapa (ID/nome → código) ou por palavras do nome. */
+/** Combo "leve todos": libera todos os materiais extras de uma vez. */
+export function isCombo(raw: string | null): boolean {
+  if (!raw) return false;
+  const s = raw.toLowerCase();
+  return s.includes("combo") || s.includes("leve todos") || s.includes("todos os materiais") || s.includes("kit completo");
+}
+
+/** Extras liberados por um item do pedido (o combo libera todos). */
+export function parseExtras(raw: string | null, map: Record<string, string> = {}): string[] {
+  if (isCombo(raw)) return [...EXTRA_CODES];
+  const one = parseExtra(raw, map);
+  return one ? [one] : [];
+}
+
 export function parseExtra(raw: string | null, map: Record<string, string> = {}): string | null {
   if (!raw) return null;
+  if (isCombo(raw)) return null;
   if (map[raw] && EXTRA_CODES.includes(map[raw])) return map[raw];
   const s = raw.toLowerCase();
   if (s.includes("mockup")) return "bump_mockups";
@@ -156,14 +171,14 @@ export function parseEvent(payload: unknown, map: Record<string, string> = {}): 
   const email = pick(payload, EMAIL)?.toLowerCase();
   if (!email || !email.includes("@")) return null;
   const names = productNames(payload);
-  const extras = [...new Set(names.map((n) => parseExtra(n, map)).filter(Boolean) as string[])];
-  const planName = names.find((n) => !parseExtra(n, map) && parsePlan(n, map)) ?? null;
+  const extras = [...new Set(names.flatMap((n) => parseExtras(n, map)))];
+  const planName = names.find((n) => parseExtras(n, map).length === 0 && parsePlan(n, map)) ?? null;
   const productRaw = planName ?? pick(payload, PRODUCT);
   const end = pick(payload, PERIOD_END);
   const endDate = end && !Number.isNaN(Date.parse(end)) ? new Date(end).toISOString() : null;
   return {
     email,
-    plan: productRaw && !parseExtra(productRaw, map) ? parsePlan(productRaw, map) : null,
+    plan: productRaw && parseExtras(productRaw, map).length === 0 ? parsePlan(productRaw, map) : null,
     extras,
     status: parseStatus(pick(payload, STATUS)),
     cycle: structuredCycle(payload) ?? parseCycle(names.join(" ")),

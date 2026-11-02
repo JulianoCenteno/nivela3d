@@ -2,7 +2,7 @@ import { BadgePercent, Download, ExternalLink, FileText, Gift, LayoutTemplate, L
 import Link from "next/link";
 import { Flash, PageHeader } from "@/components/ui";
 import { getContext } from "@/lib/data";
-import { checkoutFor, EXTRAS } from "@/lib/extras";
+import { checkoutFor, COMBO, comboCheckout, EXTRAS } from "@/lib/extras";
 
 export const metadata = { title: "Meus conteúdos" };
 
@@ -19,6 +19,8 @@ export default async function ContentsPage({ searchParams }: { searchParams: Pro
   const { data } = await supabase.from("purchases").select("product").eq("status", "active");
   const owned = new Set((data ?? []).map((p) => p.product as string));
   const activePlan = plan !== "nenhum";
+  const missing = EXTRAS.filter((e) => !owned.has(e.code)).length;
+  const combo = comboCheckout();
 
   return (
     <>
@@ -29,6 +31,20 @@ export default async function ContentsPage({ searchParams }: { searchParams: Pro
         <h2 className="mb-4 flex items-center gap-2 text-lg font-bold">
           <ShoppingBag size={20} className="text-sage" /> Materiais extras
         </h2>
+        {missing >= 2 && combo && (
+          <div className="mb-5 flex flex-col gap-4 rounded-2xl bg-[#182B30] p-6 text-[#F5F3EE] sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wider text-[#C5B79E]">Combo leve todos</p>
+              <p className="mt-1 text-lg font-extrabold">Os 4 materiais extras por um super desconto</p>
+              <p className="tnum mt-1 text-[15px] text-[#F5F3EE]/70">
+                De <s>{COMBO.fullPrice}</s> por <b className="text-[#F5F3EE]">{COMBO.price}</b>
+              </p>
+            </div>
+            <a href={combo} target="_blank" rel="noopener" className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#8FA69A] px-5 py-3 font-bold text-[#10191C] hover:bg-[#A3B8AD]">
+              Quero todos <Gift size={18} />
+            </a>
+          </div>
+        )}
         <div className="grid gap-5 md:grid-cols-2">
           {EXTRAS.map((e) => {
             const has = owned.has(e.code);

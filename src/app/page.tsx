@@ -19,7 +19,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { Logo, LogoMark } from "@/components/Logo";
 import { PhoneCarousel } from "@/components/PhoneCarousel";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { CHECKOUT_LINKS } from "@/lib/plans";
 
 export const metadata: Metadata = {
@@ -319,20 +318,20 @@ export default function Landing() {
         </section>
 
         {/* ---------- Recursos ---------- */}
-        <section id="recursos" className="scroll-mt-20 bg-[#182B30] text-[#F5F3EE]">
+        <section id="recursos" className="scroll-mt-20 border-t border-line">
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="max-w-2xl">
-              <p className="text-sm font-bold uppercase tracking-wider text-[#8FA69A]">Por dentro do app</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">Por dentro do app</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Tudo para fechar o vazamento e cuidar do seu lucro</h2>
-              <p className="mt-3 text-lg text-[#F5F3EE]/70">Feito para ser simples: botões grandes, linguagem clara e funciona igual no computador e no celular.</p>
+              <p className="mt-3 text-lg text-muted">Feito para ser simples: botões grandes, linguagem clara e funciona igual no computador e no celular.</p>
             </div>
 
             <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
-              <div className="dark"><Shot src="/landing/painel-dark.webp" alt="Painel do Nivela 3D com faturamento, taxas, custos e lucro real do mês" /></div>
+              <div><Shot src="/landing/painel.webp" alt="Painel do Nivela 3D com faturamento, taxas, custos e lucro real do mês" /></div>
               <div>
-                <LayoutDashboard className="text-[#8FA69A]" />
+                <LayoutDashboard className="text-sage" />
                 <h3 className="mt-3 text-2xl font-bold">Painel do lucro real</h3>
-                <p className="mt-2 leading-relaxed text-[#F5F3EE]/70">
+                <p className="mt-2 leading-relaxed text-muted">
                   Faturamento, taxas dos canais, custos e o que realmente sobrou — por mês. Veja quais categorias e produtos dão
                   mais lucro e quais estão dando prejuízo.
                 </p>
@@ -341,14 +340,14 @@ export default function Landing() {
 
             <div className="mt-20 grid items-center gap-10 lg:grid-cols-[1fr_1.4fr]">
               <div className="lg:order-1">
-                <Paperclip className="text-[#8FA69A]" />
+                <Paperclip className="text-sage" />
                 <h3 className="mt-3 text-2xl font-bold">Produtos com custo sempre atualizado</h3>
-                <p className="mt-2 leading-relaxed text-[#F5F3EE]/70">
+                <p className="mt-2 leading-relaxed text-muted">
                   Cadastre cada peça uma vez, com os insumos que ela usa — argola de chaveiro, ímã, embalagem. Mudou o preço do
                   filamento? Um clique recalcula todo o catálogo.
                 </p>
               </div>
-              <div className="dark lg:order-2"><Shot src="/landing/produto-insumos.webp" alt="Cadastro de produto com insumos como argola e embalagem" /></div>
+              <div className="lg:order-2"><Shot src="/landing/produto-insumos.webp" alt="Cadastro de produto com insumos como argola e embalagem" /></div>
             </div>
 
             <div className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
@@ -360,10 +359,10 @@ export default function Landing() {
               ].map(([Icon, t, d]) => {
                 const I = Icon as typeof Printer;
                 return (
-                  <div key={t as string} className="rounded-2xl border border-white/10 bg-white/[0.04] p-6">
-                    <I className="text-[#8FA69A]" size={22} />
+                  <div key={t as string} className="rounded-2xl border border-line bg-bg p-6">
+                    <I className="text-sage" size={22} />
                     <p className="mt-3 font-bold">{t as string}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-[#F5F3EE]/65">{d as string}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-muted">{d as string}</p>
                   </div>
                 );
               })}
@@ -506,7 +505,6 @@ export default function Landing() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-muted sm:flex-row">
           <Logo size={24} />
           <p>© {new Date().getFullYear()} Nivela 3D · Gestão inteligente para impressão 3D</p>
-          <ThemeToggle />
         </div>
       </footer>
     </div>

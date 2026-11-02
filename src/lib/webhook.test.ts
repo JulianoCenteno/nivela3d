@@ -88,3 +88,17 @@ describe("formato real do Digital Hub", () => {
     expect(e.plan).toBe("empresa");
   });
 });
+
+describe("combo leve todos", () => {
+  it("bump combo libera os 4 materiais e mantém o plano", () => {
+    const e = parseEvent({
+      event: "pedido.pago",
+      customer: { email: "a@b.com" },
+      offer: { code: "3DC61E0F", name: "Profissional — Mensal", interval: "month", interval_count: 1 },
+      product: { name: "Nivela 3D — Gestão para Impressão 3D" },
+      order: { status: "paid", bumps: [{ name: "Combo Leve Todos: 4 Materiais Nivela 3D", price: 29.9 }] },
+    });
+    expect(e!.plan).toBe("profissional");
+    expect(e!.extras.sort()).toEqual(["bump_etiquetas", "bump_guia", "bump_mensagens", "bump_mockups"]);
+  });
+});
