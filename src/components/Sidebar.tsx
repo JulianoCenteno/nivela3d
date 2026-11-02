@@ -4,6 +4,7 @@ import {
   BadgePercent,
   Calculator,
   CreditCard,
+  Gift,
   LayoutDashboard,
   LogOut,
   Menu,
@@ -30,6 +31,7 @@ const NAV = [
   { href: "/materiais", label: "Materiais", icon: Spool },
   { href: "/insumos", label: "Insumos", icon: Paperclip },
   { href: "/configuracoes", label: "Custos e canais", icon: Settings },
+  { href: "/conteudos", label: "Meus conteúdos", icon: Gift },
   { href: "/clube", label: "Clube de Ofertas", icon: BadgePercent },
   { href: "/plano", label: "Meu plano", icon: CreditCard },
 ];

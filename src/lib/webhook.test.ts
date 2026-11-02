@@ -32,3 +32,59 @@ describe("parseStatus / parsePlan", () => {
   it("não confunde 'Produto' com plano Pro", () => expect(parsePlan("Produto Digital")).toBeNull());
   it("reconhece 'Pro'", () => expect(parsePlan("Nivela Pro")).toBe("profissional"));
 });
+
+describe("order bumps", () => {
+  it("encontra plano e order bumps no mesmo pedido", () => {
+    const e = parseEvent({
+      status: "paid",
+      customer: { email: "a@b.com" },
+      product: { name: "Nivela 3D Profissional" },
+      items: [{ name: "Nivela 3D Profissional" }, { name: "Kit 30 Mockups Editáveis" }, { name: "Pack de Etiquetas e Embalagens" }],
+    })!;
+    expect(e.plan).toBe("profissional");
+    expect(e.extras.sort()).toEqual(["bump_etiquetas", "bump_mockups"]);
+  });
+
+  it("compra só do order bump não vira plano", () => {
+    const e = parseEvent({ status: "approved", email: "x@y.com", product_name: "100 Mensagens e Modelos de Anúncios" })!;
+    expect(e.plan).toBeNull();
+    expect(e.extras).toEqual(["bump_mensagens"]);
+  });
+
+  it("usa o mapa de IDs para order bumps", () => {
+    const e = parseEvent({ status: "approved", email: "x@y.com", product_id: "777" }, { "777": "bump_guia" })!;
+    expect(e.extras).toEqual(["bump_guia"]);
+  });
+});
+
+describe("formato real do Digital Hub", () => {
+  const base = {
+    event: "pedido.pago",
+    offer: { id: "o1", code: "AB12CD34", name: "Profissional anual", price: 399, recurring: true, interval: "year", interval_count: 1 },
+    product: { id: "p1", name: "Nivela 3D" },
+    subscription: { id: "s1", status: "ativa", current_period_end: "2027-11-01T00:00:00Z" },
+    order: { id: "or1", status: "pago", bumps: [{ name: "Pack de Etiquetas e Embalagens", price: 9.9 }] },
+    customer: { name: "Ana", email: "Ana@Loja.com" },
+  };
+
+  it("lê plano, ciclo, vencimento e order bump", () => {
+    const e = parseEvent(base)!;
+    expect(e).toMatchObject({ email: "ana@loja.com", plan: "profissional", status: "active", cycle: "anual", periodEnd: "2027-11-01T00:00:00.000Z" });
+    expect(e.extras).toEqual(["bump_etiquetas"]);
+  });
+
+  it("pagamento recusado não libera nada", () => {
+    expect(parseEvent({ ...base, event: "pedido.recusado" })!.status).toBeNull();
+  });
+
+  it("assinatura cancelada e reembolso", () => {
+    expect(parseEvent({ ...base, event: "assinatura.cancelada" })!.status).toBe("canceled");
+    expect(parseEvent({ ...base, event: "pedido.reembolsado" })!.status).toBe("refunded");
+    expect(parseEvent({ ...base, event: "assinatura.renovada" })!.status).toBe("active");
+  });
+
+  it("oferta mapeada pelo código", () => {
+    const e = parseEvent({ ...base, offer: { code: "ZZ99", name: "Oferta X" } }, { ZZ99: "empresa" })!;
+    expect(e.plan).toBe("empresa");
+  });
+});
