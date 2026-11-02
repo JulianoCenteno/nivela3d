@@ -272,3 +272,6 @@ revoke execute on function public.get_public_quote(text) from public;
 revoke execute on function public.approve_public_quote(text) from public;
 grant execute on function public.get_public_quote(text) to anon, authenticated;
 grant execute on function public.approve_public_quote(text) to anon, authenticated;
+
+-- Sem teste grátis: acesso só com assinatura
+create or replace function public.trial_days() returns int language sql immutable as $$ select 0 $$;
