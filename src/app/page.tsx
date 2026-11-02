@@ -24,7 +24,7 @@ import { CHECKOUT_LINKS } from "@/lib/plans";
 export const metadata: Metadata = {
   title: "Nivela 3D — Descubra quanto realmente sobra em cada impressão",
   description:
-    "Vender mais não significa lucrar mais. Com o Raio-X do Lucro 3D você encontra os custos escondidos, cobra o preço certo e vê o lucro real de cada peça. Teste grátis por 7 dias.",
+    "Vender mais não significa lucrar mais. Com o Raio-X do Lucro 3D você encontra os custos escondidos, cobra o preço certo e vê o lucro real de cada peça. Planos a partir de R$ 19,90/mês.",
 };
 
 // Exemplo ilustrativo do Vazamento Invisível de Lucro (valores fictícios).
@@ -86,7 +86,8 @@ const FAQ = [
   ["Funciona com a minha impressora?", "Sim. Funciona com impressoras de filamento (FDM) e de resina. Já trazemos uma lista com os principais modelos — Bambu Lab, Creality, Elegoo, Anycubic, Prusa e outros — com o consumo de energia preenchido."],
   ["O que é o Raio-X do Lucro 3D?", "É o método do Nivela 3D para enxergar quanto realmente sobra em cada impressão: revelar todos os custos da peça, precificar com a margem certa, conferir o lucro real de cada venda e descobrir quais produtos valem a pena."],
   ["Como o preço sugerido é calculado?", "Somamos material, energia, desgaste e manutenção da impressora, uma margem para falhas, sua mão de obra e os insumos da peça. Depois aplicamos a comissão do canal onde você vai vender e a margem de lucro que você escolher."],
-  ["Preciso de cartão para testar?", "Não. Você cria a conta e usa grátis por 7 dias. Se gostar, escolhe um plano."],
+  ["Como recebo o acesso?", "Logo depois do pagamento você recebe o link para criar sua conta com o mesmo e-mail da compra. O plano é liberado na hora."],
+  ["Tem garantia?", "Sim. Você tem 7 dias de garantia: se não gostar, pede o reembolso e recebe o valor de volta."],
   ["Meus dados ficam protegidos?", "Sim. Cada conta acessa somente os próprios dados, protegidos por regras de segurança no banco de dados."],
   ["Posso mudar de plano depois?", "Pode. Você começa no plano que fizer sentido hoje e muda quando o negócio crescer."],
 ];
@@ -101,7 +102,7 @@ const SLIDES = [
   { src: "/landing/cel-painel-escuro.webp", title: "Tema claro ou escuro", text: "Do jeito que for mais confortável para você." },
 ];
 
-const checkout = (id: "iniciante" | "profissional" | "empresa") => CHECKOUT_LINKS[id] || "/cadastro";
+const checkout = (id: "iniciante" | "profissional" | "empresa") => CHECKOUT_LINKS[id] || "#planos";
 
 function Shot({ src, alt, w = 2880, h = 1800, className = "", priority = false }: { src: string; alt: string; w?: number; h?: number; className?: string; priority?: boolean }) {
   return (
@@ -140,7 +141,7 @@ export default function Landing() {
           </nav>
           <div className="flex items-center gap-2">
             <Link href="/login" className="hidden rounded-xl px-3 py-2 text-[15px] font-semibold text-ink-2 hover:bg-surface-2 sm:block">Entrar</Link>
-            <Link href="/cadastro" className="btn-primary px-4 py-2 text-sm sm:text-[15px]">Testar grátis</Link>
+            <a href="#planos" className="btn-primary px-4 py-2 text-sm sm:text-[15px]">Assinar agora</a>
           </div>
         </div>
       </header>
@@ -160,12 +161,12 @@ export default function Landing() {
               Lucro 3D você encontra os custos escondidos, cobra com segurança e vê quais peças realmente compensam.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-              <Link href="/cadastro" className="btn-primary px-6 py-3.5 text-base">
+              <a href="#planos" className="btn-primary px-6 py-3.5 text-base">
                 Quero descobrir meu lucro real <ArrowRight size={18} />
-              </Link>
-              <a href="#planos" className="btn-ghost px-6 py-3.5 text-base">Ver planos</a>
+              </a>
+              <a href="#como-funciona" className="btn-ghost px-6 py-3.5 text-base">Como funciona</a>
             </div>
-            <p className="mt-4 text-sm text-muted">7 dias grátis, sem cartão · Depois, a partir de R$ 19,90/mês</p>
+            <p className="mt-4 text-sm text-muted">A partir de R$ 19,90/mês · 7 dias de garantia · Acesso imediato</p>
           </div>
 
           <div className="relative pb-6 pl-[16%]">
@@ -390,7 +391,7 @@ export default function Landing() {
                 </li>
               ))}
             </ul>
-            <Link href="/cadastro" className="btn-primary mt-9 px-6 py-3.5 text-base">Fazer o Raio-X das minhas peças <ArrowRight size={18} /></Link>
+            <a href="#planos" className="btn-primary mt-9 px-6 py-3.5 text-base">Fazer o Raio-X das minhas peças <ArrowRight size={18} /></a>
           </div>
         </section>
 
@@ -433,7 +434,7 @@ export default function Landing() {
               ))}
             </div>
             <p className="mt-10 text-center text-muted">
-              Ainda em dúvida? <Link href="/cadastro" className="font-semibold text-primary underline">Teste grátis por 7 dias</Link>, sem cartão.
+              Todos os planos têm <b className="text-ink">7 dias de garantia</b>: se não gostar, você pede o reembolso.
             </p>
           </div>
         </section>
@@ -494,9 +495,9 @@ export default function Landing() {
               <span className="text-[#8FA69A]">O Nivela ajuda você a transformar isso em lucro.</span>
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-lg text-[#F5F3EE]/70">Em poucos minutos você faz o Raio-X da sua primeira peça e descobre quanto realmente sobra. Cada impressão conta. Cada lucro também.</p>
-            <Link href="/cadastro" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#8FA69A] px-7 py-4 text-base font-bold text-[#10191C] transition hover:bg-[#A3B8AD]">
+            <a href="#planos" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#8FA69A] px-7 py-4 text-base font-bold text-[#10191C] transition hover:bg-[#A3B8AD]">
               Quero descobrir meu lucro real <ArrowRight size={18} />
-            </Link>
+            </a>
           </div>
         </section>
       </main>
