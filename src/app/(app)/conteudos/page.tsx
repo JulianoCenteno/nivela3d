@@ -3,16 +3,11 @@ import { BadgePercent, Download, ExternalLink, FileText, Gift, LayoutTemplate, L
 import Link from "next/link";
 import { Flash, PageHeader } from "@/components/ui";
 import { getContext } from "@/lib/data";
+import { BONUSES } from "@/lib/bonus";
 import { checkoutFor, COMBO, comboCheckout, EXTRAS } from "@/lib/extras";
 
 export const metadata = { title: "Meus conteúdos" };
 
-const BONUSES = [
-  ["Primeiras Vendas com Lucro", "Como começar a vender suas peças sem deixar dinheiro na mesa."],
-  ["Checklist Antidesperdício", "Evite as falhas que jogam filamento, tempo e lucro fora."],
-  ["20 Ideias de Produtos para Vender", "Inspiração por categoria e por público."],
-  ["Modelos de Mensagens para Clientes", "Respostas rápidas para orçamentos e pedidos."],
-];
 
 export default async function ContentsPage({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
   await requireOwner();
@@ -130,14 +125,20 @@ export default async function ContentsPage({ searchParams }: { searchParams: Pro
               <p className="text-sm text-muted">Promoções selecionadas de filamentos e ferramentas.</p>
             </div>
           </Link>
-          {BONUSES.map(([t, d]) => (
-            <div key={t} className="card flex items-center gap-4 p-5">
-              <div className="rounded-xl bg-surface-2 p-3 text-muted"><FileText size={22} /></div>
+          {BONUSES.map((b) => (
+            <div key={b.slug} className="card flex items-center gap-4 p-5">
+              <div className={`rounded-xl p-3 ${activePlan ? "bg-sand-soft text-ink-2" : "bg-surface-2 text-muted"}`}><FileText size={22} /></div>
               <div className="min-w-0 flex-1">
-                <p className="font-bold">{t}</p>
-                <p className="text-sm text-muted">{d}</p>
+                <p className="font-bold">{b.title}</p>
+                <p className="text-sm text-muted">{b.description}</p>
               </div>
-              <span className="shrink-0 rounded-full bg-surface-2 px-2 py-1 text-xs font-bold text-muted">Em breve</span>
+              {activePlan ? (
+                <a href={`/api/bonus/${b.slug}`} className="btn-ghost shrink-0 gap-1.5 px-3 py-2 text-sm" aria-label={`Baixar ${b.title}`}>
+                  <Download size={16} /> PDF
+                </a>
+              ) : (
+                <Lock size={18} className="shrink-0 text-muted" />
+              )}
             </div>
           ))}
         </div>

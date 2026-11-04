@@ -4,6 +4,7 @@ const nextConfig: NextConfig = {
   // Inclui os PDFs privados na função que faz a entrega protegida.
   outputFileTracingIncludes: {
     "/api/conteudos/[code]": ["./private/materiais/**/*"],
+    "/api/bonus/[slug]": ["./private/materiais/**/*"],
   },
   // Imagens de divulgação (checkout) podem ser lidas por outros sites.
   async headers() {
