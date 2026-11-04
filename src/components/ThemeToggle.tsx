@@ -33,4 +33,4 @@ export function ThemeToggle({ className = "" }: { className?: string }) {
 }
 
 /** Script inline: aplica o tema antes da pintura para evitar "piscar". */
-export const themeScript = `(function(){try{if(location.pathname==='/'){document.documentElement.classList.remove('dark');return}var t=localStorage.getItem('nivela-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}})()`;
+export const themeScript = `(function(){try{if(location.pathname==='/'||location.pathname==='/oferta'){document.documentElement.classList.remove('dark');return}var t=localStorage.getItem('nivela-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches))document.documentElement.classList.add('dark')}catch(e){}})()`;
