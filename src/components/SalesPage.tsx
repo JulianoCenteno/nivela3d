@@ -122,13 +122,16 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
   );
 }
 
-export function SalesPage({ upsell = false }: { upsell?: boolean }) {
+export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; declineUrl?: string }) {
   return (
     <div className="overflow-x-hidden">
       {upsell && (
         <div className="bg-[#182B30] px-5 py-3 text-center text-[15px] text-[#F5F3EE]">
           <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#8FA69A] align-[-3px] text-[#10191C]"><Check size={13} strokeWidth={3} /></span>
-          <b>Compra confirmada!</b> Seu acesso já está a caminho do seu e-mail. <span className="text-[#C5B79E]">Antes de fechar esta página, veja isto.</span>
+          <b>Compra confirmada!</b> Seu acesso já está a caminho do seu e-mail. <span className="text-[#C5B79E]">Antes de ir para o seu acesso, veja isto.</span>
+          {declineUrl && (
+            <a href={declineUrl} className="ml-2 whitespace-nowrap font-semibold text-[#F5F3EE]/70 underline underline-offset-2 hover:text-[#F5F3EE]">Ir para o meu acesso</a>
+          )}
         </div>
       )}
       {/* ---------- Topo ---------- */}
@@ -520,7 +523,15 @@ export function SalesPage({ upsell = false }: { upsell?: boolean }) {
               Quero descobrir meu lucro real <ArrowRight size={18} />
             </a>
             {upsell && (
-              <p className="mt-8 text-sm text-muted">Não quer agora? Tudo bem: o acesso da sua compra chega no seu e-mail normalmente.</p>
+              <p className="mt-8 text-sm text-muted">
+                Não quer agora? Tudo bem: o acesso da sua compra chega no seu e-mail normalmente.
+                {declineUrl && (
+                  <>
+                    {" "}
+                    <a href={declineUrl} className="font-semibold text-ink-2 underline underline-offset-2">Não, obrigado. Ir para o meu acesso</a>
+                  </>
+                )}
+              </p>
             )}
           </div>
         </section>
