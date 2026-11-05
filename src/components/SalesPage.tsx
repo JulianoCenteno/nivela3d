@@ -18,6 +18,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Logo, LogoMark } from "@/components/Logo";
 import { PhoneCarousel } from "@/components/PhoneCarousel";
+import { MetaPixel } from "@/components/MetaPixel";
 import { CHECKOUT_LINKS } from "@/lib/plans";
 
 // Exemplo ilustrativo do Vazamento Invisível de Lucro (valores fictícios).
@@ -125,6 +126,7 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
 export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; declineUrl?: string }) {
   return (
     <div className="overflow-x-hidden">
+      <MetaPixel page={upsell ? "upsell" : "landing"} />
       {upsell && (
         <div className="bg-[#182B30] px-5 py-3 text-center text-[15px] text-[#F5F3EE]">
           <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#8FA69A] align-[-3px] text-[#10191C]"><Check size={13} strokeWidth={3} /></span>
