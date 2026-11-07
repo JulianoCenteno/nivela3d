@@ -62,7 +62,7 @@ export type BillingCycle = "mensal" | "trimestral" | "anual";
 
 export const CYCLES: { id: BillingCycle; label: string; badge?: string; badgeShort?: string }[] = [
   { id: "mensal", label: "Mensal" },
-  { id: "trimestral", label: "Trimestral", badge: "-10%" },
+  { id: "trimestral", label: "Trimestral", badge: "-8%" },
   { id: "anual", label: "Anual", badge: "2 meses grátis", badgeShort: "-17%" },
 ];
 
@@ -70,17 +70,17 @@ export const CYCLES: { id: BillingCycle; label: string; badge?: string; badgeSho
 export const CYCLE_PRICES: Record<PaidPlan, Record<BillingCycle, { perMonth: string; total: string }>> = {
   iniciante: {
     mensal: { perMonth: "19,90", total: "R$ 19,90" },
-    trimestral: { perMonth: "17,90", total: "R$ 53,70" },
+    trimestral: { perMonth: "18,30", total: "R$ 54,90" },
     anual: { perMonth: "16,58", total: "R$ 199" },
   },
   profissional: {
     mensal: { perMonth: "39,90", total: "R$ 39,90" },
-    trimestral: { perMonth: "35,90", total: "R$ 107,70" },
+    trimestral: { perMonth: "36,63", total: "R$ 109,90" },
     anual: { perMonth: "33,25", total: "R$ 399" },
   },
   empresa: {
     mensal: { perMonth: "79,90", total: "R$ 79,90" },
-    trimestral: { perMonth: "71,90", total: "R$ 215,70" },
+    trimestral: { perMonth: "73,30", total: "R$ 219,90" },
     anual: { perMonth: "66,58", total: "R$ 799" },
   },
 };
