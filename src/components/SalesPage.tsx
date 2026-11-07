@@ -19,7 +19,8 @@ import Link from "next/link";
 import { Logo, LogoMark } from "@/components/Logo";
 import { PhoneCarousel } from "@/components/PhoneCarousel";
 import { MetaPixel } from "@/components/MetaPixel";
-import { CHECKOUT_LINKS } from "@/lib/plans";
+import { PricingPlans, type PricingPlan } from "@/components/PricingPlans";
+import { availableCycles } from "@/lib/plans";
 
 // Exemplo ilustrativo do Vazamento Invisível de Lucro (valores fictícios).
 const LEAK = [
@@ -39,20 +40,16 @@ const XRAY = [
   [TrendingUp, "Evolua", "Descubra quais produtos e categorias deixam mais dinheiro no seu bolso e quais só dão trabalho."],
 ] as const;
 
-const PLANS = [
+const PLANS: PricingPlan[] = [
   {
     id: "iniciante" as const,
     name: "Iniciante",
-    price: "19,90",
-    annual: "R$ 199/ano",
     desc: "Pare de precificar no achismo e descubra quanto cobrar.",
     features: ["Raio-X do Lucro 3D completo", "1 impressora", "Até 30 produtos", "Registro de vendas e painel de lucro", "Bônus e Clube de Ofertas"],
   },
   {
     id: "profissional" as const,
     name: "Profissional",
-    price: "39,90",
-    annual: "R$ 399/ano",
     desc: "Controle seus pedidos, custos e lucros em um só lugar.",
     features: ["Tudo do Iniciante", "Até 5 impressoras", "Até 200 produtos", "Insumos e canais de venda ilimitados", "Relatórios completos", "Orçamentos, pedidos e estoque"],
     featured: true,
@@ -60,8 +57,6 @@ const PLANS = [
   {
     id: "empresa" as const,
     name: "Empresa",
-    price: "79,90",
-    annual: "R$ 799/ano",
     desc: "Mais controle financeiro e operacional para crescer com segurança.",
     features: ["Tudo do Profissional", "Até 15 impressoras", "Produtos ilimitados", "Equipe com até 5 pessoas", "Link de orçamento: o cliente aprova e vira pedido", "Baixa automática de estoque e alertas de prazo", "Suporte prioritário"],
   },
@@ -99,8 +94,6 @@ const SLIDES = [
   { src: "/landing/cel-impressoras.webp", title: "Sua impressora na lista", text: "Escolha o modelo e o consumo de energia vem preenchido." },
   { src: "/landing/cel-painel-escuro.webp", title: "Tema claro ou escuro", text: "Do jeito que for mais confortável para você." },
 ];
-
-const checkout = (id: "iniciante" | "profissional" | "empresa") => CHECKOUT_LINKS[id] || "#planos";
 
 function Shot({ src, alt, w = 2880, h = 1800, className = "", priority = false }: { src: string; alt: string; w?: number; h?: number; className?: string; priority?: boolean }) {
   return (
@@ -427,38 +420,10 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-sm font-bold uppercase tracking-wider text-sage">Planos</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Comece a cuidar dos seus lucros a partir de R$ 19,90/mês</h2>
-              <p className="mt-3 text-lg text-muted">Todos os planos incluem os bônus e o Clube de Ofertas 3D. No plano anual você paga o equivalente a 10 meses.</p>
+              <p className="mt-3 text-lg text-muted">Todos os planos incluem os bônus e o Clube de Ofertas 3D.{" "}
+                {availableCycles().length > 1 ? "Pague por mês, a cada 3 meses ou por ano e economize até 2 meses." : ""}</p>
             </div>
-            <div className="mt-14 grid gap-6 lg:grid-cols-3 lg:items-stretch">
-              {PLANS.map((p) => (
-                <div
-                  key={p.id}
-                  className={`relative flex flex-col rounded-3xl border p-8 ${p.featured ? "border-2 border-primary bg-bg shadow-[0_30px_70px_-30px_rgba(24,43,48,0.35)] lg:-my-4 lg:py-12" : "border-line bg-bg"}`}
-                >
-                  {p.featured && (
-                    <span className="absolute -top-3.5 left-8 rounded-full bg-primary px-3 py-1 text-xs font-bold text-on-primary">Mais completo</span>
-                  )}
-                  <p className="text-xl font-extrabold">{p.name}</p>
-                  <p className="mt-1 text-muted">{p.desc}</p>
-                  <p className="tnum mt-6 flex items-baseline gap-1">
-                    <span className="text-lg font-bold text-muted">R$</span>
-                    <span className="text-5xl font-extrabold tracking-tight">{p.price}</span>
-                    <span className="font-semibold text-muted">/mês</span>
-                  </p>
-                  <p className="mt-1 text-sm text-muted">ou {p.annual} no plano anual</p>
-                  <ul className="mt-7 flex-1 space-y-3">
-                    {p.features.map((f) => (
-                      <li key={f} className="flex gap-2.5 text-[15px]">
-                        <Check size={18} className="mt-0.5 shrink-0 text-sage" /> {f}
-                      </li>
-                    ))}
-                  </ul>
-                  <a href={checkout(p.id)} className={`mt-8 w-full py-3.5 text-base ${p.featured ? "btn-primary" : "btn-ghost"}`}>
-                    Assinar {p.name}
-                  </a>
-                </div>
-              ))}
-            </div>
+            <PricingPlans plans={PLANS} cycles={availableCycles()} />
             <p className="mt-10 text-center text-muted">
               Todos os planos têm <b className="text-ink">7 dias de garantia</b>: se não gostar, você pede o reembolso.
             </p>

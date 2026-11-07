@@ -57,12 +57,75 @@ export const PLANS: Record<Exclude<PlanId, "nenhum">, PlanInfo> = {
   },
 };
 
-/** Links de checkout na plataforma — configure no .env. */
-export const CHECKOUT_LINKS: Record<"iniciante" | "profissional" | "empresa", string | undefined> = {
-  iniciante: process.env.NEXT_PUBLIC_CHECKOUT_INICIANTE,
-  profissional: process.env.NEXT_PUBLIC_CHECKOUT_PROFISSIONAL,
-  empresa: process.env.NEXT_PUBLIC_CHECKOUT_EMPRESA,
+export type PaidPlan = "iniciante" | "profissional" | "empresa";
+export type BillingCycle = "mensal" | "trimestral" | "anual";
+
+export const CYCLES: { id: BillingCycle; label: string; badge?: string; badgeShort?: string }[] = [
+  { id: "mensal", label: "Mensal" },
+  { id: "trimestral", label: "Trimestral", badge: "-10%" },
+  { id: "anual", label: "Anual", badge: "2 meses grátis", badgeShort: "-17%" },
+];
+
+/** Preço por ciclo: `perMonth` é o equivalente mensal exibido em destaque; `total` é o valor cobrado no ciclo. */
+export const CYCLE_PRICES: Record<PaidPlan, Record<BillingCycle, { perMonth: string; total: string }>> = {
+  iniciante: {
+    mensal: { perMonth: "19,90", total: "R$ 19,90" },
+    trimestral: { perMonth: "17,90", total: "R$ 53,70" },
+    anual: { perMonth: "16,58", total: "R$ 199" },
+  },
+  profissional: {
+    mensal: { perMonth: "39,90", total: "R$ 39,90" },
+    trimestral: { perMonth: "35,90", total: "R$ 107,70" },
+    anual: { perMonth: "33,25", total: "R$ 399" },
+  },
+  empresa: {
+    mensal: { perMonth: "79,90", total: "R$ 79,90" },
+    trimestral: { perMonth: "71,90", total: "R$ 215,70" },
+    anual: { perMonth: "66,58", total: "R$ 799" },
+  },
 };
+
+export function cycleNote(plan: PaidPlan, cycle: BillingCycle): string {
+  const { total } = CYCLE_PRICES[plan][cycle];
+  if (cycle === "trimestral") return `${total} a cada 3 meses`;
+  if (cycle === "anual") return `${total} por ano`;
+  return "cobrado todo mês";
+}
+
+/**
+ * Links de checkout na plataforma — configure no .env / Vercel.
+ * (Referências estáticas: o Next só embute variáveis NEXT_PUBLIC escritas por extenso.)
+ */
+export const CHECKOUT_BY_CYCLE: Record<PaidPlan, Record<BillingCycle, string | undefined>> = {
+  iniciante: {
+    mensal: process.env.NEXT_PUBLIC_CHECKOUT_INICIANTE,
+    trimestral: process.env.NEXT_PUBLIC_CHECKOUT_INICIANTE_TRIMESTRAL,
+    anual: process.env.NEXT_PUBLIC_CHECKOUT_INICIANTE_ANUAL,
+  },
+  profissional: {
+    mensal: process.env.NEXT_PUBLIC_CHECKOUT_PROFISSIONAL,
+    trimestral: process.env.NEXT_PUBLIC_CHECKOUT_PROFISSIONAL_TRIMESTRAL,
+    anual: process.env.NEXT_PUBLIC_CHECKOUT_PROFISSIONAL_ANUAL,
+  },
+  empresa: {
+    mensal: process.env.NEXT_PUBLIC_CHECKOUT_EMPRESA,
+    trimestral: process.env.NEXT_PUBLIC_CHECKOUT_EMPRESA_TRIMESTRAL,
+    anual: process.env.NEXT_PUBLIC_CHECKOUT_EMPRESA_ANUAL,
+  },
+};
+
+/** Mantido por compatibilidade: links do plano mensal. */
+export const CHECKOUT_LINKS: Record<PaidPlan, string | undefined> = {
+  iniciante: CHECKOUT_BY_CYCLE.iniciante.mensal,
+  profissional: CHECKOUT_BY_CYCLE.profissional.mensal,
+  empresa: CHECKOUT_BY_CYCLE.empresa.mensal,
+};
+
+/** Ciclos com link configurado nos três planos (o mensal sempre aparece). */
+export function availableCycles(): BillingCycle[] {
+  const plans: PaidPlan[] = ["iniciante", "profissional", "empresa"];
+  return CYCLES.map((c) => c.id).filter((c) => c === "mensal" || plans.every((p) => !!CHECKOUT_BY_CYCLE[p][c]));
+}
 
 export function planInfo(id: string | null | undefined): PlanInfo | null {
   if (!id || id === "nenhum") return null;
