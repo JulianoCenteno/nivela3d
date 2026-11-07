@@ -93,7 +93,7 @@ export function PricingPlans({ plans, cycles }: { plans: PricingPlan[]; cycles: 
                 <span className="text-5xl font-extrabold tracking-tight">{price.perMonth}</span>
                 <span className="font-semibold text-muted">/mês</span>
               </p>
-              <p className="mt-1 text-sm text-muted">{cycleNote(p.id, cycle)}</p>
+              <p className="mt-1 text-sm text-muted">{cycleNote(p.id, cycle) || "\u00a0"}</p>
               <ul className="mt-7 flex-1 space-y-3">
                 {p.features.map((f) => (
                   <li key={f} className="flex gap-2.5 text-[15px]">

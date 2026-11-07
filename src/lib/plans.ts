@@ -89,7 +89,7 @@ export function cycleNote(plan: PaidPlan, cycle: BillingCycle): string {
   const { total } = CYCLE_PRICES[plan][cycle];
   if (cycle === "trimestral") return `${total} a cada 3 meses`;
   if (cycle === "anual") return `${total} por ano`;
-  return "cobrado todo mês";
+  return "";
 }
 
 /**

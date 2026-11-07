@@ -28,7 +28,7 @@ export function PlanUpgrade({ currentPlan, cycles }: { currentPlan: string; cycl
                 R$ {CYCLE_PRICES[id][cycle].perMonth}
                 <span className="text-base font-semibold text-muted">/mês</span>
               </p>
-              <p className="mt-0.5 text-sm text-muted">{cycleNote(id, cycle)}</p>
+              <p className="mt-0.5 text-sm text-muted">{cycleNote(id, cycle) || "\u00a0"}</p>
               <ul className="mt-5 flex-1 space-y-2.5">
                 {p.features.map((f) => (
                   <li key={f} className="flex gap-2 text-[15px] text-ink-2">
