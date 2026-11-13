@@ -52,14 +52,14 @@ const PLANS: PricingPlan[] = [
     id: "profissional" as const,
     name: "Profissional",
     desc: "Controle seus pedidos, custos e lucros em um só lugar.",
-    features: ["Tudo do Iniciante", "Até 5 impressoras", "Até 200 produtos", "Insumos e canais de venda ilimitados", "Relatórios completos", "Orçamentos, pedidos e estoque"],
+    features: ["Tudo do Iniciante", "Impressoras ilimitadas", "Produtos ilimitados", "Insumos e canais de venda ilimitados", "Relatórios completos", "Orçamentos, pedidos e estoque"],
     featured: true,
   },
   {
     id: "empresa" as const,
     name: "Empresa",
     desc: "Mais controle financeiro e operacional para crescer com segurança.",
-    features: ["Tudo do Profissional", "Até 15 impressoras", "Produtos ilimitados", "Equipe com até 5 pessoas", "Link de orçamento: o cliente aprova e vira pedido", "Baixa automática de estoque e alertas de prazo", "Suporte prioritário"],
+    features: ["Tudo do Profissional", "Equipe com até 5 pessoas", "Link de orçamento: o cliente aprova e vira pedido", "Baixa automática de estoque e alertas de prazo", "Suporte prioritário"],
   },
 ];
 

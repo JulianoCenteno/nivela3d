@@ -6,7 +6,7 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { dv, Field, Flash, PageHeader } from "@/components/ui";
 import { getContext, getPrinters } from "@/lib/data";
 import { money, number } from "@/lib/format";
-import { planInfo } from "@/lib/plans";
+import { planInfo, UNLIMITED } from "@/lib/plans";
 import { deletePrinter, savePrinter } from "../actions";
 
 export const metadata = { title: "Impressoras" };
@@ -60,7 +60,7 @@ export default async function PrintersPage({
             );
           })}
           <p className="text-sm text-muted">
-            {printers.length} de {limit} impressora{limit === 1 ? "" : "s"} do seu plano.
+            {limit >= UNLIMITED ? `${printers.length} impressora${printers.length === 1 ? "" : "s"} · ilimitadas no seu plano.` : `${printers.length} de ${limit} impressora${limit === 1 ? "" : "s"} do seu plano.`}
           </p>
         </section>
 

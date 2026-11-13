@@ -5,7 +5,7 @@ import { Empty, Flash, PageHeader } from "@/components/ui";
 import { evaluatePrice } from "@/lib/calc";
 import { getContext, getProducts } from "@/lib/data";
 import { money, pct } from "@/lib/format";
-import { planInfo } from "@/lib/plans";
+import { planInfo, UNLIMITED } from "@/lib/plans";
 import { recalcAllProducts } from "../actions";
 
 export const metadata = { title: "Produtos" };
@@ -118,7 +118,7 @@ export default async function ProductsPage({
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-sm text-muted">{all.length} de {limit} produtos do seu plano.</p>
+          <p className="mt-3 text-sm text-muted">{limit >= UNLIMITED ? `${all.length} produtos · ilimitados no seu plano.` : `${all.length} de ${limit} produtos do seu plano.`}</p>
         </>
       )}
     </>

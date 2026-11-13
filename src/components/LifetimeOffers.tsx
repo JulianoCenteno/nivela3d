@@ -6,7 +6,7 @@ import { LIFETIME } from "@/lib/plans";
 import type { PricingPlan } from "@/components/PricingPlans";
 
 /** Recursos que o Completo tem e o Básico não (mostrados no pop-up). */
-const UPGRADE_GAINS = ["Até 5 impressoras", "Até 200 produtos", "Orçamentos, pedidos e estoque", "Relatórios completos"];
+const UPGRADE_GAINS = ["Impressoras ilimitadas", "Produtos ilimitados", "Orçamentos, pedidos e estoque", "Relatórios completos"];
 
 /**
  * Duas ofertas de pagamento único com acesso vitalício.

@@ -9,6 +9,9 @@ export interface PlanInfo {
   features: string[];
 }
 
+/** Limite tratado como "ilimitado" (espelha public.plan_limit no banco). */
+export const UNLIMITED = 100000;
+
 export const PLANS: Record<Exclude<PlanId, "nenhum">, PlanInfo> = {
   teste: {
     id: "teste",
@@ -30,12 +33,12 @@ export const PLANS: Record<Exclude<PlanId, "nenhum">, PlanInfo> = {
     id: "profissional",
     label: "Profissional",
     price: "R$ 39,90/mês",
-    printers: 5,
-    products: 200,
+    printers: UNLIMITED,
+    products: UNLIMITED,
     features: [
       "Tudo do Iniciante",
-      "Até 5 impressoras",
-      "200 produtos",
+      "Impressoras ilimitadas",
+      "Produtos ilimitados",
       "Orçamentos, pedidos e estoque",
       "Relatórios completos",
     ],
@@ -44,12 +47,10 @@ export const PLANS: Record<Exclude<PlanId, "nenhum">, PlanInfo> = {
     id: "empresa",
     label: "Empresa",
     price: "R$ 79,90/mês",
-    printers: 15,
-    products: 5000,
+    printers: UNLIMITED,
+    products: UNLIMITED,
     features: [
       "Tudo do Profissional",
-      "Até 15 impressoras",
-      "Produtos ilimitados",
       "Equipe com até 5 pessoas",
       "Automações: link de orçamento, baixa de estoque e alertas de prazo",
       "Suporte prioritário",
