@@ -17,7 +17,9 @@ export function LifetimeOffers({ basico, completo }: { basico: PricingPlan; comp
   const dialogRef = useRef<HTMLDivElement>(null);
   const upgradeHref = LIFETIME.upgrade.href || LIFETIME.completo.href!;
   const upgradePrice = LIFETIME.upgrade.href ? LIFETIME.upgrade.price : LIFETIME.completo.price;
-  const diff = Number(upgradePrice) - Number(LIFETIME.basico.price);
+  const toNum = (v: string) => Number(v.replace(",", "."));
+  const diffNum = toNum(upgradePrice) - toNum(LIFETIME.basico.price);
+  const diff = Number.isInteger(Math.round(diffNum * 100) / 100) ? String(Math.round(diffNum)) : diffNum.toFixed(2).replace(".", ",");
 
   useEffect(() => {
     if (!open) return;

@@ -134,9 +134,9 @@ export function availableCycles(): BillingCycle[] {
  * O pop-up do Básico oferece o Completo com desconto (link "upgrade").
  */
 export const LIFETIME = {
-  basico: { plan: "iniciante" as PaidPlan, price: "27", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO },
-  completo: { plan: "profissional" as PaidPlan, price: "47", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO },
-  upgrade: { price: "37", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE },
+  basico: { plan: "iniciante" as PaidPlan, price: "19,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO },
+  completo: { plan: "profissional" as PaidPlan, price: "59,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO },
+  upgrade: { price: "29,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE },
 };
 
 /** A página de vendas usa a oferta vitalícia quando os links do Básico e do Completo existem. */
