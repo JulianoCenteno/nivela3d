@@ -1,6 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
-import { addCycle, parseEvent } from "@/lib/webhook";
+import { addCycle, LIFETIME_END, parseEvent } from "@/lib/webhook";
 
 /**
  * Webhook da plataforma de vendas (Digital Hub).
@@ -65,18 +65,25 @@ export async function POST(req: NextRequest) {
   }
 
   if (plan) {
+    // Vitalício: acesso até 2099; eventos de cancelamento de recorrência não tiram o acesso.
+    if (ev.lifetime && ev.status === "canceled") {
+      await log(`ignorado: cancelamento em compra vitalícia (${ev.email})`);
+      return NextResponse.json({ ok: true, ignored: true });
+    }
     const periodEnd =
       ev.status === "active"
-        ? ev.periodEnd ?? addCycle(new Date(), ev.cycle).toISOString()
+        ? ev.lifetime
+          ? LIFETIME_END
+          : ev.periodEnd ?? addCycle(new Date(), ev.cycle).toISOString()
         : ev.status === "refunded"
           ? new Date().toISOString()
           : ev.periodEnd;
     const { error } = await db.rpc("wh_subscription", {
-      p_token: token, p_email: ev.email, p_plan: plan, p_status: ev.status, p_cycle: ev.cycle,
+      p_token: token, p_email: ev.email, p_plan: plan, p_status: ev.status, p_cycle: ev.lifetime ? "anual" : ev.cycle,
       p_period_end: periodEnd, p_external_id: ev.externalId,
     });
     if (error?.code === "28000") return NextResponse.json({ error: "unauthorized" }, { status: 401 });
-    results.push(error ? `plano erro: ${error.message}` : `plano ${plan} (${ev.status})`);
+    results.push(error ? `plano erro: ${error.message}` : `plano ${plan}${ev.lifetime ? " vitalício" : ""} (${ev.status})`);
   }
 
   const err = await log(results.length ? `ok: ${ev.email} → ${results.join(" | ")}` : "ignorado: plano não identificado");

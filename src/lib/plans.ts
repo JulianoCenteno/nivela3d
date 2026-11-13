@@ -127,6 +127,22 @@ export function availableCycles(): BillingCycle[] {
   return CYCLES.map((c) => c.id).filter((c) => c === "mensal" || plans.every((p) => !!CHECKOUT_BY_CYCLE[p][c]));
 }
 
+/**
+ * Oferta de pagamento único com acesso vitalício (frente low ticket).
+ * Básico = plano Iniciante; Completo = plano Profissional.
+ * O pop-up do Básico oferece o Completo com desconto (link "upgrade").
+ */
+export const LIFETIME = {
+  basico: { plan: "iniciante" as PaidPlan, price: "27", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO },
+  completo: { plan: "profissional" as PaidPlan, price: "47", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO },
+  upgrade: { price: "37", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE },
+};
+
+/** A página de vendas usa a oferta vitalícia quando os links do Básico e do Completo existem. */
+export function lifetimeEnabled(): boolean {
+  return !!LIFETIME.basico.href && !!LIFETIME.completo.href;
+}
+
 export function planInfo(id: string | null | undefined): PlanInfo | null {
   if (!id || id === "nenhum") return null;
   return PLANS[id as keyof typeof PLANS] ?? null;

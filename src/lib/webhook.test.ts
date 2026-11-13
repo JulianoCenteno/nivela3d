@@ -102,3 +102,30 @@ describe("combo leve todos", () => {
     expect(e!.extras.sort()).toEqual(["bump_etiquetas", "bump_guia", "bump_mensagens", "bump_mockups"]);
   });
 });
+
+describe("compra vitalícia", () => {
+  it("reconhece oferta vitalícia pelo nome", () => {
+    const e = parseEvent({ status: "paid", customer: { email: "v@x.com" }, offer: { name: "Nivela 3D Iniciante — Vitalício" } })!;
+    expect(e).toMatchObject({ plan: "iniciante", status: "active", lifetime: true });
+  });
+
+  it("reconhece intervalo não recorrente da oferta", () => {
+    const e = parseEvent({ status: "paid", customer: { email: "v@x.com" }, offer: { name: "Nivela 3D Profissional", interval: "one_time" } })!;
+    expect(e).toMatchObject({ plan: "profissional", lifetime: true });
+  });
+
+  it("assinatura mensal não é vitalícia", () => {
+    const e = parseEvent({ status: "paid", customer: { email: "v@x.com" }, offer: { name: "Nivela 3D Profissional", interval: "month", interval_count: 1 } })!;
+    expect(e).toMatchObject({ plan: "profissional", cycle: "mensal", lifetime: false });
+  });
+
+  it("order bump vitalício não marca o plano como vitalício", () => {
+    const e = parseEvent({
+      status: "paid", customer: { email: "v@x.com" },
+      offer: { name: "Nivela 3D Profissional", interval: "month" },
+      order: { bumps: [{ name: "Mockups prontos (acesso vitalício)" }] },
+    })!;
+    expect(e.lifetime).toBe(false);
+    expect(e.extras).toContain("bump_mockups");
+  });
+});

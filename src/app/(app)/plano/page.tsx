@@ -19,12 +19,15 @@ export default async function PlanPage() {
       <div className="card mb-8 p-6">
         <p className="text-sm font-semibold text-muted">Plano atual</p>
         <p className="mt-1 text-2xl font-extrabold">{current?.label ?? "Sem plano ativo"}</p>
-        {sub?.current_period_end && (
-          <p className="mt-1 text-sm text-muted">
-            {sub.status === "active" ? "Renova em" : "Acesso até"}{" "}
-            {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
-          </p>
-        )}
+        {sub?.current_period_end &&
+          (new Date(sub.current_period_end).getUTCFullYear() >= 2099 ? (
+            <p className="mt-1 text-sm font-semibold text-sage">Acesso vitalício</p>
+          ) : (
+            <p className="mt-1 text-sm text-muted">
+              {sub.status === "active" ? "Renova em" : "Acesso até"}{" "}
+              {new Date(sub.current_period_end).toLocaleDateString("pt-BR")}
+            </p>
+          ))}
         <p className="mt-3 text-sm text-muted">
           Assinou com outro e-mail? Fale com o suporte para vincular sua compra a esta conta.
         </p>

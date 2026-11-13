@@ -20,7 +20,8 @@ import { Logo, LogoMark } from "@/components/Logo";
 import { PhoneCarousel } from "@/components/PhoneCarousel";
 import { MetaPixel } from "@/components/MetaPixel";
 import { PricingPlans, type PricingPlan } from "@/components/PricingPlans";
-import { availableCycles } from "@/lib/plans";
+import { availableCycles, LIFETIME, lifetimeEnabled } from "@/lib/plans";
+import { LifetimeOffers } from "@/components/LifetimeOffers";
 
 // Exemplo ilustrativo do Vazamento Invisível de Lucro (valores fictícios).
 const LEAK = [
@@ -71,7 +72,7 @@ const BONUSES = [
 ];
 
 const UPSELL_FAQ = [
-  ["Essa assinatura é separada da compra que acabei de fazer?", "Sim. O acesso do produto que você acabou de comprar chega no seu e-mail normalmente. O Nivela 3D é um aplicativo à parte, com conta própria, para você calcular o custo e o lucro das peças que imprimir."],
+  [lifetimeEnabled() ? "Essa compra é separada da que acabei de fazer?" : "Essa assinatura é separada da compra que acabei de fazer?", "Sim. O acesso do produto que você acabou de comprar chega no seu e-mail normalmente. O Nivela 3D é um aplicativo à parte, com conta própria, para você calcular o custo e o lucro das peças que imprimir."],
 ];
 
 const FAQ = [
@@ -117,6 +118,7 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
 }
 
 export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; declineUrl?: string }) {
+  const lifetime = lifetimeEnabled();
   return (
     <div className="overflow-x-hidden">
       <MetaPixel page={upsell ? "upsell" : "landing"} />
@@ -142,7 +144,7 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
           </nav>
           <div className="flex items-center gap-2">
             {!upsell && <Link href="/login" className="hidden rounded-xl px-3 py-2 text-[15px] font-semibold text-ink-2 hover:bg-surface-2 sm:block">Entrar</Link>}
-            <a href="#planos" className="btn-primary px-4 py-2 text-sm sm:text-[15px]">Assinar agora</a>
+            <a href="#planos" className="btn-primary px-4 py-2 text-sm sm:text-[15px]">{lifetime ? "Quero acesso" : "Assinar agora"}</a>
           </div>
         </div>
       </header>
@@ -185,7 +187,7 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
               </a>
               <a href="#como-funciona" className="btn-ghost px-6 py-3.5 text-base">Como funciona</a>
             </div>
-            <p className="mt-4 text-sm text-muted">A partir de R$ 19,90/mês · 7 dias de garantia · Acesso imediato</p>
+            <p className="mt-4 text-sm text-muted">{lifetime ? `A partir de R$ ${LIFETIME.basico.price} · Pagamento único · Acesso vitalício` : "A partir de R$ 19,90/mês · 7 dias de garantia · Acesso imediato"}</p>
           </div>
 
           <div className="relative pb-6 pl-[16%]">
@@ -419,13 +421,26 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-sm font-bold uppercase tracking-wider text-sage">Planos</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Comece a cuidar dos seus lucros a partir de R$ 19,90/mês</h2>
-              <p className="mt-3 text-lg text-muted">Todos os planos incluem os bônus e o Clube de Ofertas 3D.{" "}
-                {availableCycles().length > 1 ? "Pague por mês, a cada 3 meses ou por ano e economize até 2 meses." : ""}</p>
+              {lifetime ? (
+                <>
+                  <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Pague uma vez e use para sempre</h2>
+                  <p className="mt-3 text-lg text-muted">Sem mensalidade. Os dois planos incluem os bônus e o Clube de Ofertas 3D.</p>
+                </>
+              ) : (
+                <>
+                  <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Comece a cuidar dos seus lucros a partir de R$ 19,90/mês</h2>
+                  <p className="mt-3 text-lg text-muted">Todos os planos incluem os bônus e o Clube de Ofertas 3D.{" "}
+                    {availableCycles().length > 1 ? "Pague por mês, a cada 3 meses ou por ano e economize até 2 meses." : ""}</p>
+                </>
+              )}
             </div>
-            <PricingPlans plans={PLANS} cycles={availableCycles()} />
+            {lifetime ? (
+              <LifetimeOffers basico={PLANS[0]} completo={PLANS[1]} />
+            ) : (
+              <PricingPlans plans={PLANS} cycles={availableCycles()} />
+            )}
             <p className="mt-10 text-center text-muted">
-              Todos os planos têm <b className="text-ink">7 dias de garantia</b>: se não gostar, você pede o reembolso.
+              {lifetime ? "Os dois planos têm" : "Todos os planos têm"} <b className="text-ink">7 dias de garantia</b>: se não gostar, você pede o reembolso.
             </p>
           </div>
         </section>
@@ -436,7 +451,7 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
             <div>
               <p className="text-sm font-bold uppercase tracking-wider text-sage">Bônus inclusos</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Você não começa sozinho</h2>
-              <p className="mt-3 text-lg leading-relaxed text-muted">Materiais para chegar mais rápido às primeiras vendas, liberados em todos os planos enquanto a assinatura estiver ativa.</p>
+              <p className="mt-3 text-lg leading-relaxed text-muted">Materiais para chegar mais rápido às primeiras vendas, {lifetime ? "liberados nos dois planos, para sempre." : "liberados em todos os planos enquanto a assinatura estiver ativa."}</p>
               <div className="mt-8 rounded-2xl bg-sand-soft p-6">
                 <BadgePercent className="text-ink-2" />
                 <p className="mt-3 font-bold">Clube de Ofertas 3D</p>

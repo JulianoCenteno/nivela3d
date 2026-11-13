@@ -18,6 +18,8 @@ export interface ParsedEvent {
   extras: string[];
   status: Status | null;
   cycle: Cycle;
+  /** Compra de pagamento único com acesso vitalício (sem recorrência). */
+  lifetime: boolean;
   externalId: string | null;
   periodEnd: string | null;
 }
@@ -83,8 +85,8 @@ export function parsePlan(raw: string | null, map: Record<string, string> = {}):
   if (map[raw]) return map[raw] as Plan;
   const s = raw.toLowerCase();
   if (s.includes("empresa") || s.includes("business")) return "empresa";
-  if (s.includes("iniciante") || s.includes("starter") || s.includes("basic")) return "iniciante";
-  if (s.includes("profissional") || /\bpro\b/.test(s)) return "profissional";
+  if (s.includes("iniciante") || s.includes("starter") || s.includes("basic") || s.includes("básico")) return "iniciante";
+  if (s.includes("profissional") || s.includes("completo") || /\bpro\b/.test(s)) return "profissional";
   return null;
 }
 
@@ -167,6 +169,23 @@ function structuredCycle(payload: unknown): Cycle | null {
   return null;
 }
 
+/** Data usada como "para sempre" no acesso vitalício. */
+export const LIFETIME_END = "2099-12-31T23:59:59.000Z";
+
+const LIFETIME_WORDS = ["vitalíc", "vitalic", "lifetime", "pagamento único", "pagamento unico", "acesso para sempre"];
+const RECURRING_INTERVALS = ["day", "week", "month", "year"];
+
+/**
+ * Pagamento único: o nome da oferta diz "vitalício" (ou similar), ou a oferta
+ * informa um intervalo que não é recorrente (ex.: "one_time", "lifetime").
+ */
+export function isLifetime(payload: unknown, names: string[]): boolean {
+  const joined = names.join(" ").toLowerCase();
+  if (LIFETIME_WORDS.some((w) => joined.includes(w))) return true;
+  const interval = pick(payload, ["offer.interval"])?.toLowerCase();
+  return !!interval && !RECURRING_INTERVALS.includes(interval);
+}
+
 export function parseEvent(payload: unknown, map: Record<string, string> = {}): ParsedEvent | null {
   const email = pick(payload, EMAIL)?.toLowerCase();
   if (!email || !email.includes("@")) return null;
@@ -182,6 +201,7 @@ export function parseEvent(payload: unknown, map: Record<string, string> = {}): 
     extras,
     status: parseStatus(pick(payload, STATUS)),
     cycle: structuredCycle(payload) ?? parseCycle(names.join(" ")),
+    lifetime: isLifetime(payload, planName ? [planName] : names.filter((n) => parseExtras(n, map).length === 0)),
     externalId: pick(payload, ID),
     periodEnd: endDate,
   };
