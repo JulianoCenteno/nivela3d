@@ -57,7 +57,7 @@ export function LifetimeOffers({ basico, completo }: { basico: PricingPlan; comp
               </p>
               <p className="mt-1 text-sm font-semibold text-sage">Pagamento único · acesso vitalício</p>
               <ul className="mt-7 flex-1 space-y-3">
-                {p.features.map((f) => (
+                {p.features.map((f) => f.replace("Tudo do Iniciante", "Tudo do Básico")).map((f) => (
                   <li key={f} className="flex gap-2.5 text-[15px]">
                     <Check size={18} className="mt-0.5 shrink-0 text-sage" /> {f}
                   </li>
