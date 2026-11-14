@@ -18,6 +18,8 @@ export function LandingLangSwitcher({ locale, upsell = false }: { locale: Locale
         onChange={(e) => {
           const next = e.target.value as Locale;
           document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+          // Escolha manual: o site deixa de trocar o idioma pela região.
+          document.cookie = `nivela_lang_manual=1; path=/; max-age=31536000; samesite=lax`;
           const base = upsell ? `/oferta${next === "pt" ? "" : `/${next}`}` : PATH[next];
           router.push(base + window.location.search);
         }}
