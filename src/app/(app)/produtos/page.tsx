@@ -4,11 +4,13 @@ import { SubmitButton } from "@/components/SubmitButton";
 import { Empty, Flash, PageHeader } from "@/components/ui";
 import { evaluatePrice } from "@/lib/calc";
 import { getContext, getProducts } from "@/lib/data";
-import { money, pct } from "@/lib/format";
 import { planInfo, UNLIMITED } from "@/lib/plans";
 import { recalcAllProducts } from "../actions";
+import { getI18n, getT } from "@/i18n/server";
 
-export const metadata = { title: "Produtos" };
+export async function generateMetadata() {
+  return { title: (await getT()).products.list.title };
+}
 
 export default async function ProductsPage({
   searchParams,
@@ -22,15 +24,18 @@ export default async function ProductsPage({
     ? all.filter((p) => p.name.toLowerCase().includes(q) || (p.category ?? "").toLowerCase().includes(q))
     : all;
   const limit = planInfo(plan)?.products ?? 0;
+  const { t, fmt } = await getI18n();
+  const l_ = t.products.list;
+  const { money, pct } = fmt;
 
   return (
     <>
       <PageHeader
-        title="Produtos"
-        description="Seu catálogo com custo, preço e margem de cada peça (margem sem taxas de canal)."
+        title={l_.title}
+        description={l_.desc}
         action={
           <Link href="/produtos/novo" className="btn-primary">
-            <Plus size={18} /> Novo produto
+            <Plus size={18} /> {l_.new}
           </Link>
         }
       />
@@ -39,20 +44,20 @@ export default async function ProductsPage({
       {all.length === 0 ? (
         <Empty
           icon={<Package size={28} />}
-          title="Nenhum produto ainda"
-          text="Cadastre suas peças para saber o lucro de cada uma e registrar vendas mais rápido."
+          title={l_.emptyTitle}
+          text={l_.emptyText}
           href="/produtos/novo"
-          cta="Cadastrar primeiro produto"
+          cta={l_.emptyCta}
         />
       ) : (
         <>
           <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <form className="w-full sm:max-w-xs">
-              <input name="q" defaultValue={sp.q} placeholder="Buscar por nome ou categoria" className="input" />
+              <input name="q" defaultValue={sp.q} placeholder={l_.search} className="input" />
             </form>
             <form action={recalcAllProducts}>
-              <SubmitButton className="btn-ghost text-sm" pendingText="Recalculando…">
-                <RefreshCw size={16} /> Recalcular custos
+              <SubmitButton className="btn-ghost text-sm" pendingText={l_.recalculating}>
+                <RefreshCw size={16} /> {l_.recalc}
               </SubmitButton>
             </form>
           </div>
@@ -67,7 +72,7 @@ export default async function ProductsPage({
                     <div className="min-w-0">
                       <p className="truncate font-semibold">{p.name}</p>
                       <p className="tnum text-sm text-muted">
-                        {p.category ? `${p.category} · ` : ""}custo {money(p.unit_cost)}
+                        {p.category ? `${p.category} · ` : ""}{l_.costOf(money(p.unit_cost))}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">
@@ -87,11 +92,11 @@ export default async function ProductsPage({
             <table className="w-full min-w-[640px] text-left">
               <thead className="border-b border-line text-xs font-bold uppercase tracking-wide text-muted">
                 <tr>
-                  <th className="px-5 py-3.5">Produto</th>
-                  <th className="px-5 py-3.5 text-right">Custo</th>
-                  <th className="px-5 py-3.5 text-right">Preço</th>
-                  <th className="px-5 py-3.5 text-right">Lucro</th>
-                  <th className="px-5 py-3.5 text-right">Margem</th>
+                  <th className="px-5 py-3.5">{l_.product}</th>
+                  <th className="px-5 py-3.5 text-right">{l_.cost}</th>
+                  <th className="px-5 py-3.5 text-right">{l_.price}</th>
+                  <th className="px-5 py-3.5 text-right">{l_.profit}</th>
+                  <th className="px-5 py-3.5 text-right">{l_.margin}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-line">
@@ -118,7 +123,7 @@ export default async function ProductsPage({
               </tbody>
             </table>
           </div>
-          <p className="mt-3 text-sm text-muted">{limit >= UNLIMITED ? `${all.length} produtos · ilimitados no seu plano.` : `${all.length} de ${limit} produtos do seu plano.`}</p>
+          <p className="mt-3 text-sm text-muted">{limit >= UNLIMITED ? l_.unlimited(all.length) : l_.ofLimit(all.length, limit)}</p>
         </>
       )}
     </>

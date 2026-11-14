@@ -128,4 +128,13 @@ describe("compra vitalícia", () => {
     expect(e.lifetime).toBe(false);
     expect(e.extras).toContain("bump_mockups");
   });
+
+  it("reconhece ofertas e materiais em inglês e espanhol", () => {
+    const en = parseEvent({ status: "paid", customer: { email: "e@x.com" }, offer: { name: "Complete — Lifetime" } })!;
+    expect(en.plan).toBe("profissional");
+    expect(en.lifetime).toBe(true);
+    const es = parseEvent({ status: "paid", customer: { email: "s@x.com" }, offer: { name: "Básico — Vitalicio" } })!;
+    expect(es.plan).toBe("iniciante");
+    expect(es.lifetime).toBe(true);
+  });
 });

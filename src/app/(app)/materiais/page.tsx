@@ -2,13 +2,15 @@ import { Spool } from "lucide-react";
 import Link from "next/link";
 import { DeleteButton } from "@/components/DeleteButton";
 import { SubmitButton } from "@/components/SubmitButton";
-import { dv, Field, Flash, PageHeader } from "@/components/ui";
+import { Field, Flash, PageHeader } from "@/components/ui";
 import { getMaterials } from "@/lib/data";
-import { money } from "@/lib/format";
-import { MATERIAL_GROUPS } from "@/lib/material-catalog";
+import { materialGroups } from "@/lib/material-catalog";
+import { getI18n, getT } from "@/i18n/server";
 import { deleteMaterial, saveMaterial } from "../actions";
 
-export const metadata = { title: "Materiais" };
+export async function generateMetadata() {
+  return { title: (await getT()).catalog.materials.title };
+}
 
 
 export default async function MaterialsPage({
@@ -19,17 +21,22 @@ export default async function MaterialsPage({
   const sp = await searchParams;
   const materials = await getMaterials();
   const editing = materials.find((m) => m.id === sp.editar);
+  const { t: tt, fmt, locale } = await getI18n();
+  const c = tt.catalog;
+  const m_ = c.materials;
+  const { money, dv } = fmt;
+  const MATERIAL_GROUPS = materialGroups(locale);
 
   return (
     <>
-      <PageHeader title="Materiais" description="Filamentos e resinas que você usa, com o preço que você paga por quilo. Argolas, ímãs e embalagens ficam em Insumos." />
+      <PageHeader title={m_.title} description={m_.desc} />
       <Flash ok={sp.ok} erro={sp.erro} />
 
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         <section className="space-y-3">
           {materials.length === 0 && (
             <div className="card flex items-center gap-4 p-6 text-muted">
-              <Spool className="shrink-0 text-sage" /> Cadastre seu primeiro filamento ao lado.
+              <Spool className="shrink-0 text-sage" /> {m_.empty}
             </div>
           )}
           {materials.map((m) => (
@@ -46,19 +53,19 @@ export default async function MaterialsPage({
                 </p>
               </div>
               <div className="flex gap-2">
-                <Link href={`/materiais?editar=${m.id}`} className="btn-ghost px-3 py-2 text-sm">Editar</Link>
-                <DeleteButton id={m.id} action={deleteMaterial} confirmText={`Remover ${m.name}?`} />
+                <Link href={`/materiais?editar=${m.id}`} className="btn-ghost px-3 py-2 text-sm">{tt.common.actions.edit}</Link>
+                <DeleteButton id={m.id} action={deleteMaterial} confirmText={c.removeName(m.name)} />
               </div>
             </div>
           ))}
         </section>
 
         <form action={saveMaterial} className="card h-fit space-y-4 p-6" key={editing?.id ?? "novo"}>
-          <h2 className="text-lg font-bold">{editing ? "Editar material" : "Novo material"}</h2>
+          <h2 className="text-lg font-bold">{editing ? m_.edit : m_.new}</h2>
           {editing && <input type="hidden" name="id" value={editing.id} />}
-          <Field label="Nome" name="name" placeholder="Ex.: PLA Preto Voolt" defaultValue={editing?.name} required />
+          <Field label={c.name} name="name" placeholder={m_.namePh} defaultValue={editing?.name} required />
           <div>
-            <label className="label" htmlFor="type">Tipo</label>
+            <label className="label" htmlFor="type">{m_.type}</label>
             <select id="type" name="type" className="input" defaultValue={editing?.type ?? "PLA"}>
               {MATERIAL_GROUPS.map((g) => (
                 <optgroup key={g.group} label={g.group}>
@@ -68,19 +75,19 @@ export default async function MaterialsPage({
               {editing && !MATERIAL_GROUPS.some((g) => g.types.includes(editing.type)) && <option>{editing.type}</option>}
             </select>
           </div>
-          <Field label="Cor" name="color" placeholder="Opcional" defaultValue={editing?.color ?? ""} />
+          <Field label={m_.color} name="color" placeholder={m_.optional} defaultValue={editing?.color ?? ""} />
           <Field
-            label="Preço por kg"
+            label={m_.pricePerKg}
             name="price_per_kg"
-            prefix="R$"
+            prefix={fmt.symbol}
             inputMode="decimal"
             defaultValue={dv(editing?.price_per_kg)}
-            hint="Se pagou R$ 89 num rolo de 1 kg com frete de R$ 15, informe 104. Resina: preço por kg (≈ por litro)."
+            hint={m_.priceHint}
             required
           />
           <div className="flex gap-2 pt-1">
-            <SubmitButton className="btn-primary flex-1">{editing ? "Salvar alterações" : "Cadastrar"}</SubmitButton>
-            {editing && <Link href="/materiais" className="btn-ghost">Cancelar</Link>}
+            <SubmitButton className="btn-primary flex-1">{editing ? c.saveChanges : c.register}</SubmitButton>
+            {editing && <Link href="/materiais" className="btn-ghost">{tt.common.actions.cancel}</Link>}
           </div>
         </form>
       </div>

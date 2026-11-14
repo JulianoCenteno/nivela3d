@@ -1,10 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC = ["/oferta", "/login", "/cadastro", "/recuperar-senha", "/auth", "/api/webhooks", "/o"];
+const PUBLIC = ["/en", "/es", "/oferta", "/login", "/cadastro", "/recuperar-senha", "/auth", "/api/webhooks", "/o"];
+
+const LANDING_LOCALE: Record<string, string> = { "/": "pt", "/oferta": "pt", "/en": "en", "/es": "es", "/oferta/en": "en", "/oferta/es": "es" };
 
 export async function middleware(request: NextRequest) {
+  // Quem chega pela página em inglês/espanhol já entra no app nesse idioma.
+  const landingLocale = LANDING_LOCALE[request.nextUrl.pathname];
+  if (landingLocale && request.cookies.get("nivela_locale")?.value !== landingLocale) {
+    request.cookies.set("nivela_locale", landingLocale);
+  }
   let response = NextResponse.next({ request });
+  if (landingLocale) response.cookies.set("nivela_locale", landingLocale, { path: "/", maxAge: 31536000, sameSite: "lax" });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -15,6 +23,7 @@ export async function middleware(request: NextRequest) {
         setAll: (list) => {
           list.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
+          if (landingLocale) response.cookies.set("nivela_locale", landingLocale, { path: "/", maxAge: 31536000, sameSite: "lax" });
           list.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },

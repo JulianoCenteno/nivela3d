@@ -1,12 +1,15 @@
 import { requireOwner } from "@/lib/guard";
 import { SubmitButton } from "@/components/SubmitButton";
 import { DeleteButton } from "@/components/DeleteButton";
-import { dv, Field, Flash, PageHeader } from "@/components/ui";
+import { Field, Flash, PageHeader } from "@/components/ui";
+import { RegionSettings } from "@/components/RegionSettings";
 import { getChannels, getSettings } from "@/lib/data";
-import { money, pct } from "@/lib/format";
 import { deleteChannel, saveChannel, saveSettings } from "../actions";
+import { getI18n, getT } from "@/i18n/server";
 
-export const metadata = { title: "Custos e canais" };
+export async function generateMetadata() {
+  return { title: (await getT()).manage.settings.title };
+}
 
 export default async function SettingsPage({
   searchParams,
@@ -16,63 +19,65 @@ export default async function SettingsPage({
   await requireOwner();
   const sp = await searchParams;
   const [s, channels] = await Promise.all([getSettings(), getChannels()]);
+  const { t, fmt } = await getI18n();
+  const c_ = t.manage.settings;
+  const { money, pct, dv } = fmt;
 
   return (
     <>
       <PageHeader
-        title="Custos e canais"
-        description="Esses valores são usados em todos os cálculos. Ajuste uma vez e o Nivela faz o resto."
+        title={c_.title}
+        description={c_.desc}
       />
       <Flash ok={sp.ok} erro={sp.erro} />
 
       <div className="grid gap-6 lg:grid-cols-2">
         <form action={saveSettings} className="card space-y-4 p-6">
-          <h2 className="text-lg font-bold">Seus custos</h2>
-          <Field label="Nome do seu negócio" name="business_name" defaultValue={s.business_name ?? ""} placeholder="Opcional" />
+          <h2 className="text-lg font-bold">{c_.yourCosts}</h2>
+          <Field label={c_.business} name="business_name" defaultValue={s.business_name ?? ""} placeholder={c_.optional} />
           <div className="grid gap-4 sm:grid-cols-2">
             <Field
-              label="Energia elétrica"
+              label={c_.energy}
               name="energy_price_kwh"
-              prefix="R$"
+              prefix={fmt.symbol}
               suffix="/kWh"
               inputMode="decimal"
               defaultValue={dv(s.energy_price_kwh)}
-              hint="Veja na sua conta de luz: valor total ÷ kWh consumidos."
+              hint={c_.energyHint}
             />
             <Field
-              label="Sua hora de trabalho"
+              label={c_.labor}
               name="labor_per_hour"
-              prefix="R$"
+              prefix={fmt.symbol}
               suffix="/h"
               inputMode="decimal"
               defaultValue={dv(s.labor_per_hour)}
-              hint="Quanto vale uma hora do seu tempo."
+              hint={c_.laborHint}
             />
             <Field
-              label="Taxa de falhas"
+              label={c_.failure}
               name="failure_rate_pct"
               suffix="%"
               inputMode="decimal"
               defaultValue={dv(s.failure_rate_pct)}
-              hint="Reimpressões e peças perdidas. 10% é um bom começo."
+              hint={c_.failureHint}
             />
             <Field
-              label="Margem desejada"
+              label={c_.margin}
               name="default_margin_pct"
               suffix="%"
               inputMode="decimal"
               defaultValue={dv(s.default_margin_pct)}
-              hint="Quanto do preço final deve sobrar como lucro."
+              hint={c_.marginHint}
             />
           </div>
-          <SubmitButton>Salvar custos</SubmitButton>
+          <SubmitButton>{c_.saveCosts}</SubmitButton>
         </form>
 
         <section className="card p-6">
-          <h2 className="text-lg font-bold">Canais de venda</h2>
+          <h2 className="text-lg font-bold">{c_.channels}</h2>
           <p className="mt-1 text-sm text-muted">
-            Cadastre a comissão de cada lugar onde você vende. Confira as taxas atuais na sua conta de cada
-            marketplace — elas mudam com frequência.
+            {c_.channelsText}
           </p>
           <ul className="mt-5 divide-y divide-line">
             {channels.map((c) => (
@@ -80,20 +85,23 @@ export default async function SettingsPage({
                 <div className="flex-1">
                   <p className="font-semibold">{c.name}</p>
                   <p className="tnum text-sm text-muted">
-                    {pct(c.fee_pct)} + {money(c.fee_fixed)} por venda
+                    {c_.perSale(pct(c.fee_pct), money(c.fee_fixed))}
                   </p>
                 </div>
-                <DeleteButton id={c.id} action={deleteChannel} confirmText={`Remover o canal ${c.name}?`} />
+                <DeleteButton id={c.id} action={deleteChannel} confirmText={c_.removeChannel(c.name)} />
               </li>
             ))}
           </ul>
           <form action={saveChannel} className="mt-4 grid gap-3 rounded-xl bg-surface-2 p-4 sm:grid-cols-[1.4fr_1fr_1fr_auto] sm:items-end">
-            <Field label="Canal" name="name" placeholder="Ex.: Shopee" required />
-            <Field label="Comissão" name="fee_pct" suffix="%" inputMode="decimal" defaultValue="0" />
-            <Field label="Taxa fixa" name="fee_fixed" prefix="R$" inputMode="decimal" defaultValue="0" />
-            <SubmitButton>Adicionar</SubmitButton>
+            <Field label={c_.channel} name="name" placeholder={c_.channelPh} required />
+            <Field label={c_.fee} name="fee_pct" suffix="%" inputMode="decimal" defaultValue="0" />
+            <Field label={c_.fixed} name="fee_fixed" prefix={fmt.symbol} inputMode="decimal" defaultValue="0" />
+            <SubmitButton>{t.common.actions.add}</SubmitButton>
           </form>
         </section>
+        <div className="lg:col-span-2">
+          <RegionSettings />
+        </div>
       </div>
     </>
   );

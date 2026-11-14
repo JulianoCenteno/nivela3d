@@ -10,7 +10,7 @@ export interface Slide {
   text: string;
 }
 
-export function PhoneCarousel({ slides }: { slides: Slide[] }) {
+export function PhoneCarousel({ slides, prevLabel = "Tela anterior", nextLabel = "Próxima tela" }: { slides: Slide[]; prevLabel?: string; nextLabel?: string }) {
   const track = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState(0);
 
@@ -61,10 +61,10 @@ export function PhoneCarousel({ slides }: { slides: Slide[] }) {
           ))}
         </div>
         <div className="flex gap-2">
-          <button type="button" onClick={() => go(active - 1)} disabled={active === 0} className="btn-ghost h-11 w-11 p-0" aria-label="Tela anterior">
+          <button type="button" onClick={() => go(active - 1)} disabled={active === 0} className="btn-ghost h-11 w-11 p-0" aria-label={prevLabel}>
             <ChevronLeft size={20} />
           </button>
-          <button type="button" onClick={() => go(active + 1)} disabled={active === slides.length - 1} className="btn-ghost h-11 w-11 p-0" aria-label="Próxima tela">
+          <button type="button" onClick={() => go(active + 1)} disabled={active === slides.length - 1} className="btn-ghost h-11 w-11 p-0" aria-label={nextLabel}>
             <ChevronRight size={20} />
           </button>
         </div>

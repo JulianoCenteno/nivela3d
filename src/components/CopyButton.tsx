@@ -2,9 +2,12 @@
 
 import { Check, Copy } from "lucide-react";
 import { useState } from "react";
+import { useI18n } from "@/i18n/client";
 
-export function CopyButton({ text, label = "Copiar", className = "btn-ghost" }: { text: string; label?: string; className?: string }) {
+export function CopyButton({ text, label, className = "btn-ghost" }: { text: string; label?: string; className?: string }) {
   const [done, setDone] = useState(false);
+  const { t } = useI18n();
+  label ??= t.common.actions.copy;
   return (
     <button
       type="button"
@@ -25,7 +28,7 @@ export function CopyButton({ text, label = "Copiar", className = "btn-ghost" }: 
       }}
     >
       {done ? <Check size={17} /> : <Copy size={17} />}
-      {done ? "Copiado!" : label}
+      {done ? t.common.actions.copied : label}
     </button>
   );
 }

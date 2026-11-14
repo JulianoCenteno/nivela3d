@@ -1,37 +1,37 @@
 import Link from "next/link";
 import { AuthShell } from "@/components/AuthShell";
 import { SubmitButton } from "@/components/SubmitButton";
+import { getT } from "@/i18n/server";
 import { signUp } from "../actions";
 
-export const metadata = { title: "Criar conta" };
+export async function generateMetadata() {
+  return { title: (await getT()).common.auth.createAccount };
+}
 
 export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
   const sp = await searchParams;
+  const a = (await getT()).common.auth;
   return (
-    <AuthShell
-      title="Criar conta"
-      subtitle="Comece a calcular seus preços em poucos minutos."
-      error={sp.erro}
-    >
+    <AuthShell title={a.createAccount} subtitle={a.signUpSubtitle} error={sp.erro}>
       <form action={signUp} className="space-y-4">
         <div>
-          <label className="label" htmlFor="name">Seu nome</label>
+          <label className="label" htmlFor="name">{a.yourName}</label>
           <input className="input" id="name" name="name" autoComplete="name" required />
         </div>
         <div>
-          <label className="label" htmlFor="email">E-mail</label>
+          <label className="label" htmlFor="email">{a.email}</label>
           <input className="input" id="email" name="email" type="email" autoComplete="email" required />
-          <p className="hint">Já assinou? Use o mesmo e-mail da compra para liberar seu plano automaticamente.</p>
+          <p className="hint">{a.sameEmailHint}</p>
         </div>
         <div>
-          <label className="label" htmlFor="password">Senha</label>
+          <label className="label" htmlFor="password">{a.password}</label>
           <input className="input" id="password" name="password" type="password" minLength={8} autoComplete="new-password" required />
-          <p className="hint">Mínimo de 8 caracteres.</p>
+          <p className="hint">{a.minChars}</p>
         </div>
-        <SubmitButton className="btn-primary w-full" pendingText="Criando conta…">Criar conta</SubmitButton>
+        <SubmitButton className="btn-primary w-full" pendingText={a.creating}>{a.createAccount}</SubmitButton>
       </form>
       <p className="mt-6 text-center text-sm text-muted">
-        Já tem conta? <Link href="/login" className="font-semibold text-primary hover:underline">Entrar</Link>
+        {a.haveAccount} <Link href="/login" className="font-semibold text-primary hover:underline">{a.signInTitle}</Link>
       </p>
     </AuthShell>
   );

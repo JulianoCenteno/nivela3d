@@ -6,8 +6,11 @@ import { getPeople, getQuote } from "@/lib/gestao-data";
 import type { OrderRow } from "@/lib/orders";
 import { hasFeature } from "@/lib/plans";
 import { saveOrder } from "../../gestao-actions";
+import { getT } from "@/i18n/server";
 
-export const metadata = { title: "Novo pedido" };
+export async function generateMetadata() {
+  return { title: (await getT()).ops.orders.new };
+}
 
 export default async function NewOrderPage({ searchParams }: { searchParams: Promise<{ erro?: string; orcamento?: string }> }) {
   const sp = await searchParams;
@@ -36,7 +39,7 @@ export default async function NewOrderPage({ searchParams }: { searchParams: Pro
     : null;
   return (
     <>
-      <PageHeader title="Novo pedido" description="Cadastre o pedido com o prazo de entrega. Depois é só ir avançando as etapas." />
+      <PageHeader title={(await getT()).ops.orders.new} description={(await getT()).ops.orders.newDesc} />
       <Flash erro={sp.erro} />
       <QuoteOrderForm mode="order" action={saveOrder} products={products} channels={channels} people={people} order={prefill} />
     </>

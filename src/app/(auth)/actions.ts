@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getI18n } from "@/i18n/server";
 
 async function origin() {
   const h = await headers();
@@ -18,35 +19,34 @@ export async function signIn(formData: FormData) {
     password: String(formData.get("password")),
   });
   if (error) {
-    const msg = error.message.includes("Email not confirmed")
-      ? "Confirme seu e-mail pelo link que enviamos antes de entrar."
-      : "E-mail ou senha incorretos.";
+    const a = (await getI18n()).t.common.auth;
+    const msg = error.message.includes("Email not confirmed") ? a.errNotConfirmed : a.errWrong;
     redirect(`/login?erro=${q(msg)}`);
   }
   redirect("/painel");
 }
 
 export async function signUp(formData: FormData) {
+  const { t, locale } = await getI18n();
+  const a = t.common.auth;
   const password = String(formData.get("password"));
-  if (password.length < 8) redirect(`/cadastro?erro=${q("A senha precisa ter pelo menos 8 caracteres.")}`);
+  if (password.length < 8) redirect(`/cadastro?erro=${q(a.errShort)}`);
 
   const supabase = await createClient();
   const { data, error } = await supabase.auth.signUp({
     email: String(formData.get("email")).trim().toLowerCase(),
     password,
     options: {
-      data: { name: String(formData.get("name") ?? "").trim() },
+      data: { name: String(formData.get("name") ?? "").trim(), locale },
       emailRedirectTo: `${await origin()}/auth/callback?next=/painel`,
     },
   });
   if (error) {
-    const msg = error.message.includes("already registered")
-      ? "Este e-mail já tem conta. Faça login."
-      : "Não foi possível criar a conta. Verifique os dados.";
+    const msg = error.message.includes("already registered") ? a.errExists : a.errCreate;
     redirect(`/cadastro?erro=${q(msg)}`);
   }
   if (!data.session) {
-    redirect(`/login?ok=${q("Conta criada! Enviamos um link de confirmação para o seu e-mail.")}`);
+    redirect(`/login?ok=${q(a.okCreated)}`);
   }
   redirect("/painel");
 }
@@ -56,15 +56,16 @@ export async function requestReset(formData: FormData) {
   await supabase.auth.resetPasswordForEmail(String(formData.get("email")).trim(), {
     redirectTo: `${await origin()}/auth/callback?next=/auth/nova-senha`,
   });
-  redirect(`/login?ok=${q("Se o e-mail estiver cadastrado, você receberá um link para criar uma nova senha.")}`);
+  redirect(`/login?ok=${q((await getI18n()).t.common.auth.okReset)}`);
 }
 
 export async function updatePassword(formData: FormData) {
+  const a = (await getI18n()).t.common.auth;
   const password = String(formData.get("password"));
-  if (password.length < 8) redirect(`/auth/nova-senha?erro=${q("A senha precisa ter pelo menos 8 caracteres.")}`);
+  if (password.length < 8) redirect(`/auth/nova-senha?erro=${q(a.errShort)}`);
   const supabase = await createClient();
   const { error } = await supabase.auth.updateUser({ password });
-  if (error) redirect(`/auth/nova-senha?erro=${q("Link expirado. Peça um novo.")}`);
+  if (error) redirect(`/auth/nova-senha?erro=${q(a.errExpired)}`);
   redirect("/painel");
 }
 

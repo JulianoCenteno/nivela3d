@@ -6,17 +6,23 @@ import { PageHeader, Stat } from "@/components/ui";
 import { saleTotals } from "@/lib/calc";
 import { getContext, getMaterials, getPrinters, getProducts, getSales, getSettings, getSupplies } from "@/lib/data";
 import { getOrders } from "@/lib/gestao-data";
-import { deadlineInfo } from "@/lib/orders";
+import { deadlineInfo, deadlineText } from "@/lib/orders";
 import { hasFeature } from "@/lib/plans";
-import { money, number, pct } from "@/lib/format";
-import { fmtDate, monthRange, todayISO } from "@/lib/period";
+import { monthRange, todayISO } from "@/lib/period";
+import { getI18n, getT } from "@/i18n/server";
+import { LOCALE_TAG } from "@/i18n/config";
 
-export const metadata = { title: "Painel" };
+export async function generateMetadata() {
+  return { title: (await getT()).money.dash.title };
+}
 
 export default async function DashboardPage({ searchParams }: { searchParams: Promise<{ mes?: string }> }) {
   await requireOwner();
   const sp = await searchParams;
-  const period = monthRange(sp.mes);
+  const { t: tt, fmt, locale } = await getI18n();
+  const d_ = tt.money.dash;
+  const { money, number, pct } = fmt;
+  const period = monthRange(sp.mes, LOCALE_TAG[locale]);
   const [{ profile }, sales, printers, materials, products, settings] = await Promise.all([
     getContext(),
     getSales(period.from, period.to),
@@ -51,7 +57,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
   // Lucro por categoria
   const byCat = new Map<string, number>();
-  for (const r of rows) byCat.set(r.category || "Sem categoria", (byCat.get(r.category || "Sem categoria") ?? 0) + r.t.profit);
+  for (const r of rows) byCat.set(r.category || d_.noCategory, (byCat.get(r.category || d_.noCategory) ?? 0) + r.t.profit);
   const cats = [...byCat.entries()].sort((a, b) => b[1] - a[1]).slice(0, 6);
   const maxCat = Math.max(1, ...cats.map(([, v]) => Math.abs(v)));
 
@@ -67,11 +73,11 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const top = [...byProd.values()].sort((a, b) => b.profit - a.profit).slice(0, 5);
 
   const steps = [
-    { done: settings.energy_price_kwh !== 0.95 || settings.labor_per_hour !== 20, label: "Ajuste seus custos (energia e hora de trabalho)", href: "/configuracoes", icon: Settings },
-    { done: printers.length > 0, label: "Cadastre sua impressora", href: "/impressoras", icon: Printer },
-    { done: materials.length > 0, label: "Cadastre um filamento", href: "/materiais", icon: Spool },
-    { done: products.length > 0, label: "Calcule e salve seu primeiro produto", href: "/produtos/novo", icon: Package },
-    { done: sales.length > 0, label: "Registre uma venda", href: "/vendas", icon: Receipt },
+    { done: settings.energy_price_kwh !== 0.95 || settings.labor_per_hour !== 20, label: d_.steps.costs, href: "/configuracoes", icon: Settings },
+    { done: printers.length > 0, label: d_.steps.printer, href: "/impressoras", icon: Printer },
+    { done: materials.length > 0, label: d_.steps.filament, href: "/materiais", icon: Spool },
+    { done: products.length > 0, label: d_.steps.product, href: "/produtos/novo", icon: Package },
+    { done: sales.length > 0, label: d_.steps.sale, href: "/vendas", icon: Receipt },
   ];
   const pending = steps.filter((s) => !s.done).length;
 
@@ -92,8 +98,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   return (
     <>
       <PageHeader
-        title={first ? `Olá, ${first}` : "Painel"}
-        description="Quanto entrou, quanto saiu e quanto realmente sobrou."
+        title={first ? d_.hello(first) : d_.title}
+        description={d_.desc}
         action={<MonthNav base="/painel" ym={period.ym} label={period.label} />}
       />
 
@@ -101,17 +107,17 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         <section className="mb-8 grid gap-4 md:grid-cols-2">
           {late.length > 0 && (
             <Link href="/pedidos" className="block rounded-2xl border border-[#E8C9A8] bg-[#FBF1E6] p-5 hover:border-[#d9a77a] dark:border-[#5a4632] dark:bg-[#2b241c]">
-              <p className="flex items-center gap-2 font-bold"><AlarmClock size={18} /> Prazos de entrega</p>
+              <p className="flex items-center gap-2 font-bold"><AlarmClock size={18} /> {d_.deadlines}</p>
               <ul className="mt-2 space-y-1 text-[15px]">
                 {late.slice(0, 4).map(({ o, d }) => (
-                  <li key={o.id}><b className={d!.level === "atrasado" ? "text-negative" : ""}>{d!.text}</b> · nº {o.number} · {o.customer_name}</li>
+                  <li key={o.id}><b className={d!.level === "atrasado" ? "text-negative" : ""}>{deadlineText(d!, tt.gestao.deadline)}</b> · {tt.ops.quotes.num(o.number)} · {o.customer_name}</li>
                 ))}
               </ul>
             </Link>
           )}
           {lowStock.length > 0 && (
             <Link href="/estoque" className="block rounded-2xl bg-negative-soft p-5 text-negative">
-              <p className="flex items-center gap-2 font-bold"><AlertTriangle size={18} /> Estoque baixo</p>
+              <p className="flex items-center gap-2 font-bold"><AlertTriangle size={18} /> {d_.lowStock}</p>
               <p className="mt-2 text-[15px]">{lowStock.slice(0, 6).join(" · ")}</p>
             </Link>
           )}
@@ -121,8 +127,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       {pending > 0 && (
         <section className="card mb-8 p-6">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold">Primeiros passos</h2>
-            <span className="text-sm font-semibold text-muted">{steps.length - pending} de {steps.length}</span>
+            <h2 className="text-lg font-bold">{d_.firstSteps}</h2>
+            <span className="text-sm font-semibold text-muted">{d_.of(steps.length - pending, steps.length)}</span>
           </div>
           <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-surface-2">
             <div className="h-full rounded-full bg-primary" style={{ width: `${((steps.length - pending) / steps.length) * 100}%` }} />
@@ -146,13 +152,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       )}
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label="Faturamento" value={money(sum.revenue)} hint={`${number(sum.units)} peças vendidas`} />
-        <Stat label="Taxas de canais" value={money(sum.fees)} />
-        <Stat label="Custos + frete" value={money(sum.cost)} />
+        <Stat label={d_.revenue} value={money(sum.revenue)} hint={d_.pieces(number(sum.units))} />
+        <Stat label={d_.fees} value={money(sum.fees)} />
+        <Stat label={d_.costs} value={money(sum.cost)} />
         <Stat
-          label="Lucro real"
+          label={d_.profit}
           value={money(sum.profit)}
-          hint={sum.revenue > 0 ? `Margem de ${pct(margin)}` : undefined}
+          hint={sum.revenue > 0 ? d_.margin(pct(margin)) : undefined}
           tone={sum.profit < 0 ? "negative" : sum.profit > 0 ? "positive" : undefined}
         />
       </div>
@@ -160,14 +166,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
       {rows.length === 0 ? (
         <div className="card mt-6 flex flex-col items-center px-6 py-12 text-center">
           <Calculator size={28} className="text-sage" />
-          <p className="mt-3 font-bold">Sem vendas em {period.label}</p>
-          <p className="mt-1 max-w-sm text-muted">Registre suas vendas para ver aqui o lucro por categoria e os produtos campeões.</p>
-          <Link href="/vendas" className="btn-primary mt-5">Registrar venda</Link>
+          <p className="mt-3 font-bold">{d_.noSales(period.label)}</p>
+          <p className="mt-1 max-w-sm text-muted">{d_.noSalesText}</p>
+          <Link href="/vendas" className="btn-primary mt-5">{d_.logSale}</Link>
         </div>
       ) : (
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           <section className="card p-6">
-            <h2 className="font-bold">Lucro por categoria</h2>
+            <h2 className="font-bold">{d_.byCategory}</h2>
             <ul className="mt-5 space-y-4">
               {cats.map(([name, v]) => (
                 <li key={name} title={`${name}: ${money(v)}`}>
@@ -187,13 +193,13 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </section>
 
           <section className="card p-6">
-            <h2 className="font-bold">Produtos que mais deram lucro</h2>
+            <h2 className="font-bold">{d_.topProducts}</h2>
             <ol className="mt-4 divide-y divide-line">
               {top.map((p, i) => (
                 <li key={p.name + i} className="flex items-center gap-3 py-3">
                   <span className="tnum w-6 text-sm font-bold text-muted">{i + 1}</span>
                   <span className="flex-1 font-semibold">{p.name}</span>
-                  <span className="tnum hidden text-sm text-muted sm:inline">{p.units} un.</span>
+                  <span className="tnum hidden text-sm text-muted sm:inline">{d_.units(p.units)}</span>
                   <span className={`tnum shrink-0 text-right font-bold ${p.profit < 0 ? "text-negative" : ""}`}>{money(p.profit)}</span>
                 </li>
               ))}
@@ -202,19 +208,19 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
           <section className="card p-6 lg:col-span-2">
             <div className="flex items-center justify-between">
-              <h2 className="font-bold">Últimas vendas</h2>
-              <Link href={`/vendas?mes=${period.ym}`} className="text-sm font-semibold text-primary hover:underline">Ver todas</Link>
+              <h2 className="font-bold">{d_.lastSales}</h2>
+              <Link href={`/vendas?mes=${period.ym}`} className="text-sm font-semibold text-primary hover:underline">{d_.seeAll}</Link>
             </div>
             <ul className="mt-3 divide-y divide-line">
               {rows.slice(0, 6).map((r) => (
                 <li key={r.id} className="flex items-center justify-between gap-3 py-3">
                   <div>
                     <p className="font-semibold">{r.quantity > 1 ? `${r.quantity}× ` : ""}{r.description}</p>
-                    <p className="text-sm text-muted">{fmtDate(r.sold_at)}</p>
+                    <p className="text-sm text-muted">{fmt.short(r.sold_at)}</p>
                   </div>
                   <div className="text-right">
                     <p className="tnum font-semibold">{money(r.t.revenue)}</p>
-                    <p className={`tnum text-sm ${r.t.profit < 0 ? "text-negative" : "text-positive"}`}>lucro {money(r.t.profit)}</p>
+                    <p className={`tnum text-sm ${r.t.profit < 0 ? "text-negative" : "text-positive"}`}>{d_.profitOf(money(r.t.profit))}</p>
                   </div>
                 </li>
               ))}

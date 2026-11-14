@@ -4,8 +4,11 @@ import { ProductForm } from "@/components/ProductForm";
 import { Flash, PageHeader } from "@/components/ui";
 import { getChannels, getMaterials, getPrinters, getProducts, getSettings, getSupplies } from "@/lib/data";
 import { deleteProduct } from "../../actions";
+import { getT } from "@/i18n/server";
 
-export const metadata = { title: "Editar produto" };
+export async function generateMetadata() {
+  return { title: (await getT()).products.list.editMeta };
+}
 
 export default async function EditProductPage({
   params,
@@ -26,13 +29,14 @@ export default async function EditProductPage({
   const product = products.find((p) => p.id === id);
   if (!product) notFound();
   const categories = [...new Set(products.map((p) => p.category).filter(Boolean) as string[])];
+  const t = await getT();
 
   return (
     <>
       <PageHeader
         title={product.name}
-        description="Altere os dados e o custo é recalculado ao salvar."
-        action={<DeleteButton id={product.id} action={deleteProduct} confirmText={`Remover ${product.name}?`} label="Remover produto" />}
+        description={t.products.list.editDesc}
+        action={<DeleteButton id={product.id} action={deleteProduct} confirmText={t.catalog.removeName(product.name)} label={t.products.list.removeProduct} />}
       />
       <Flash erro={sp.erro} />
       <ProductForm

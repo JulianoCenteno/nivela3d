@@ -25,23 +25,25 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useI18n } from "@/i18n/client";
 
 const NAV = [
-  { href: "/painel", label: "Painel", icon: LayoutDashboard, owner: true },
-  { href: "/calculadora", label: "Calculadora", icon: Calculator },
-  { href: "/orcamentos", label: "Orçamentos", icon: FileText },
-  { href: "/pedidos", label: "Pedidos", icon: ClipboardList },
-  { href: "/vendas", label: "Vendas", icon: Receipt },
-  { href: "/produtos", label: "Produtos", icon: Package },
-  { href: "/estoque", label: "Estoque", icon: Boxes },
-  { href: "/impressoras", label: "Impressoras", icon: Printer },
-  { href: "/materiais", label: "Materiais", icon: Spool },
-  { href: "/insumos", label: "Insumos", icon: Paperclip },
-  { href: "/configuracoes", label: "Custos e canais", icon: Settings, owner: true },
-  { href: "/equipe", label: "Equipe", icon: Users },
-  { href: "/conteudos", label: "Meus conteúdos", icon: Gift, owner: true },
-  { href: "/clube", label: "Clube de Ofertas", icon: BadgePercent },
-  { href: "/plano", label: "Meu plano", icon: CreditCard, owner: true },
+  { href: "/painel", key: "painel" as const, icon: LayoutDashboard, owner: true },
+  { href: "/calculadora", key: "calculadora" as const, icon: Calculator },
+  { href: "/orcamentos", key: "orcamentos" as const, icon: FileText },
+  { href: "/pedidos", key: "pedidos" as const, icon: ClipboardList },
+  { href: "/vendas", key: "vendas" as const, icon: Receipt },
+  { href: "/produtos", key: "produtos" as const, icon: Package },
+  { href: "/estoque", key: "estoque" as const, icon: Boxes },
+  { href: "/impressoras", key: "impressoras" as const, icon: Printer },
+  { href: "/materiais", key: "materiais" as const, icon: Spool },
+  { href: "/insumos", key: "insumos" as const, icon: Paperclip },
+  { href: "/configuracoes", key: "configuracoes" as const, icon: Settings, owner: true },
+  { href: "/equipe", key: "equipe" as const, icon: Users },
+  { href: "/conteudos", key: "conteudos" as const, icon: Gift, owner: true },
+  { href: "/clube", key: "clube" as const, icon: BadgePercent },
+  { href: "/plano", key: "plano" as const, icon: CreditCard, owner: true },
 ];
 
 export function Sidebar({
@@ -56,11 +58,14 @@ export function Sidebar({
   role?: "dono" | "membro";
 }) {
   const path = usePathname();
+  const { t } = useI18n();
+  const tn = t.common.nav;
   const [open, setOpen] = useState(false);
 
   const nav = (
     <nav className="flex flex-1 flex-col gap-0.5">
-      {NAV.filter((n) => role === "dono" || !n.owner).map(({ href, label, icon: Icon }) => {
+      {NAV.filter((n) => role === "dono" || !n.owner).map(({ href, key, icon: Icon }) => {
+        const label = tn[key];
         const active = path === href || path.startsWith(href + "/");
         return (
           <Link
@@ -83,12 +88,13 @@ export function Sidebar({
     <div className="mt-4 space-y-1 border-t border-line pt-4">
       <div className="px-3 pb-2">
         <p className="truncate text-sm font-semibold">{userName}</p>
-        <p className="text-xs text-muted">{role === "membro" ? "Membro da equipe" : `Plano ${planLabel}`}</p>
+        <p className="text-xs text-muted">{role === "membro" ? tn.teamMember : tn.planLabel(planLabel)}</p>
       </div>
       <ThemeToggle className="w-full" />
+      <LanguageSwitcher className="w-full" />
       <form action={signOut}>
         <button className="inline-flex w-full items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted transition hover:bg-surface-2 hover:text-ink">
-          <LogOut size={18} /> Sair
+          <LogOut size={18} /> {tn.signOut}
         </button>
       </form>
     </div>
@@ -110,7 +116,7 @@ export function Sidebar({
         <Link href="/painel">
           <Logo size={26} />
         </Link>
-        <button onClick={() => setOpen(true)} className="rounded-xl p-2 text-ink-2 hover:bg-surface-2" aria-label="Abrir menu">
+        <button onClick={() => setOpen(true)} className="rounded-xl p-2 text-ink-2 hover:bg-surface-2" aria-label={tn.openMenu}>
           <Menu size={24} />
         </button>
       </header>
@@ -120,7 +126,7 @@ export function Sidebar({
           <aside className="absolute inset-y-0 right-0 flex w-72 flex-col overflow-y-auto bg-surface px-4 py-5 shadow-xl">
             <div className="mb-6 flex items-center justify-between px-2">
               <Logo size={26} />
-              <button onClick={() => setOpen(false)} className="rounded-xl p-2 hover:bg-surface-2" aria-label="Fechar menu">
+              <button onClick={() => setOpen(false)} className="rounded-xl p-2 hover:bg-surface-2" aria-label={tn.closeMenu}>
                 <X size={22} />
               </button>
             </div>

@@ -2,13 +2,15 @@ import { Paperclip } from "lucide-react";
 import Link from "next/link";
 import { DeleteButton } from "@/components/DeleteButton";
 import { SubmitButton } from "@/components/SubmitButton";
-import { dv, Field, Flash, PageHeader } from "@/components/ui";
+import { Field, Flash, PageHeader } from "@/components/ui";
 import { getSupplies } from "@/lib/data";
-import { money } from "@/lib/format";
-import { SUPPLY_SUGGESTIONS, SUPPLY_UNITS } from "@/lib/material-catalog";
+import { supplySuggestions, supplyUnits } from "@/lib/material-catalog";
+import { getI18n, getT } from "@/i18n/server";
 import { deleteSupply, saveSupply } from "../actions";
 
-export const metadata = { title: "Insumos" };
+export async function generateMetadata() {
+  return { title: (await getT()).catalog.supplies.title };
+}
 
 export default async function SuppliesPage({
   searchParams,
@@ -18,14 +20,20 @@ export default async function SuppliesPage({
   const sp = await searchParams;
   const supplies = await getSupplies();
   const editing = supplies.find((s) => s.id === sp.editar);
+  const { t: tt, fmt, locale } = await getI18n();
+  const c = tt.catalog;
+  const s_ = c.supplies;
+  const { money, dv } = fmt;
+  const SUPPLY_SUGGESTIONS = supplySuggestions(locale);
+  const SUPPLY_UNITS = supplyUnits(locale);
   const have = new Set(supplies.map((s) => s.name.toLowerCase()));
   const suggestions = SUPPLY_SUGGESTIONS.filter((s) => !have.has(s.name.toLowerCase()));
 
   return (
     <>
       <PageHeader
-        title="Insumos"
-        description="Tudo o que vai junto com a peça impressa: argolas, ímãs, parafusos, embalagens… Depois é só escolher no produto."
+        title={s_.title}
+        description={s_.desc}
       />
       <Flash ok={sp.ok} erro={sp.erro} />
 
@@ -33,7 +41,7 @@ export default async function SuppliesPage({
         <section className="space-y-3">
           {supplies.length === 0 && (
             <div className="card flex items-center gap-4 p-6 text-muted">
-              <Paperclip className="shrink-0 text-sage" /> Nenhum insumo ainda. Use as sugestões ao lado.
+              <Paperclip className="shrink-0 text-sage" /> {s_.empty}
             </div>
           )}
           {supplies.map((s) => (
@@ -43,11 +51,11 @@ export default async function SuppliesPage({
               </div>
               <div className="flex-1">
                 <p className="font-bold">{s.name}</p>
-                <p className="tnum mt-0.5 text-sm text-muted">{money(s.unit_price)} por {s.unit}</p>
+                <p className="tnum mt-0.5 text-sm text-muted">{s_.per(money(s.unit_price), s.unit)}</p>
               </div>
               <div className="flex gap-2">
-                <Link href={`/insumos?editar=${s.id}`} className="btn-ghost px-3 py-2 text-sm">Editar</Link>
-                <DeleteButton id={s.id} action={deleteSupply} confirmText={`Remover ${s.name}?`} />
+                <Link href={`/insumos?editar=${s.id}`} className="btn-ghost px-3 py-2 text-sm">{tt.common.actions.edit}</Link>
+                <DeleteButton id={s.id} action={deleteSupply} confirmText={c.removeName(s.name)} />
               </div>
             </div>
           ))}
@@ -55,35 +63,35 @@ export default async function SuppliesPage({
 
         <div className="space-y-4">
           <form action={saveSupply} className="card h-fit space-y-4 p-6" key={editing?.id ?? sp.nome ?? "novo"}>
-            <h2 className="text-lg font-bold">{editing ? "Editar insumo" : "Novo insumo"}</h2>
+            <h2 className="text-lg font-bold">{editing ? s_.edit : s_.new}</h2>
             {editing && <input type="hidden" name="id" value={editing.id} />}
-            <Field label="Nome" name="name" placeholder="Ex.: Argola de chaveiro" defaultValue={editing?.name ?? sp.nome ?? ""} required />
+            <Field label={c.name} name="name" placeholder={s_.namePh} defaultValue={editing?.name ?? sp.nome ?? ""} required />
             <div className="grid grid-cols-[1fr_110px] gap-3">
               <Field
-                label="Preço por unidade"
+                label={s_.unitPrice}
                 name="unit_price"
-                prefix="R$"
+                prefix={fmt.symbol}
                 inputMode="decimal"
                 defaultValue={dv(editing?.unit_price)}
                 required
               />
               <div>
-                <label className="label" htmlFor="unit">Unidade</label>
-                <select id="unit" name="unit" className="input" defaultValue={editing?.unit ?? sp.unidade ?? "un"}>
+                <label className="label" htmlFor="unit">{s_.unit}</label>
+                <select id="unit" name="unit" className="input" defaultValue={editing?.unit ?? sp.unidade ?? SUPPLY_UNITS[0]}>
                   {SUPPLY_UNITS.map((u) => <option key={u}>{u}</option>)}
                 </select>
               </div>
             </div>
-            <p className="hint -mt-2">Comprou 100 argolas por R$ 35? Informe 0,35.</p>
+            <p className="hint -mt-2">{s_.hint}</p>
             <div className="flex gap-2 pt-1">
-              <SubmitButton className="btn-primary flex-1">{editing ? "Salvar alterações" : "Cadastrar"}</SubmitButton>
-              {editing && <Link href="/insumos" className="btn-ghost">Cancelar</Link>}
+              <SubmitButton className="btn-primary flex-1">{editing ? c.saveChanges : c.register}</SubmitButton>
+              {editing && <Link href="/insumos" className="btn-ghost">{tt.common.actions.cancel}</Link>}
             </div>
           </form>
 
           {!editing && suggestions.length > 0 && (
             <div className="card p-6">
-              <p className="text-sm font-semibold text-muted">Sugestões rápidas</p>
+              <p className="text-sm font-semibold text-muted">{s_.quick}</p>
               <div className="mt-3 flex flex-wrap gap-2">
                 {suggestions.map((s) => (
                   <Link

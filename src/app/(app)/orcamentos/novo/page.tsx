@@ -4,8 +4,11 @@ import { Flash, PageHeader } from "@/components/ui";
 import { getChannels, getContext, getProducts } from "@/lib/data";
 import { hasFeature } from "@/lib/plans";
 import { saveQuote } from "../../gestao-actions";
+import { getT } from "@/i18n/server";
 
-export const metadata = { title: "Novo orçamento" };
+export async function generateMetadata() {
+  return { title: (await getT()).ops.quotes.new };
+}
 
 export default async function NewQuotePage({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
   const sp = await searchParams;
@@ -15,7 +18,7 @@ export default async function NewQuotePage({ searchParams }: { searchParams: Pro
   const valid = new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10);
   return (
     <>
-      <PageHeader title="Novo orçamento" description="Escolha as peças do catálogo ou digite itens avulsos. O total e a sobra aparecem na hora." />
+      <PageHeader title={(await getT()).ops.quotes.new} description={(await getT()).ops.quotes.newDesc} />
       <Flash erro={sp.erro} />
       <QuoteOrderForm mode="quote" action={saveQuote} products={products} channels={channels} defaultValidUntil={valid} />
     </>

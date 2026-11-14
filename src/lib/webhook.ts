@@ -86,7 +86,7 @@ export function parsePlan(raw: string | null, map: Record<string, string> = {}):
   const s = raw.toLowerCase();
   if (s.includes("empresa") || s.includes("business")) return "empresa";
   if (s.includes("iniciante") || s.includes("starter") || s.includes("basic") || s.includes("básico")) return "iniciante";
-  if (s.includes("profissional") || s.includes("completo") || /\bpro\b/.test(s)) return "profissional";
+  if (s.includes("profissional") || s.includes("completo") || s.includes("complete") || /\bpro\b/.test(s)) return "profissional";
   return null;
 }
 
@@ -111,7 +111,7 @@ const EXTRA_CODES = ["bump_mockups", "bump_etiquetas", "bump_mensagens", "bump_g
 export function isCombo(raw: string | null): boolean {
   if (!raw) return false;
   const s = raw.toLowerCase();
-  return s.includes("combo") || s.includes("leve todos") || s.includes("todos os materiais") || s.includes("kit completo");
+  return s.includes("combo") || s.includes("bundle") || s.includes("todos los materiales") || s.includes("leve todos") || s.includes("todos os materiais") || s.includes("kit completo");
 }
 
 /** Extras liberados por um item do pedido (o combo libera todos). */
@@ -127,9 +127,9 @@ export function parseExtra(raw: string | null, map: Record<string, string> = {})
   if (map[raw] && EXTRA_CODES.includes(map[raw])) return map[raw];
   const s = raw.toLowerCase();
   if (s.includes("mockup")) return "bump_mockups";
-  if (s.includes("etiqueta") || s.includes("embalage")) return "bump_etiquetas";
-  if (s.includes("mensage") || s.includes("modelos de anúncio") || s.includes("modelos de anuncio")) return "bump_mensagens";
-  if (s.includes("guia") && (s.includes("mercado") || s.includes("shopee"))) return "bump_guia";
+  if (s.includes("etiqueta") || s.includes("embalage") || s.includes("label") || s.includes("packaging") || s.includes("empaque")) return "bump_etiquetas";
+  if (s.includes("mensage") || s.includes("mensaje") || s.includes("message") || s.includes("modelos de anúncio") || s.includes("modelos de anuncio")) return "bump_mensagens";
+  if ((s.includes("guia") || s.includes("guía") || s.includes("guide")) && (s.includes("mercado") || s.includes("shopee") || s.includes("etsy") || s.includes("amazon") || s.includes("libre"))) return "bump_guia";
   return null;
 }
 

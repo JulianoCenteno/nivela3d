@@ -3,13 +3,15 @@ import Link from "next/link";
 import { DeleteButton } from "@/components/DeleteButton";
 import { PrinterModelPicker } from "@/components/PrinterModelPicker";
 import { SubmitButton } from "@/components/SubmitButton";
-import { dv, Field, Flash, PageHeader } from "@/components/ui";
+import { Field, Flash, PageHeader } from "@/components/ui";
 import { getContext, getPrinters } from "@/lib/data";
-import { money, number } from "@/lib/format";
 import { planInfo, UNLIMITED } from "@/lib/plans";
 import { deletePrinter, savePrinter } from "../actions";
+import { getI18n, getT } from "@/i18n/server";
 
-export const metadata = { title: "Impressoras" };
+export async function generateMetadata() {
+  return { title: (await getT()).catalog.printers.title };
+}
 
 export default async function PrintersPage({
   searchParams,
@@ -19,13 +21,17 @@ export default async function PrintersPage({
   const sp = await searchParams;
   const [{ plan }, printers] = await Promise.all([getContext(), getPrinters()]);
   const editing = printers.find((p) => p.id === sp.editar);
+  const { t: tt, fmt } = await getI18n();
+  const c = tt.catalog;
+  const p_ = c.printers;
+  const { money, number, dv } = fmt;
   const limit = planInfo(plan)?.printers ?? 0;
 
   return (
     <>
       <PageHeader
-        title="Impressoras"
-        description="O consumo de energia e o desgaste de cada máquina entram no custo das suas peças."
+        title={p_.title}
+        description={p_.desc}
       />
       <Flash ok={sp.ok} erro={sp.erro} />
 
@@ -33,7 +39,7 @@ export default async function PrintersPage({
         <section className="space-y-3">
           {printers.length === 0 && (
             <div className="card flex items-center gap-4 p-6 text-muted">
-              <Printer className="shrink-0 text-sage" /> Cadastre sua primeira impressora ao lado.
+              <Printer className="shrink-0 text-sage" /> {p_.empty}
             </div>
           )}
           {printers.map((p) => {
@@ -46,65 +52,64 @@ export default async function PrintersPage({
                 <div className="flex-1">
                   <p className="font-bold">{p.name}</p>
                   <p className="tnum mt-0.5 text-sm text-muted">
-                    {number(p.power_watts)} W · desgaste {money(wearPerHour)}/h · manutenção{" "}
-                    {money(p.maintenance_per_hour)}/h
+                    {p_.line(number(p.power_watts), money(wearPerHour), money(p.maintenance_per_hour))}
                   </p>
                 </div>
                 <div className="flex gap-2">
                   <Link href={`/impressoras?editar=${p.id}`} className="btn-ghost px-3 py-2 text-sm">
-                    Editar
+                    {tt.common.actions.edit}
                   </Link>
-                  <DeleteButton id={p.id} action={deletePrinter} confirmText={`Remover ${p.name}?`} />
+                  <DeleteButton id={p.id} action={deletePrinter} confirmText={c.removeName(p.name)} />
                 </div>
               </div>
             );
           })}
           <p className="text-sm text-muted">
-            {limit >= UNLIMITED ? `${printers.length} impressora${printers.length === 1 ? "" : "s"} · ilimitadas no seu plano.` : `${printers.length} de ${limit} impressora${limit === 1 ? "" : "s"} do seu plano.`}
+            {limit >= UNLIMITED ? p_.unlimited(printers.length) : p_.ofLimit(printers.length, limit)}
           </p>
         </section>
 
         <form action={savePrinter} className="card h-fit space-y-4 p-6" key={editing?.id ?? "nova"}>
-          <h2 className="text-lg font-bold">{editing ? "Editar impressora" : "Nova impressora"}</h2>
+          <h2 className="text-lg font-bold">{editing ? p_.edit : p_.new}</h2>
           {editing && <input type="hidden" name="id" value={editing.id} />}
           {!editing && <PrinterModelPicker />}
-          <Field label="Nome" name="name" placeholder="Ex.: Bambu A1 Mini" defaultValue={editing?.name} required />
+          <Field label={c.name} name="name" placeholder={p_.namePh} defaultValue={editing?.name} required />
           <Field
-            label="Potência média"
+            label={p_.power}
             name="power_watts"
             suffix="W"
             inputMode="decimal"
             defaultValue={dv(editing?.power_watts ?? 150)}
-            hint="Consumo médio durante a impressão (não o pico). Em geral entre 80 e 350 W."
+            hint={p_.powerHint}
           />
           <Field
-            label="Valor pago"
+            label={p_.paid}
             name="purchase_price"
-            prefix="R$"
+            prefix={fmt.symbol}
             inputMode="decimal"
             defaultValue={dv(editing?.purchase_price ?? 0)}
           />
           <Field
-            label="Vida útil estimada"
+            label={p_.life}
             name="lifetime_hours"
-            suffix="horas"
+            suffix={p_.hours}
             inputMode="numeric"
             defaultValue={dv(editing?.lifetime_hours ?? 5000)}
-            hint="Horas de impressão até precisar trocar a máquina."
+            hint={p_.lifeHint}
           />
           <Field
-            label="Manutenção por hora"
+            label={p_.maint}
             name="maintenance_per_hour"
-            prefix="R$"
+            prefix={fmt.symbol}
             inputMode="decimal"
             defaultValue={dv(editing?.maintenance_per_hour ?? 0.15)}
-            hint="Bicos, correias, PEI, lubrificação… dividido pelas horas de uso."
+            hint={p_.maintHint}
           />
           <div className="flex gap-2 pt-1">
-            <SubmitButton className="btn-primary flex-1">{editing ? "Salvar alterações" : "Cadastrar"}</SubmitButton>
+            <SubmitButton className="btn-primary flex-1">{editing ? c.saveChanges : c.register}</SubmitButton>
             {editing && (
               <Link href="/impressoras" className="btn-ghost">
-                Cancelar
+                {tt.common.actions.cancel}
               </Link>
             )}
           </div>

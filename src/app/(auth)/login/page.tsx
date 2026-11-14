@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { AuthShell } from "@/components/AuthShell";
 import { SubmitButton } from "@/components/SubmitButton";
+import { getT } from "@/i18n/server";
 import { signIn } from "../actions";
 
-export const metadata = { title: "Entrar" };
+export async function generateMetadata() {
+  return { title: (await getT()).common.auth.signInTitle };
+}
 
 export default async function LoginPage({
   searchParams,
@@ -11,27 +14,28 @@ export default async function LoginPage({
   searchParams: Promise<{ erro?: string; ok?: string }>;
 }) {
   const sp = await searchParams;
+  const a = (await getT()).common.auth;
   return (
-    <AuthShell title="Entrar" subtitle="Acesse sua conta Nivela 3D." error={sp.erro} ok={sp.ok}>
+    <AuthShell title={a.signInTitle} subtitle={a.signInSubtitle} error={sp.erro} ok={sp.ok}>
       <form action={signIn} className="space-y-4">
         <div>
-          <label className="label" htmlFor="email">E-mail</label>
+          <label className="label" htmlFor="email">{a.email}</label>
           <input className="input" id="email" name="email" type="email" autoComplete="email" required />
         </div>
         <div>
           <div className="flex items-baseline justify-between">
-            <label className="label" htmlFor="password">Senha</label>
+            <label className="label" htmlFor="password">{a.password}</label>
             <Link href="/recuperar-senha" className="text-sm font-medium text-primary hover:underline">
-              Esqueci a senha
+              {a.forgot}
             </Link>
           </div>
           <input className="input" id="password" name="password" type="password" autoComplete="current-password" required />
         </div>
-        <SubmitButton className="btn-primary w-full" pendingText="Entrando…">Entrar</SubmitButton>
+        <SubmitButton className="btn-primary w-full" pendingText={a.signingIn}>{a.signInTitle}</SubmitButton>
       </form>
       <p className="mt-6 text-center text-sm text-muted">
-        Ainda não tem conta?{" "}
-        <Link href="/cadastro" className="font-semibold text-primary hover:underline">Criar conta</Link>
+        {a.noAccount}{" "}
+        <Link href="/cadastro" className="font-semibold text-primary hover:underline">{a.createAccount}</Link>
       </p>
     </AuthShell>
   );

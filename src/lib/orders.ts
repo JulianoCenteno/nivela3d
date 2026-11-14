@@ -50,20 +50,20 @@ export interface OrderRow {
   created_at: string;
 }
 
-export const QUOTE_STATUS: Record<QuoteStatus, { label: string; tone: string }> = {
-  aberto: { label: "Em aberto", tone: "bg-surface-2 text-ink-2" },
-  enviado: { label: "Enviado", tone: "bg-sand-soft text-ink-2" },
-  aprovado: { label: "Aprovado", tone: "bg-primary-soft text-primary" },
-  recusado: { label: "Recusado", tone: "bg-negative-soft text-negative" },
-  convertido: { label: "Virou pedido", tone: "bg-primary-soft text-primary" },
+export const QUOTE_TONE: Record<QuoteStatus, string> = {
+  aberto: "bg-surface-2 text-ink-2",
+  enviado: "bg-sand-soft text-ink-2",
+  aprovado: "bg-primary-soft text-primary",
+  recusado: "bg-negative-soft text-negative",
+  convertido: "bg-primary-soft text-primary",
 };
 
-export const ORDER_STATUS: Record<OrderStatus, { label: string; tone: string }> = {
-  novo: { label: "Novo", tone: "bg-sand-soft text-ink-2" },
-  producao: { label: "Em produção", tone: "bg-primary-soft text-primary" },
-  pronto: { label: "Pronto", tone: "bg-primary-soft text-primary" },
-  entregue: { label: "Entregue", tone: "bg-surface-2 text-muted" },
-  cancelado: { label: "Cancelado", tone: "bg-negative-soft text-negative" },
+export const ORDER_TONE: Record<OrderStatus, string> = {
+  novo: "bg-sand-soft text-ink-2",
+  producao: "bg-primary-soft text-primary",
+  pronto: "bg-primary-soft text-primary",
+  entregue: "bg-surface-2 text-muted",
+  cancelado: "bg-negative-soft text-negative",
 };
 
 export const ORDER_FLOW: OrderStatus[] = ["novo", "producao", "pronto", "entregue"];
@@ -102,10 +102,15 @@ export function deadlineInfo(o: Pick<OrderRow, "due_date" | "status">, today: st
   if (o.status === "entregue" || o.status === "cancelado") return null;
   const d = daysUntil(o.due_date, today);
   if (d === null) return null;
-  if (d < 0) return { level: "atrasado" as const, text: d === -1 ? "Atrasado 1 dia" : `Atrasado ${-d} dias` };
-  if (d === 0) return { level: "hoje" as const, text: "Entrega hoje" };
-  if (d <= 3) return { level: "breve" as const, text: d === 1 ? "Entrega amanhã" : `Entrega em ${d} dias` };
+  if (d < 0) return { level: "atrasado" as const, days: -d };
+  if (d === 0) return { level: "hoje" as const, days: 0 };
+  if (d <= 3) return { level: "breve" as const, days: d };
   return null;
+}
+
+type DeadlineDict = { late: (d: number) => string; today: string; soon: (d: number) => string };
+export function deadlineText(info: { level: "atrasado" | "hoje" | "breve"; days: number }, t: DeadlineDict) {
+  return info.level === "atrasado" ? t.late(info.days) : info.level === "hoje" ? t.today : t.soon(info.days);
 }
 
 /** Consumo de estoque de uma lista de itens (filamento em g, insumos em un). */
@@ -125,25 +130,39 @@ export function stockNeeds(
 }
 
 /** Texto do orçamento para colar no WhatsApp. */
-export function quoteText(q: Pick<QuoteRow, "number" | "customer_name" | "items" | "discount" | "shipping" | "valid_until" | "delivery_days">, business: string, link?: string) {
-  const brl = (v: number) => v.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+type QuoteTextDict = {
+  title: (business: string, n: number) => string;
+  hello: (name: string) => string;
+  discount: string;
+  shipping: string;
+  total: string;
+  leadTime: (d: number) => string;
+  validUntil: (date: string) => string;
+  approveHere: (link: string) => string;
+};
+
+export function quoteText(
+  q: Pick<QuoteRow, "number" | "customer_name" | "items" | "discount" | "shipping" | "valid_until" | "delivery_days">,
+  business: string,
+  link: string | undefined,
+  tx: QuoteTextDict,
+  money: (v: number) => string,
+  shortDate: (iso: string) => string,
+) {
   const t = itemsTotals(q.items, q.discount, q.shipping);
   const lines = [
-    `*${business} — Orçamento nº ${q.number}*`,
-    `Olá, ${q.customer_name.split(" ")[0]}! Segue o seu orçamento:`,
+    tx.title(business, q.number),
+    tx.hello(q.customer_name.split(" ")[0]),
     "",
-    ...q.items.map((i) => `• ${i.qty}× ${i.description} — ${brl(i.qty * i.unit_price)}`),
+    ...q.items.map((i) => `• ${i.qty}× ${i.description} — ${money(i.qty * i.unit_price)}`),
     "",
   ];
-  if (q.discount > 0) lines.push(`Desconto: -${brl(q.discount)}`);
-  if (q.shipping > 0) lines.push(`Frete: ${brl(q.shipping)}`);
-  lines.push(`*Total: ${brl(t.total)}*`);
-  if (q.delivery_days) lines.push(`Prazo de produção: ${q.delivery_days} dias após a aprovação`);
-  if (q.valid_until) {
-    const [y, m, d] = q.valid_until.split("-");
-    lines.push(`Válido até ${d}/${m}/${y}`);
-  }
-  if (link) lines.push("", `Veja e aprove aqui: ${link}`);
+  if (q.discount > 0) lines.push(`${tx.discount}: -${money(q.discount)}`);
+  if (q.shipping > 0) lines.push(`${tx.shipping}: ${money(q.shipping)}`);
+  lines.push(`*${tx.total}: ${money(t.total)}*`);
+  if (q.delivery_days) lines.push(tx.leadTime(q.delivery_days));
+  if (q.valid_until) lines.push(tx.validUntil(shortDate(q.valid_until)));
+  if (link) lines.push("", tx.approveHere(link));
   return lines.join("\n");
 }
 

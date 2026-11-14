@@ -3,8 +3,9 @@ import { saveProduct } from "@/app/(app)/actions";
 import type { ChannelRow, MaterialRow, PrinterRow, ProductRow, Settings, SupplyRow } from "@/lib/data";
 import { CostCalculator } from "./CostCalculator";
 import { SubmitButton } from "./SubmitButton";
+import { getT } from "@/i18n/server";
 
-export function ProductForm({
+export async function ProductForm({
   product,
   printers,
   materials,
@@ -21,17 +22,19 @@ export function ProductForm({
   supplies: SupplyRow[];
   categories: string[];
 }) {
+  const t = await getT();
+  const f = t.products.form;
   return (
     <form action={saveProduct} className="space-y-6">
       {product && <input type="hidden" name="id" value={product.id} />}
       <div className="card grid gap-4 p-6 sm:grid-cols-2">
         <div>
-          <label className="label" htmlFor="name">Nome do produto</label>
-          <input id="name" name="name" className="input" defaultValue={product?.name} placeholder="Ex.: Vaso geométrico P" required />
+          <label className="label" htmlFor="name">{f.name}</label>
+          <input id="name" name="name" className="input" defaultValue={product?.name} placeholder={f.namePh} required />
         </div>
         <div>
-          <label className="label" htmlFor="category">Categoria</label>
-          <input id="category" name="category" className="input" list="cats" defaultValue={product?.category ?? ""} placeholder="Ex.: Decoração" />
+          <label className="label" htmlFor="category">{f.category}</label>
+          <input id="category" name="category" className="input" list="cats" defaultValue={product?.category ?? ""} placeholder={f.categoryPh} />
           <datalist id="cats">
             {categories.map((c) => <option key={c} value={c} />)}
           </datalist>
@@ -49,13 +52,13 @@ export function ProductForm({
       />
 
       <div className="card p-6">
-        <label className="label" htmlFor="notes">Observações</label>
-        <textarea id="notes" name="notes" rows={3} className="input" defaultValue={product?.notes ?? ""} placeholder="Configurações de fatiamento, cores, fornecedor do arquivo…" />
+        <label className="label" htmlFor="notes">{f.notes}</label>
+        <textarea id="notes" name="notes" rows={3} className="input" defaultValue={product?.notes ?? ""} placeholder={f.notesPh} />
       </div>
 
       <div className="flex gap-3">
-        <SubmitButton>{product ? "Salvar alterações" : "Cadastrar produto"}</SubmitButton>
-        <Link href="/produtos" className="btn-ghost">Cancelar</Link>
+        <SubmitButton>{product ? t.catalog.saveChanges : f.create}</SubmitButton>
+        <Link href="/produtos" className="btn-ghost">{t.common.actions.cancel}</Link>
       </div>
     </form>
   );

@@ -20,80 +20,25 @@ import { Logo, LogoMark } from "@/components/Logo";
 import { PhoneCarousel } from "@/components/PhoneCarousel";
 import { MetaPixel } from "@/components/MetaPixel";
 import { PricingPlans, type PricingPlan } from "@/components/PricingPlans";
-import { availableCycles, LIFETIME, lifetimeEnabled } from "@/lib/plans";
+import { availableCycles, lifetimeEnabled, lifetimeFor } from "@/lib/plans";
+import type { Locale } from "@/i18n/config";
+import landing from "@/i18n/messages/landing";
+import { makeFmt } from "@/i18n/format";
+import { DEFAULT_CURRENCY } from "@/i18n/config";
+import { LandingLangSwitcher } from "@/components/LandingLangSwitcher";
 import { LifetimeOffers } from "@/components/LifetimeOffers";
 
-// Exemplo ilustrativo do Vazamento Invisível de Lucro (valores fictícios).
-const LEAK = [
-  ["Filamento", 8],
-  ["Energia", 2],
-  ["Desgaste da máquina", 3],
-  ["Tempo de trabalho", 8],
-  ["Embalagem", 3],
-  ["Taxas de venda", 8],
-  ["Perdas e desperdícios", 4],
-] as const;
-
-const XRAY = [
-  [Search, "Revele", "Identifique os custos que estavam passando despercebidos: energia, desgaste, falhas, sua hora, insumos e taxas — peça por peça."],
-  [Calculator, "Precifique", "Simule o preço de venda com a margem que você quer, já com a comissão da Shopee, do Mercado Livre ou de onde você vender."],
-  [ShieldCheck, "Proteja", "Registre cada venda com o preço que você cobrou de verdade, a taxa e o frete. Veja na hora se um desconto ou uma taxa comeu sua margem."],
-  [TrendingUp, "Evolua", "Descubra quais produtos e categorias deixam mais dinheiro no seu bolso e quais só dão trabalho."],
-] as const;
-
-const PLANS: PricingPlan[] = [
-  {
-    id: "iniciante" as const,
-    name: "Iniciante",
-    desc: "Pare de precificar no achismo e descubra quanto cobrar.",
-    features: ["Raio-X do Lucro 3D completo", "1 impressora", "Até 30 produtos", "Registro de vendas e painel de lucro", "Bônus e Clube de Ofertas"],
-  },
-  {
-    id: "profissional" as const,
-    name: "Profissional",
-    desc: "Controle seus pedidos, custos e lucros em um só lugar.",
-    features: ["Tudo do Iniciante", "Impressoras ilimitadas", "Produtos ilimitados", "Insumos e canais de venda ilimitados", "Relatórios completos", "Orçamentos, pedidos e estoque"],
-    featured: true,
-  },
-  {
-    id: "empresa" as const,
-    name: "Empresa",
-    desc: "Mais controle financeiro e operacional para crescer com segurança.",
-    features: ["Tudo do Profissional", "Equipe com até 5 pessoas", "Link de orçamento: o cliente aprova e vira pedido", "Baixa automática de estoque e alertas de prazo", "Suporte prioritário"],
-  },
-];
-
-const BONUSES = [
-  ["Primeiras Vendas com Lucro", "Como começar a vender suas peças sem deixar dinheiro na mesa."],
-  ["Checklist Antidesperdício", "Evite as falhas que jogam filamento, tempo e lucro fora."],
-  ["20 Ideias de Produtos para Vender", "Inspiração por categoria e por público."],
-  ["Modelos de Mensagens para Clientes", "Responda orçamentos e acompanhe pedidos sem travar."],
-  ["Clube de Ofertas 3D", "Promoções selecionadas de filamentos, peças e ferramentas."],
-];
-
-const UPSELL_FAQ = [
-  [lifetimeEnabled() ? "Essa compra é separada da que acabei de fazer?" : "Essa assinatura é separada da compra que acabei de fazer?", "Sim. O acesso do produto que você acabou de comprar chega no seu e-mail normalmente. O Nivela 3D é um aplicativo à parte, com conta própria, para você calcular o custo e o lucro das peças que imprimir."],
-];
-
-const FAQ = [
-  ["Preciso instalar alguma coisa?", "Não. O Nivela 3D funciona direto no navegador, no computador e no celular. É só criar sua conta e começar."],
-  ["Funciona com a minha impressora?", "Sim. Funciona com impressoras de filamento (FDM) e de resina. Já trazemos uma lista com os principais modelos — Bambu Lab, Creality, Elegoo, Anycubic, Prusa e outros — com o consumo de energia preenchido."],
-  ["O que é o Raio-X do Lucro 3D?", "É o método do Nivela 3D para enxergar quanto realmente sobra em cada impressão: revelar todos os custos da peça, precificar com a margem certa, conferir o lucro real de cada venda e descobrir quais produtos valem a pena."],
-  ["Como o preço sugerido é calculado?", "Somamos material, energia, desgaste e manutenção da impressora, uma margem para falhas, sua mão de obra e os insumos da peça. Depois aplicamos a comissão do canal onde você vai vender e a margem de lucro que você escolher."],
-  ["Como recebo o acesso?", "Logo depois do pagamento você recebe o link para criar sua conta com o mesmo e-mail da compra. O plano é liberado na hora."],
-  ["Tem garantia?", "Sim. Você tem 7 dias de garantia: se não gostar, pede o reembolso e recebe o valor de volta."],
-  ["Meus dados ficam protegidos?", "Sim. Cada conta acessa somente os próprios dados, protegidos por regras de segurança no banco de dados."],
-  ["Posso mudar de plano depois?", "Pode. Você começa no plano que fizer sentido hoje e muda quando o negócio crescer."],
-];
-
-const SLIDES = [
-  { src: "/landing/cel-calculadora.webp", title: "Preço certo na hora", text: "Peso, tempo e canal de venda: o Nivela mostra o preço e o seu lucro." },
-  { src: "/landing/cel-painel.webp", title: "Lucro real do mês", text: "Faturamento, taxas, custos e o que sobrou no seu bolso." },
-  { src: "/landing/cel-insumos.webp", title: "Insumos na conta", text: "Argola, ímã, embalagem: cada peça com seu custo completo." },
-  { src: "/landing/cel-produtos.webp", title: "Catálogo com margem", text: "Veja quais peças dão lucro e quais dão prejuízo." },
-  { src: "/landing/cel-vendas.webp", title: "Vendas em segundos", text: "Registre cada venda e o lucro aparece na hora." },
-  { src: "/landing/cel-impressoras.webp", title: "Sua impressora na lista", text: "Escolha o modelo e o consumo de energia vem preenchido." },
-  { src: "/landing/cel-painel-escuro.webp", title: "Tema claro ou escuro", text: "Do jeito que for mais confortável para você." },
+const XRAY_ICONS = [Search, Calculator, ShieldCheck, TrendingUp];
+const STEP_ICONS = [Printer, Calculator, Receipt];
+const CARD_ICONS = [Printer, Calculator, Smartphone, Sparkles];
+const SLIDE_SRC = [
+  "/landing/cel-calculadora.webp",
+  "/landing/cel-painel.webp",
+  "/landing/cel-insumos.webp",
+  "/landing/cel-produtos.webp",
+  "/landing/cel-vendas.webp",
+  "/landing/cel-impressoras.webp",
+  "/landing/cel-painel-escuro.webp",
 ];
 
 function Shot({ src, alt, w = 2880, h = 1800, className = "", priority = false }: { src: string; alt: string; w?: number; h?: number; className?: string; priority?: boolean }) {
@@ -117,34 +62,50 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
   );
 }
 
-export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; declineUrl?: string }) {
-  const lifetime = lifetimeEnabled();
+export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsell?: boolean; declineUrl?: string; locale?: Locale }) {
+  const L = landing[locale];
+  // Fora do Brasil só existe a oferta vitalícia (assinatura em moeda estrangeira não é suportada).
+  const lifetime = locale !== "pt" || lifetimeEnabled();
+  const fmt = makeFmt(locale, DEFAULT_CURRENCY[locale]);
+  const offer = lifetimeFor(locale);
+  const home = locale === "pt" ? "/" : `/${locale}`;
+  const PLANS: PricingPlan[] = (["iniciante", "profissional", "empresa"] as const).map((id) => ({
+    id,
+    ...L.plans[id],
+    featured: id === "profissional",
+  }));
+  const LEAK = L.leak;
+  const SLIDES = L.slides.map(([title, text], i) => ({ src: SLIDE_SRC[i], title, text }));
+  const FAQ = L.faq;
+  const UPSELL_FAQ = L.upsellFaq(lifetime);
+  const BONUSES = L.bonuses;
   return (
     <div className="overflow-x-hidden">
       <MetaPixel page={upsell ? "upsell" : "landing"} />
       {upsell && (
         <div className="bg-[#182B30] px-5 py-3 text-center text-[15px] text-[#F5F3EE]">
           <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#8FA69A] align-[-3px] text-[#10191C]"><Check size={13} strokeWidth={3} /></span>
-          <b>Compra confirmada!</b> Seu acesso já está a caminho do seu e-mail. <span className="text-[#C5B79E]">Antes de ir para o seu acesso, veja isto.</span>
+          <b>{L.upsellBar.done}</b> {L.upsellBar.sent} <span className="text-[#C5B79E]">{L.upsellBar.look}</span>
           {declineUrl && (
-            <a href={declineUrl} className="ml-2 whitespace-nowrap font-semibold text-[#F5F3EE]/70 underline underline-offset-2 hover:text-[#F5F3EE]">Ir para o meu acesso</a>
+            <a href={declineUrl} className="ml-2 whitespace-nowrap font-semibold text-[#F5F3EE]/70 underline underline-offset-2 hover:text-[#F5F3EE]">{L.upsellBar.go}</a>
           )}
         </div>
       )}
       {/* ---------- Topo ---------- */}
       <header className="sticky top-0 z-40 border-b border-line/70 bg-bg/85 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
-          <Link href="/" aria-label="Nivela 3D"><Logo size={28} /></Link>
+          <Link href={home} aria-label="Nivela 3D"><Logo size={28} /></Link>
           <nav className="hidden items-center gap-7 text-[15px] font-semibold text-ink-2 md:flex">
-            <a href="#como-funciona" className="hover:text-primary">Como funciona</a>
-            <a href="#no-celular" className="hover:text-primary">No celular</a>
-            <a href="#recursos" className="hover:text-primary">Recursos</a>
-            <a href="#planos" className="hover:text-primary">Planos</a>
-            <a href="#perguntas" className="hover:text-primary">Perguntas</a>
+            <a href="#como-funciona" className="hover:text-primary">{L.nav.how}</a>
+            <a href="#no-celular" className="hover:text-primary">{L.nav.mobile}</a>
+            <a href="#recursos" className="hover:text-primary">{L.nav.features}</a>
+            <a href="#planos" className="hover:text-primary">{L.nav.plans}</a>
+            <a href="#perguntas" className="hover:text-primary">{L.nav.faq}</a>
           </nav>
           <div className="flex items-center gap-2">
-            {!upsell && <Link href="/login" className="hidden rounded-xl px-3 py-2 text-[15px] font-semibold text-ink-2 hover:bg-surface-2 sm:block">Entrar</Link>}
-            <a href="#planos" className="btn-primary px-4 py-2 text-sm sm:text-[15px]">{lifetime ? "Quero acesso" : "Assinar agora"}</a>
+            <LandingLangSwitcher locale={locale} upsell={upsell} />
+            {!upsell && <Link href="/login" className="hidden rounded-xl px-3 py-2 text-[15px] font-semibold text-ink-2 hover:bg-surface-2 sm:block">{L.nav.login}</Link>}
+            <a href="#planos" className="btn-primary px-4 py-2 text-sm sm:text-[15px]">{lifetime ? L.nav.wantAccess : L.nav.subscribe}</a>
           </div>
         </div>
       </header>
@@ -156,46 +117,43 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
             {upsell ? (
               <>
                 <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-primary">
-                  <LogoMark size={16} /> Para quem acabou de garantir os arquivos
+                  <LogoMark size={16} /> {L.hero.upsellTag}
                 </p>
                 <h1 className="mt-6 text-[2.5rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.6rem]">
-                  Você já tem os arquivos. Agora descubra <span className="text-sage">quanto realmente sobra</span> em cada peça que imprimir.
+                  {L.hero.upsellH1a}<span className="text-sage">{L.hero.upsellH1b}</span>{L.hero.upsellH1c}
                 </h1>
                 <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-                  Bons modelos são só metade do caminho. A outra metade é cobrar o preço certo. Com o Raio-X do Lucro 3D você
-                  soma filamento, energia, desgaste, falhas, sua hora e as taxas de venda, e vê o lucro real antes de aceitar
-                  qualquer pedido.
+                  {L.hero.upsellP}
                 </p>
               </>
             ) : (
               <>
               <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface px-3 py-1.5 text-sm font-semibold text-primary">
-                <LogoMark size={16} /> Raio-X do Lucro 3D
+                <LogoMark size={16} /> {L.hero.tag}
               </p>
               <h1 className="mt-6 text-[2.5rem] font-extrabold leading-[1.08] tracking-tight sm:text-5xl lg:text-[3.6rem]">
-                Sua impressora 3D pode estar <span className="text-sage">vendendo muito e lucrando pouco.</span> E você nem percebeu.
+                {L.hero.h1a}<span className="text-sage">{L.hero.h1b}</span>{L.hero.h1c}
               </h1>
               <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
-                Descubra quanto realmente sobra em cada impressão e pare de definir seus preços no achismo. Com o Raio-X do
-                Lucro 3D você encontra os custos escondidos, cobra com segurança e vê quais peças realmente compensam.
+                {L.hero.p}
               </p>
               </>
             )}
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <a href="#planos" className="btn-primary px-6 py-3.5 text-base">
-                Quero descobrir meu lucro real <ArrowRight size={18} />
+                {L.hero.cta} <ArrowRight size={18} />
               </a>
-              <a href="#como-funciona" className="btn-ghost px-6 py-3.5 text-base">Como funciona</a>
+              <a href="#como-funciona" className="btn-ghost px-6 py-3.5 text-base">{L.hero.how}</a>
             </div>
-            <p className="mt-4 text-sm text-muted">{lifetime ? `A partir de R$ ${LIFETIME.basico.price} · Pagamento único · Acesso vitalício` : "A partir de R$ 19,90/mês · 7 dias de garantia · Acesso imediato"}</p>
+            <p className="mt-4 text-sm text-muted">{lifetime ? L.hero.lifetimeNote(fmt.money(Number(offer.basico.price.replace(",", ".")))) : L.hero.subNote}</p>
           </div>
 
           <div className="relative pb-6 pl-[16%]">
             <div className="aspect-[5/4] overflow-hidden rounded-3xl">
-              <Image src="/landing/oficina.webp" alt="Empreendedor na oficina conferindo o lucro das peças no celular" width={1536} height={1024} className="h-full w-full object-cover object-[60%_50%]" priority sizes="(min-width: 1024px) 560px, 100vw" />
+              <Image src="/landing/oficina.webp" alt={L.hero.imgAlt} width={1536} height={1024} className="h-full w-full object-cover object-[60%_50%]" priority sizes="(min-width: 1024px) 560px, 100vw" />
             </div>
             <div className="absolute bottom-0 left-0 w-[33%] max-w-[210px]">
-              <Phone src="/landing/m-calculadora.webp" alt="Calculadora do Nivela 3D no celular mostrando o preço sugerido" />
+              <Phone src="/landing/m-calculadora.webp" alt={L.hero.phoneAlt} />
             </div>
           </div>
         </section>
@@ -204,34 +162,31 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         <section className="border-y border-line bg-surface">
           <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1.05fr] lg:py-24">
             <div>
-              <p className="text-sm font-bold uppercase tracking-wider text-sage">A verdade que pouca gente fala</p>
-              <h2 className="mt-2 text-3xl font-extrabold leading-tight tracking-tight sm:text-[2.6rem]">Vender mais não significa lucrar mais.</h2>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.leakSec.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold leading-tight tracking-tight sm:text-[2.6rem]">{L.leakSec.h2}</h2>
               <p className="mt-5 text-lg leading-relaxed text-muted">
-                O segredo não é só imprimir mais peças. É saber quanto realmente sobra em cada venda. A maioria calcula o
-                filamento e esquece o resto — e é aí que o dinheiro escapa sem ninguém ver.
+                {L.leakSec.p}
               </p>
               <div className="mt-7 rounded-2xl border border-line bg-bg p-6">
-                <p className="text-sm font-bold uppercase tracking-wider text-[#B4533C] dark:text-[#E08A72]">O problema tem nome</p>
-                <p className="mt-1 text-xl font-extrabold">Vazamento Invisível de Lucro 3D</p>
+                <p className="text-sm font-bold uppercase tracking-wider text-[#B4533C] dark:text-[#E08A72]">{L.leakSec.nameKicker}</p>
+                <p className="mt-1 text-xl font-extrabold">{L.leakSec.name}</p>
                 <p className="mt-2 leading-relaxed text-muted">
-                  É todo o dinheiro que fica de fora da conta: energia, desgaste da máquina, peças que falham, sua hora de
-                  trabalho, argolas e embalagem, taxa do marketplace. Cada item parece pequeno. Somados, eles decidem se você
-                  está lucrando ou só trabalhando de graça.
+                  {L.leakSec.nameP}
                 </p>
               </div>
             </div>
 
             <div className="card p-6 sm:p-8">
-              <p className="text-sm font-semibold text-muted">Exemplo: uma peça vendida por</p>
-              <p className="tnum text-4xl font-extrabold tracking-tight">R$ 50,00</p>
+              <p className="text-sm font-semibold text-muted">{L.leakSec.example}</p>
+              <p className="tnum text-4xl font-extrabold tracking-tight">{fmt.money(50)}</p>
               <div className="mt-6 grid grid-cols-2 gap-3">
                 <div className="rounded-xl bg-surface-2 p-4">
-                  <p className="text-sm font-semibold text-muted">Quem só conta o filamento acha que ganha</p>
-                  <p className="tnum mt-1 text-2xl font-extrabold text-muted line-through decoration-2">R$ 42,00</p>
+                  <p className="text-sm font-semibold text-muted">{L.leakSec.thinks}</p>
+                  <p className="tnum mt-1 text-2xl font-extrabold text-muted line-through decoration-2">{fmt.money(42)}</p>
                 </div>
                 <div className="rounded-xl bg-primary p-4 text-on-primary">
-                  <p className="text-sm font-semibold opacity-80">O lucro real é</p>
-                  <p className="tnum mt-1 text-2xl font-extrabold">R$ 14,00</p>
+                  <p className="text-sm font-semibold opacity-80">{L.leakSec.real}</p>
+                  <p className="tnum mt-1 text-2xl font-extrabold">{fmt.money(14)}</p>
                 </div>
               </div>
               <ul className="mt-6 divide-y divide-line">
@@ -239,15 +194,15 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
                   <li key={label} className="flex items-center gap-3 py-2.5 text-[15px]">
                     <span className="flex-1 font-semibold text-ink-2">{label}</span>
                     <span className="h-2 rounded-full bg-sage/70" style={{ width: `${value * 9}px` }} />
-                    <span className="tnum w-20 text-right font-bold">R$ {value.toFixed(2).replace(".", ",")}</span>
+                    <span className="tnum w-20 text-right font-bold">{fmt.money(value)}</span>
                   </li>
                 ))}
                 <li className="flex items-center justify-between py-3 font-extrabold">
-                  <span>Custo real da peça</span>
-                  <span className="tnum">R$ 36,00</span>
+                  <span>{L.leakSec.cost}</span>
+                  <span className="tnum">{fmt.money(36)}</span>
                 </li>
               </ul>
-              <p className="mt-3 text-xs text-muted">Valores fictícios, só para ilustrar. No Nivela você vê os números das suas peças.</p>
+              <p className="mt-3 text-xs text-muted">{L.leakSec.note}</p>
             </div>
           </div>
         </section>
@@ -255,25 +210,24 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         {/* ---------- Frase de autoridade ---------- */}
         <section className="mx-auto max-w-4xl px-5 pt-20 text-center lg:pt-24">
           <p className="text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl">
-            “Quem leva a impressão 3D a sério não trabalha no achismo.{" "}
-            <span className="text-sage">Trabalha com números.”</span>
+            {L.quoteA}{" "}
+            <span className="text-sage">{L.quoteB}</span>
           </p>
         </section>
 
         {/* ---------- Raio-X do Lucro 3D (mecanismo) ---------- */}
         <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-16 lg:py-24">
           <div className="max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-wider text-sage">A solução</p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Raio-X do Lucro 3D</h2>
+            <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.xraySec.kicker}</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.xraySec.h2}</h2>
             <p className="mt-3 text-lg leading-relaxed text-muted">
-              Não é só uma calculadora. É o método do Nivela 3D que acompanha a peça do orçamento até a venda e mostra, em
-              números, quanto ficou no seu bolso. Quatro etapas:
+              {L.xraySec.p}
             </p>
           </div>
           <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_1.35fr] lg:items-center">
             <ol className="space-y-7">
-              {XRAY.map(([Icon, title, text], i) => {
-                const I = Icon as typeof Printer;
+              {L.xray.map(([title, text], i) => {
+                const I = XRAY_ICONS[i];
                 return (
                   <li key={title} className="flex gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary">
@@ -287,21 +241,17 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
                 );
               })}
             </ol>
-            <Shot src="/landing/calculadora.webp" alt="Raio-X do Lucro 3D: custo completo da peça, preço sugerido e lucro" />
+            <Shot src="/landing/calculadora.webp" alt={L.xraySec.shotAlt} />
           </div>
           <div className="mt-14 grid gap-4 rounded-3xl border border-line bg-surface p-6 sm:grid-cols-3 sm:p-8">
-            {[
-              [Printer, "Cadastre impressora e filamento", "Escolha seu modelo numa lista com 39 impressoras. Leva 2 minutos."],
-              [Calculator, "Faça o Raio-X da peça", "Peso e tempo do fatiador: o Nivela revela o custo completo e o preço certo."],
-              [Receipt, "Registre as vendas", "Veja o lucro real do mês, já com taxas, custos e frete descontados."],
-            ].map(([Icon, t, d], i) => {
-              const I = Icon as typeof Printer;
+            {L.xraySec.steps.map(([t, d], i) => {
+              const I = STEP_ICONS[i];
               return (
-                <div key={t as string} className="flex gap-3">
+                <div key={t} className="flex gap-3">
                   <I size={20} className="mt-0.5 shrink-0 text-sage" />
                   <div>
-                    <p className="font-bold">Passo {i + 1}: {t as string}</p>
-                    <p className="text-[15px] text-muted">{d as string}</p>
+                    <p className="font-bold">{L.xraySec.step(i + 1, t)}</p>
+                    <p className="text-[15px] text-muted">{d}</p>
                   </div>
                 </div>
               );
@@ -313,9 +263,9 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         <section id="no-celular" className="scroll-mt-20 border-t border-line bg-surface">
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="max-w-2xl">
-              <p className="text-sm font-bold uppercase tracking-wider text-sage">No seu celular</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">O Raio-X ali mesmo, do lado da impressora</h2>
-              <p className="mt-3 text-lg text-muted">O Nivela 3D foi feito para o celular. Abra no navegador e use como um aplicativo — sem instalar nada.</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.mobileSec.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.mobileSec.h2}</h2>
+              <p className="mt-3 text-lg text-muted">{L.mobileSec.p}</p>
             </div>
             <div className="mt-12 grid items-start gap-12 lg:grid-cols-[300px_1fr]">
               <div className="mx-auto w-[78%] max-w-[300px] lg:w-full">
@@ -329,12 +279,12 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
                     playsInline
                     preload="metadata"
                     className="block aspect-[9/16] w-full rounded-[1.9rem] object-cover"
-                    aria-label="Vídeo mostrando o Nivela 3D calculando o preço de uma peça no celular"
+                    aria-label={L.mobileSec.videoAlt}
                   />
                 </div>
-                <p className="mt-3 text-center text-sm text-muted">Veja em 15 segundos</p>
+                <p className="mt-3 text-center text-sm text-muted">{L.mobileSec.watch}</p>
               </div>
-              <PhoneCarousel slides={SLIDES} />
+              <PhoneCarousel slides={SLIDES} prevLabel={L.carousel.prev} nextLabel={L.carousel.next} />
             </div>
           </div>
         </section>
@@ -343,19 +293,18 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         <section id="recursos" className="scroll-mt-20 border-t border-line">
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="max-w-2xl">
-              <p className="text-sm font-bold uppercase tracking-wider text-sage">Por dentro do app</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Tudo para fechar o vazamento e cuidar do seu lucro</h2>
-              <p className="mt-3 text-lg text-muted">Feito para ser simples: botões grandes, linguagem clara e funciona igual no computador e no celular.</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.featSec.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.featSec.h2}</h2>
+              <p className="mt-3 text-lg text-muted">{L.featSec.p}</p>
             </div>
 
             <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
-              <div><Shot src="/landing/painel.webp" alt="Painel do Nivela 3D com faturamento, taxas, custos e lucro real do mês" /></div>
+              <div><Shot src="/landing/painel.webp" alt={L.featSec.dashAlt} /></div>
               <div>
                 <LayoutDashboard className="text-sage" />
-                <h3 className="mt-3 text-2xl font-bold">Painel do lucro real</h3>
+                <h3 className="mt-3 text-2xl font-bold">{L.featSec.dashH}</h3>
                 <p className="mt-2 leading-relaxed text-muted">
-                  Faturamento, taxas dos canais, custos e o que realmente sobrou — por mês. Veja quais categorias e produtos dão
-                  mais lucro e quais estão dando prejuízo.
+                  {L.featSec.dashP}
                 </p>
               </div>
             </div>
@@ -363,28 +312,22 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
             <div className="mt-20 grid items-center gap-10 lg:grid-cols-[1fr_1.4fr]">
               <div className="lg:order-1">
                 <Paperclip className="text-sage" />
-                <h3 className="mt-3 text-2xl font-bold">Produtos com custo sempre atualizado</h3>
+                <h3 className="mt-3 text-2xl font-bold">{L.featSec.prodH}</h3>
                 <p className="mt-2 leading-relaxed text-muted">
-                  Cadastre cada peça uma vez, com os insumos que ela usa — argola de chaveiro, ímã, embalagem. Mudou o preço do
-                  filamento? Um clique recalcula todo o catálogo.
+                  {L.featSec.prodP}
                 </p>
               </div>
-              <div className="lg:order-2"><Shot src="/landing/produto-insumos.webp" alt="Cadastro de produto com insumos como argola e embalagem" /></div>
+              <div className="lg:order-2"><Shot src="/landing/produto-insumos.webp" alt={L.featSec.prodAlt} /></div>
             </div>
 
             <div className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                [Printer, "39 impressoras prontas", "Bambu Lab, Creality, Elegoo, Anycubic, Prusa e mais, com consumo de energia preenchido."],
-                [Calculator, "Taxas de cada canal", "Cadastre a comissão da Shopee, Mercado Livre ou Elo7 e veja o preço certo para cada um."],
-                [Smartphone, "No celular e no computador", "Acesse de qualquer lugar, com tema claro ou escuro."],
-                [Sparkles, "Modo simples de usar", "Pensado para quem nunca usou um sistema de gestão."],
-              ].map(([Icon, t, d]) => {
-                const I = Icon as typeof Printer;
+              {L.featSec.cards.map(([t, d], i) => {
+                const I = CARD_ICONS[i];
                 return (
-                  <div key={t as string} className="rounded-2xl border border-line bg-bg p-6">
+                  <div key={t} className="rounded-2xl border border-line bg-bg p-6">
                     <I className="text-sage" size={22} />
-                    <p className="mt-3 font-bold">{t as string}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted">{d as string}</p>
+                    <p className="mt-3 font-bold">{t}</p>
+                    <p className="mt-1 text-sm leading-relaxed text-muted">{d}</p>
                   </div>
                 );
               })}
@@ -395,24 +338,20 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         {/* ---------- Para quem ---------- */}
         <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-2 lg:py-28">
           <div className="overflow-hidden rounded-3xl">
-            <Image src="/landing/atelie.webp" alt="Empreendedora embalando pedidos de peças impressas em 3D" width={1536} height={1024} className="h-auto w-full" sizes="(min-width: 1024px) 560px, 100vw" />
+            <Image src="/landing/atelie.webp" alt={L.whoSec.imgAlt} width={1536} height={1024} className="h-auto w-full" sizes="(min-width: 1024px) 560px, 100vw" />
           </div>
           <div>
-            <p className="text-sm font-bold uppercase tracking-wider text-sage">Para quem é</p>
-            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Para quem quer transformar impressão 3D em negócio de verdade</h2>
+            <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.whoSec.kicker}</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.whoSec.h2}</h2>
             <ul className="mt-8 space-y-4">
-              {[
-                ["Está começando", "e quer cobrar o preço certo desde a primeira venda."],
-                ["Já vende nos marketplaces", "e quer saber quanto sobra depois das taxas."],
-                ["Pensa em comprar outra impressora", "e quer saber antes se está lucrando bem com as que já tem."],
-              ].map(([b, t]) => (
+              {L.whoSec.items.map(([b, t]) => (
                 <li key={b} className="flex gap-3">
                   <span className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-on-primary"><Check size={14} /></span>
                   <p className="text-lg leading-relaxed"><b>{b}</b> <span className="text-muted">{t}</span></p>
                 </li>
               ))}
             </ul>
-            <a href="#planos" className="btn-primary mt-9 px-6 py-3.5 text-base">Fazer o Raio-X das minhas peças <ArrowRight size={18} /></a>
+            <a href="#planos" className="btn-primary mt-9 px-6 py-3.5 text-base">{L.whoSec.cta} <ArrowRight size={18} /></a>
           </div>
         </section>
 
@@ -420,27 +359,27 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         <section id="planos" className="scroll-mt-20 border-t border-line bg-surface">
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-bold uppercase tracking-wider text-sage">Planos</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.plansSec.kicker}</p>
               {lifetime ? (
                 <>
-                  <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Pague uma vez e use para sempre</h2>
-                  <p className="mt-3 text-lg text-muted">Sem mensalidade. Os dois planos incluem os bônus e o Clube de Ofertas 3D.</p>
+                  <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.plansSec.lifeH2}</h2>
+                  <p className="mt-3 text-lg text-muted">{L.plansSec.lifeP}</p>
                 </>
               ) : (
                 <>
-                  <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Comece a cuidar dos seus lucros a partir de R$ 19,90/mês</h2>
-                  <p className="mt-3 text-lg text-muted">Todos os planos incluem os bônus e o Clube de Ofertas 3D.{" "}
-                    {availableCycles().length > 1 ? "Pague por mês, a cada 3 meses ou por ano e economize até 2 meses." : ""}</p>
+                  <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.plansSec.subH2}</h2>
+                  <p className="mt-3 text-lg text-muted">{L.plansSec.subP}{" "}
+                    {availableCycles().length > 1 ? L.plansSec.subCycles : ""}</p>
                 </>
               )}
             </div>
             {lifetime ? (
-              <LifetimeOffers basico={PLANS[0]} completo={PLANS[1]} />
+              <LifetimeOffers basico={PLANS[0]} completo={PLANS[1]} locale={locale} />
             ) : (
               <PricingPlans plans={PLANS} cycles={availableCycles()} />
             )}
             <p className="mt-10 text-center text-muted">
-              {lifetime ? "Os dois planos têm" : "Todos os planos têm"} <b className="text-ink">7 dias de garantia</b>: se não gostar, você pede o reembolso.
+              {L.plansSec.guarA(lifetime)} <b className="text-ink">{L.plansSec.guarB}</b>{L.plansSec.guarC}
             </p>
           </div>
         </section>
@@ -449,15 +388,14 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         <section className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
           <div className="grid gap-12 lg:grid-cols-[1fr_1.3fr]">
             <div>
-              <p className="text-sm font-bold uppercase tracking-wider text-sage">Bônus inclusos</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">Você não começa sozinho</h2>
-              <p className="mt-3 text-lg leading-relaxed text-muted">Materiais para chegar mais rápido às primeiras vendas, {lifetime ? "liberados nos dois planos, para sempre." : "liberados em todos os planos enquanto a assinatura estiver ativa."}</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.bonusSec.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.bonusSec.h2}</h2>
+              <p className="mt-3 text-lg leading-relaxed text-muted">{L.bonusSec.p(lifetime)}</p>
               <div className="mt-8 rounded-2xl bg-sand-soft p-6">
                 <BadgePercent className="text-ink-2" />
-                <p className="mt-3 font-bold">Clube de Ofertas 3D</p>
+                <p className="mt-3 font-bold">{L.bonusSec.clubH}</p>
                 <p className="mt-1 text-[15px] leading-relaxed text-muted">
-                  Um grupo com promoções selecionadas de filamentos, bicos, mesas, ferramentas e acabamento. Poucas mensagens,
-                  só o que vale a pena.
+                  {L.bonusSec.clubP}
                 </p>
               </div>
             </div>
@@ -478,7 +416,7 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         {/* ---------- FAQ ---------- */}
         <section id="perguntas" className="scroll-mt-20 border-t border-line bg-surface">
           <div className="mx-auto max-w-3xl px-5 py-20 lg:py-28">
-            <h2 className="text-center text-3xl font-extrabold tracking-tight sm:text-4xl">Perguntas frequentes</h2>
+            <h2 className="text-center text-3xl font-extrabold tracking-tight sm:text-4xl">{L.faqH2}</h2>
             <div className="mt-10 divide-y divide-line rounded-2xl border border-line bg-bg">
               {(upsell ? [...UPSELL_FAQ, ...FAQ] : FAQ).map(([q, a]) => (
                 <details key={q} className="group p-6">
@@ -497,20 +435,20 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
         <section className="px-5 py-20">
           <div className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] bg-[#182B30] px-8 py-14 text-center text-[#F5F3EE] sm:px-14">
             <h2 className="text-3xl font-extrabold leading-tight tracking-tight sm:text-4xl">
-              Sua impressora produz peças.<br />
-              <span className="text-[#8FA69A]">O Nivela ajuda você a transformar isso em lucro.</span>
+              {L.final.h2a}<br />
+              <span className="text-[#8FA69A]">{L.final.h2b}</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-lg text-[#F5F3EE]/70">Em poucos minutos você faz o Raio-X da sua primeira peça e descobre quanto realmente sobra. Cada impressão conta. Cada lucro também.</p>
+            <p className="mx-auto mt-4 max-w-xl text-lg text-[#F5F3EE]/70">{L.final.p}</p>
             <a href="#planos" className="mt-8 inline-flex items-center gap-2 rounded-xl bg-[#8FA69A] px-7 py-4 text-base font-bold text-[#10191C] transition hover:bg-[#A3B8AD]">
-              Quero descobrir meu lucro real <ArrowRight size={18} />
+              {L.final.cta} <ArrowRight size={18} />
             </a>
             {upsell && (
               <p className="mt-8 text-sm text-muted">
-                Não quer agora? Tudo bem: o acesso da sua compra chega no seu e-mail normalmente.
+                {L.final.later}
                 {declineUrl && (
                   <>
                     {" "}
-                    <a href={declineUrl} className="font-semibold text-ink-2 underline underline-offset-2">Não, obrigado. Ir para o meu acesso</a>
+                    <a href={declineUrl} className="font-semibold text-ink-2 underline underline-offset-2">{L.final.decline}</a>
                   </>
                 )}
               </p>
@@ -522,7 +460,7 @@ export function SalesPage({ upsell = false, declineUrl }: { upsell?: boolean; de
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-muted sm:flex-row">
           <Logo size={24} />
-          <p>© {new Date().getFullYear()} Nivela 3D · Gestão inteligente para impressão 3D</p>
+          <p>© {new Date().getFullYear()} Nivela 3D · {L.footer}</p>
         </div>
       </footer>
     </div>

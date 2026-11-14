@@ -5,11 +5,14 @@ import { SaleForm } from "@/components/SaleForm";
 import { Flash, PageHeader } from "@/components/ui";
 import { saleTotals } from "@/lib/calc";
 import { getChannels, getProducts, getSales } from "@/lib/data";
-import { money } from "@/lib/format";
-import { fmtDate, monthRange, todayISO } from "@/lib/period";
+import { monthRange, todayISO } from "@/lib/period";
+import { getI18n, getT } from "@/i18n/server";
+import { LOCALE_TAG } from "@/i18n/config";
 import { deleteSale } from "../actions";
 
-export const metadata = { title: "Vendas" };
+export async function generateMetadata() {
+  return { title: (await getT()).money.sales.title };
+}
 
 export default async function SalesPage({
   searchParams,
@@ -17,7 +20,10 @@ export default async function SalesPage({
   searchParams: Promise<{ ok?: string; erro?: string; mes?: string }>;
 }) {
   const sp = await searchParams;
-  const period = monthRange(sp.mes);
+  const { t: tt, fmt, locale } = await getI18n();
+  const s_ = tt.money.sales;
+  const money = fmt.money;
+  const period = monthRange(sp.mes, LOCALE_TAG[locale]);
   const [sales, products, channels] = await Promise.all([
     getSales(period.from, period.to),
     getProducts(),
@@ -40,8 +46,8 @@ export default async function SalesPage({
   return (
     <>
       <PageHeader
-        title="Vendas"
-        description="Registre cada venda para ver o lucro real depois de taxas, custos e frete."
+        title={s_.title}
+        description={s_.desc}
         action={<MonthNav base="/vendas" ym={period.ym} label={period.label} />}
       />
       <Flash ok={sp.ok} erro={sp.erro} />
@@ -50,7 +56,7 @@ export default async function SalesPage({
         <section>
           {rows.length === 0 ? (
             <div className="card flex items-center gap-4 p-6 text-muted">
-              <Receipt className="shrink-0 text-sage" /> Nenhuma venda em {period.label}.
+              <Receipt className="shrink-0 text-sage" /> {s_.none(period.label)}
             </div>
           ) : (
             <>
@@ -63,21 +69,21 @@ export default async function SalesPage({
                       {s.description}
                     </p>
                     <p className="text-sm text-muted">
-                      {fmtDate(s.sold_at)} · {(s.channel_id && channelName.get(s.channel_id)) || "Sem canal"}
+                      {fmt.short(s.sold_at)} · {(s.channel_id && channelName.get(s.channel_id)) || s_.noChannel}
                     </p>
                   </div>
                   <div className="shrink-0 text-right">
                     <p className="tnum font-semibold">{money(s.t.revenue)}</p>
-                    <p className={`tnum text-sm font-semibold ${s.t.profit < 0 ? "text-negative" : "text-positive"}`}>lucro {money(s.t.profit)}</p>
+                    <p className={`tnum text-sm font-semibold ${s.t.profit < 0 ? "text-negative" : "text-positive"}`}>{tt.money.dash.profitOf(money(s.t.profit))}</p>
                   </div>
-                  <DeleteButton id={s.id} action={deleteSale} label="" confirmText="Remover esta venda?" />
+                  <DeleteButton id={s.id} action={deleteSale} label="" confirmText={s_.removeConfirm} />
                 </li>
               ))}
               <li className="flex justify-between bg-surface-2 px-4 py-3.5 font-bold">
-                <span>Total do mês</span>
+                <span>{s_.monthTotal}</span>
                 <span className="tnum text-right">
                   {money(total.revenue)}
-                  <span className={`block text-sm ${total.profit < 0 ? "text-negative" : "text-positive"}`}>lucro {money(total.profit)}</span>
+                  <span className={`block text-sm ${total.profit < 0 ? "text-negative" : "text-positive"}`}>{tt.money.dash.profitOf(money(total.profit))}</span>
                 </span>
               </li>
             </ul>
@@ -85,9 +91,9 @@ export default async function SalesPage({
               <table className="w-full min-w-[600px] text-left">
                 <thead className="border-b border-line text-xs font-bold uppercase tracking-wide text-muted">
                   <tr>
-                    <th className="px-5 py-3.5">Venda</th>
-                    <th className="px-5 py-3.5 text-right">Faturamento</th>
-                    <th className="px-5 py-3.5 text-right">Lucro</th>
+                    <th className="px-5 py-3.5">{s_.sale}</th>
+                    <th className="px-5 py-3.5 text-right">{s_.revenue}</th>
+                    <th className="px-5 py-3.5 text-right">{s_.profit}</th>
                     <th className="w-12 px-2 py-3.5" />
                   </tr>
                 </thead>
@@ -100,7 +106,7 @@ export default async function SalesPage({
                           {s.description}
                         </p>
                         <p className="text-sm text-muted">
-                          {fmtDate(s.sold_at)} · {(s.channel_id && channelName.get(s.channel_id)) || "Sem canal"}
+                          {fmt.short(s.sold_at)} · {(s.channel_id && channelName.get(s.channel_id)) || s_.noChannel}
                         </p>
                       </td>
                       <td className="tnum px-5 py-3.5 text-right">{money(s.t.revenue)}</td>
@@ -108,14 +114,14 @@ export default async function SalesPage({
                         {money(s.t.profit)}
                       </td>
                       <td className="px-2 py-3.5">
-                        <DeleteButton id={s.id} action={deleteSale} label="" confirmText="Remover esta venda?" />
+                        <DeleteButton id={s.id} action={deleteSale} label="" confirmText={s_.removeConfirm} />
                       </td>
                     </tr>
                   ))}
                 </tbody>
                 <tfoot className="border-t border-line bg-surface-2 font-bold">
                   <tr>
-                    <td className="px-5 py-3.5">Total do mês</td>
+                    <td className="px-5 py-3.5">{s_.monthTotal}</td>
                     <td className="tnum px-5 py-3.5 text-right">{money(total.revenue)}</td>
                     <td className={`tnum px-5 py-3.5 text-right ${total.profit < 0 ? "text-negative" : "text-positive"}`}>{money(total.profit)}</td>
                     <td />

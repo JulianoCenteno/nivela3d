@@ -6,6 +6,7 @@ import { calcCost, suppliesCost, type SupplyUse } from "@/lib/calc";
 import { getContext, getMaterials, getPrinters, getSettings, getSupplies } from "@/lib/data";
 import { fnum, friendlyError, fstr } from "@/lib/format";
 import { autoDeductSale } from "./gestao-actions";
+import { getT } from "@/i18n/server";
 
 const back = (path: string, kind: "ok" | "erro", msg: string): never => {
   revalidatePath("/", "layout");
@@ -14,6 +15,8 @@ const back = (path: string, kind: "ok" | "erro", msg: string): never => {
 
 // ---------------- Configurações ----------------
 export async function saveSettings(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase, accountId } = await getContext();
   const { error } = await supabase.from("settings").upsert({
     user_id: accountId,
@@ -24,40 +27,46 @@ export async function saveSettings(fd: FormData) {
     default_margin_pct: Math.min(fnum(fd, "default_margin_pct", 50), 95),
     updated_at: new Date().toISOString(),
   });
-  if (error) back("/configuracoes", "erro", friendlyError(error.message));
-  back("/configuracoes", "ok", "Custos salvos.");
+  if (error) back("/configuracoes", "erro", friendlyError(error.message, t.common.errors));
+  back("/configuracoes", "ok", f.costsSaved);
 }
 
 // ---------------- Canais ----------------
 export async function saveChannel(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
     user_id: accountId,
-    name: fstr(fd, "name") ?? "Canal",
+    name: fstr(fd, "name") ?? f.defaults.channel,
     fee_pct: Math.min(fnum(fd, "fee_pct"), 90),
     fee_fixed: fnum(fd, "fee_fixed"),
   };
   const { error } = id
     ? await supabase.from("channels").update(row).eq("id", id)
     : await supabase.from("channels").insert(row);
-  if (error) back("/configuracoes", "erro", friendlyError(error.message));
-  back("/configuracoes", "ok", "Canal salvo.");
+  if (error) back("/configuracoes", "erro", friendlyError(error.message, t.common.errors));
+  back("/configuracoes", "ok", f.channelSaved);
 }
 
 export async function deleteChannel(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase } = await getContext();
   await supabase.from("channels").delete().eq("id", String(fd.get("id")));
-  back("/configuracoes", "ok", "Canal removido.");
+  back("/configuracoes", "ok", f.channelRemoved);
 }
 
 // ---------------- Impressoras ----------------
 export async function savePrinter(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
     user_id: accountId,
-    name: fstr(fd, "name") ?? "Impressora",
+    name: fstr(fd, "name") ?? f.defaults.printer,
     power_watts: fnum(fd, "power_watts", 150),
     purchase_price: fnum(fd, "purchase_price"),
     lifetime_hours: Math.max(fnum(fd, "lifetime_hours", 5000), 1),
@@ -66,23 +75,27 @@ export async function savePrinter(fd: FormData) {
   const { error } = id
     ? await supabase.from("printers").update(row).eq("id", id)
     : await supabase.from("printers").insert(row);
-  if (error) back("/impressoras", "erro", friendlyError(error.message));
-  back("/impressoras", "ok", id ? "Impressora atualizada." : "Impressora cadastrada.");
+  if (error) back("/impressoras", "erro", friendlyError(error.message, t.common.errors));
+  back("/impressoras", "ok", id ? f.printerUpdated : f.printerCreated);
 }
 
 export async function deletePrinter(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase } = await getContext();
   await supabase.from("printers").delete().eq("id", String(fd.get("id")));
-  back("/impressoras", "ok", "Impressora removida.");
+  back("/impressoras", "ok", f.printerRemoved);
 }
 
 // ---------------- Materiais ----------------
 export async function saveMaterial(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
     user_id: accountId,
-    name: fstr(fd, "name") ?? "Material",
+    name: fstr(fd, "name") ?? f.defaults.material,
     type: fstr(fd, "type") ?? "PLA",
     color: fstr(fd, "color"),
     price_per_kg: fnum(fd, "price_per_kg"),
@@ -90,37 +103,43 @@ export async function saveMaterial(fd: FormData) {
   const { error } = id
     ? await supabase.from("materials").update(row).eq("id", id)
     : await supabase.from("materials").insert(row);
-  if (error) back("/materiais", "erro", friendlyError(error.message));
-  back("/materiais", "ok", id ? "Material atualizado." : "Material cadastrado.");
+  if (error) back("/materiais", "erro", friendlyError(error.message, t.common.errors));
+  back("/materiais", "ok", id ? f.materialUpdated : f.materialCreated);
 }
 
 export async function deleteMaterial(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase } = await getContext();
   await supabase.from("materials").delete().eq("id", String(fd.get("id")));
-  back("/materiais", "ok", "Material removido.");
+  back("/materiais", "ok", f.materialRemoved);
 }
 
 // ---------------- Insumos ----------------
 export async function saveSupply(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const row = {
     user_id: accountId,
-    name: fstr(fd, "name") ?? "Insumo",
-    unit: fstr(fd, "unit") ?? "un",
+    name: fstr(fd, "name") ?? f.defaults.supply,
+    unit: fstr(fd, "unit") ?? f.defaults.unit,
     unit_price: fnum(fd, "unit_price"),
   };
   const { error } = id
     ? await supabase.from("supplies").update(row).eq("id", id)
     : await supabase.from("supplies").insert(row);
-  if (error) back("/insumos", "erro", friendlyError(error.message));
-  back("/insumos", "ok", id ? "Insumo atualizado." : "Insumo cadastrado.");
+  if (error) back("/insumos", "erro", friendlyError(error.message, t.common.errors));
+  back("/insumos", "ok", id ? f.supplyUpdated : f.supplyCreated);
 }
 
 export async function deleteSupply(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase } = await getContext();
   await supabase.from("supplies").delete().eq("id", String(fd.get("id")));
-  back("/insumos", "ok", "Insumo removido.");
+  back("/insumos", "ok", f.supplyRemoved);
 }
 
 /** Lê a lista de insumos enviada pelo formulário do produto. */
@@ -161,12 +180,14 @@ async function computeUnitCost(fd: FormData, uses: SupplyUse[]) {
 }
 
 export async function saveProduct(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase, accountId } = await getContext();
   const id = fstr(fd, "id");
   const uses = parseSupplyUses(fd);
   const row = {
     user_id: accountId,
-    name: fstr(fd, "name") ?? "Produto",
+    name: fstr(fd, "name") ?? f.defaults.product,
     category: fstr(fd, "category"),
     printer_id: fstr(fd, "printer_id"),
     material_id: fstr(fd, "material_id"),
@@ -183,18 +204,22 @@ export async function saveProduct(fd: FormData) {
   const { error } = id
     ? await supabase.from("products").update(row).eq("id", id)
     : await supabase.from("products").insert(row);
-  if (error) back(id ? `/produtos/${id}` : "/produtos/novo", "erro", friendlyError(error.message));
-  back("/produtos", "ok", id ? "Produto atualizado." : "Produto cadastrado.");
+  if (error) back(id ? `/produtos/${id}` : "/produtos/novo", "erro", friendlyError(error.message, t.common.errors));
+  back("/produtos", "ok", id ? f.productUpdated : f.productCreated);
 }
 
 export async function deleteProduct(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase } = await getContext();
   await supabase.from("products").delete().eq("id", String(fd.get("id")));
-  back("/produtos", "ok", "Produto removido.");
+  back("/produtos", "ok", f.productRemoved);
 }
 
 /** Recalcula o custo de todos os produtos (após mudar custos ou impressoras). */
 export async function recalcAllProducts() {
+  const t = await getT();
+  const f = t.flash;
   const { supabase } = await getContext();
   const [settings, printers, materials, supplies, { data: products }] = await Promise.all([
     getSettings(),
@@ -224,11 +249,13 @@ export async function recalcAllProducts() {
     }).total;
     await supabase.from("products").update({ unit_cost: total }).eq("id", p.id);
   }
-  back("/produtos", "ok", "Custos de todos os produtos atualizados.");
+  back("/produtos", "ok", f.allRecalculated);
 }
 
 // ---------------- Vendas ----------------
 export async function saveSale(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase, accountId } = await getContext();
   const productId = fstr(fd, "product_id");
   const channelId = fstr(fd, "channel_id");
@@ -244,13 +271,13 @@ export async function saveSale(fd: FormData) {
 
   const quantity = Math.max(1, Math.round(fnum(fd, "quantity", 1)));
   const unitPrice = fnum(fd, "unit_price");
-  if (unitPrice <= 0) back("/vendas", "erro", "Informe o preço de venda.");
+  if (unitPrice <= 0) back("/vendas", "erro", f.saleNeedsPrice);
 
   const row = {
     user_id: accountId,
     product_id: productId,
     channel_id: channelId,
-    description: fstr(fd, "description") ?? product?.name ?? "Venda avulsa",
+    description: fstr(fd, "description") ?? product?.name ?? f.defaults.looseSale,
     category: product?.category ?? fstr(fd, "category"),
     quantity,
     unit_price: unitPrice,
@@ -261,13 +288,15 @@ export async function saveSale(fd: FormData) {
     sold_at: fstr(fd, "sold_at") ?? new Date().toISOString().slice(0, 10),
   };
   const { error } = await supabase.from("sales").insert(row);
-  if (error) back("/vendas", "erro", friendlyError(error.message));
+  if (error) back("/vendas", "erro", friendlyError(error.message, t.common.errors));
   await autoDeductSale(productId, quantity, row.description);
-  back("/vendas", "ok", "Venda registrada.");
+  back("/vendas", "ok", f.saleCreated);
 }
 
 export async function deleteSale(fd: FormData) {
+  const t = await getT();
+  const f = t.flash;
   const { supabase } = await getContext();
   await supabase.from("sales").delete().eq("id", String(fd.get("id")));
-  back("/vendas", "ok", "Venda removida.");
+  back("/vendas", "ok", f.saleRemoved);
 }

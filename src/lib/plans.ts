@@ -1,3 +1,5 @@
+import type { Locale } from "@/i18n/config";
+
 export type PlanId = "teste" | "iniciante" | "profissional" | "empresa" | "nenhum";
 
 export interface PlanInfo {
@@ -129,19 +131,45 @@ export function availableCycles(): BillingCycle[] {
 }
 
 /**
- * Oferta de pagamento único com acesso vitalício (frente low ticket).
+ * Oferta de pagamento único com acesso vitalício (frente low ticket), por idioma.
  * Básico = plano Iniciante; Completo = plano Profissional.
  * O pop-up do Básico oferece o Completo com desconto (link "upgrade").
+ * pt cobra em reais; en e es cobram em dólar (checkout da Digital Hub em inglês/espanhol).
  */
-export const LIFETIME = {
-  basico: { plan: "iniciante" as PaidPlan, price: "19,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO },
-  completo: { plan: "profissional" as PaidPlan, price: "59,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO },
-  upgrade: { price: "29,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE },
+type LifetimeOffer = { basico: { price: string; href?: string }; completo: { price: string; href?: string }; upgrade: { price: string; href?: string }; currency: string; symbol: string };
+
+const LIFETIME_BY_LOCALE: Record<Locale, LifetimeOffer> = {
+  pt: {
+    basico: { price: "19,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO },
+    completo: { price: "59,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO },
+    upgrade: { price: "29,90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE },
+    currency: "BRL",
+    symbol: "R$",
+  },
+  en: {
+    basico: { price: "9.90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO_EN },
+    completo: { price: "19.90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO_EN },
+    upgrade: { price: "14.90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE_EN },
+    currency: "USD",
+    symbol: "$",
+  },
+  es: {
+    basico: { price: "9.90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO_ES },
+    completo: { price: "19.90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO_ES },
+    upgrade: { price: "14.90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE_ES },
+    currency: "USD",
+    symbol: "US$",
+  },
 };
 
+export const lifetimeFor = (l: Locale) => LIFETIME_BY_LOCALE[l];
+/** Compatibilidade: oferta em português. */
+export const LIFETIME = LIFETIME_BY_LOCALE.pt;
+
 /** A página de vendas usa a oferta vitalícia quando os links do Básico e do Completo existem. */
-export function lifetimeEnabled(): boolean {
-  return !!LIFETIME.basico.href && !!LIFETIME.completo.href;
+export function lifetimeEnabled(l: Locale = "pt"): boolean {
+  const o = LIFETIME_BY_LOCALE[l];
+  return !!o.basico.href && !!o.completo.href;
 }
 
 export function planInfo(id: string | null | undefined): PlanInfo | null {

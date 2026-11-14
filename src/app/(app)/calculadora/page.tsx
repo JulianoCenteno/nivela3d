@@ -2,8 +2,11 @@ import Link from "next/link";
 import { CostCalculator } from "@/components/CostCalculator";
 import { PageHeader } from "@/components/ui";
 import { getChannels, getMaterials, getPrinters, getSettings, getSupplies } from "@/lib/data";
+import { getT } from "@/i18n/server";
 
-export const metadata = { title: "Calculadora" };
+export async function generateMetadata() {
+  return { title: (await getT()).common.nav.calculadora };
+}
 
 export default async function CalculatorPage() {
   const [printers, materials, channels, settings, supplies] = await Promise.all([
@@ -13,15 +16,16 @@ export default async function CalculatorPage() {
     getSettings(),
     getSupplies(),
   ]);
+  const c = (await getT()).products.calc;
 
   return (
     <>
       <PageHeader
-        title="Calculadora de preço"
-        description="Descubra quanto custa cada peça e por quanto vender para ter lucro de verdade."
+        title={c.title}
+        description={c.desc}
         action={
           <Link href="/produtos/novo" className="btn-ghost">
-            Cadastrar produto
+            {c.addProduct}
           </Link>
         }
       />

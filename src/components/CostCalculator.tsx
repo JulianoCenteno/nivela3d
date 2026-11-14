@@ -5,7 +5,8 @@ import Link from "next/link";
 import { useMemo, useState } from "react";
 import { calcCost, evaluatePrice, suggestPrice, suppliesCost, type SupplyUse } from "@/lib/calc";
 import type { ChannelRow, MaterialRow, PrinterRow, Settings, SupplyRow } from "@/lib/data";
-import { money, parseNum, pct } from "@/lib/format";
+import { parseNum } from "@/lib/format";
+import { useI18n } from "@/i18n/client";
 
 export interface CalcInitial {
   printer_id?: string | null;
@@ -18,8 +19,6 @@ export interface CalcInitial {
   supplies?: SupplyUse[];
 }
 
-const toStr = (v: number | undefined | null) =>
-  v == null || v === 0 ? "" : String(Math.round(v * 100) / 100).replace(".", ",");
 
 export function CostCalculator({
   printers,
@@ -39,6 +38,10 @@ export function CostCalculator({
   /** No cadastro de produto, o preço escolhido é enviado no formulário. */
   withPriceField?: boolean;
 }) {
+  const { t, fmt } = useI18n();
+  const c = t.products.calc;
+  const { money, pct } = fmt;
+  const toStr = (v: number | undefined | null) => (v == null || v === 0 ? "" : fmt.dv(Math.round(v * 100) / 100));
   const [printerId, setPrinterId] = useState(initial.printer_id ?? printers[0]?.id ?? "");
   const [materialId, setMaterialId] = useState(initial.material_id ?? materials[0]?.id ?? "");
   const [manualKg, setManualKg] = useState("");
@@ -49,11 +52,11 @@ export function CostCalculator({
   const [labor, setLabor] = useState(toStr(initial.labor_minutes));
   const [extras, setExtras] = useState(toStr(initial.extra_costs));
   const [channelId, setChannelId] = useState(channels[0]?.id ?? "");
-  const [margin, setMargin] = useState(String(settings.default_margin_pct).replace(".", ","));
+  const [margin, setMargin] = useState(fmt.dv(settings.default_margin_pct));
   const [myPrice, setMyPrice] = useState(toStr(initial.sale_price));
   const [showDetail, setShowDetail] = useState(false);
   const [uses, setUses] = useState<{ supply_id: string; qty: string }[]>(
-    (initial.supplies ?? []).map((u) => ({ supply_id: u.supply_id, qty: String(u.qty).replace(".", ",") })),
+    (initial.supplies ?? []).map((u) => ({ supply_id: u.supply_id, qty: fmt.dv(u.qty) })),
   );
   const usesParsed: SupplyUse[] = uses
     .map((u) => ({ supply_id: u.supply_id, qty: parseNum(u.qty) }))
@@ -92,14 +95,14 @@ export function CostCalculator({
   const hasInput = parseNum(weight) > 0 || printHours > 0;
 
   const rows: [string, number][] = [
-    ["Material", cost.material],
-    ["Energia", cost.energy],
-    ["Desgaste da impressora", cost.depreciation],
-    ["Manutenção", cost.maintenance],
-    [`Falhas (${pct(settings.failure_rate_pct)})`, cost.failure],
-    ["Mão de obra", cost.labor],
-    ["Insumos", cost.supplies],
-    ["Outros custos", cost.extras],
+    [c.rows.material, cost.material],
+    [c.rows.energy, cost.energy],
+    [c.rows.wear, cost.depreciation],
+    [c.rows.maintenance, cost.maintenance],
+    [c.rows.failures(pct(settings.failure_rate_pct)), cost.failure],
+    [c.rows.labor, cost.labor],
+    [c.rows.supplies, cost.supplies],
+    [c.rows.extras, cost.extras],
   ];
 
   return (
@@ -108,51 +111,51 @@ export function CostCalculator({
       <div className="card space-y-5 p-6">
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="label" htmlFor="printer_id">Impressora</label>
+            <label className="label" htmlFor="printer_id">{c.printer}</label>
             <select id="printer_id" name="printer_id" className="input" value={printerId} onChange={(e) => setPrinterId(e.target.value)}>
-              {printers.length === 0 && <option value="">Nenhuma cadastrada</option>}
+              {printers.length === 0 && <option value="">{c.noPrinter}</option>}
               {printers.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           </div>
           <div>
-            <label className="label" htmlFor="material_id">Material</label>
+            <label className="label" htmlFor="material_id">{c.material}</label>
             <select id="material_id" name="material_id" className="input" value={materialId} onChange={(e) => setMaterialId(e.target.value)}>
               {materials.map((m) => <option key={m.id} value={m.id}>{m.name} — {money(m.price_per_kg)}/kg</option>)}
-              <option value="">Informar preço manualmente</option>
+              <option value="">{c.manualPrice}</option>
             </select>
           </div>
           {!material && (
-            <Num label="Preço do material" value={manualKg} onChange={setManualKg} prefix="R$" suffix="/kg" />
+            <Num label={c.materialPrice} value={manualKg} onChange={setManualKg} prefix={fmt.symbol} suffix="/kg" />
           )}
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Num label="Peso da peça" name="weight_g" value={weight} onChange={setWeight} suffix="g" hint="Veja no fatiador (com suportes)." />
+          <Num label={c.weight} name="weight_g" value={weight} onChange={setWeight} suffix="g" hint={c.weightHint} />
           <div>
-            <span className="label">Tempo de impressão</span>
+            <span className="label">{c.time}</span>
             <div className="grid grid-cols-2 gap-2">
-              <Num value={hours} onChange={setHours} suffix="h" ariaLabel="Horas de impressão" />
-              <Num value={minutes} onChange={setMinutes} suffix="min" ariaLabel="Minutos de impressão" />
+              <Num value={hours} onChange={setHours} suffix="h" ariaLabel={c.hoursAria} />
+              <Num value={minutes} onChange={setMinutes} suffix="min" ariaLabel={c.minutesAria} />
             </div>
           </div>
           <input type="hidden" name="print_hours" value={String(printHours)} />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">
-          <Num label="Seu tempo de trabalho" name="labor_minutes" value={labor} onChange={setLabor} suffix="min" hint="Preparo, remoção de suporte, acabamento, embalagem." />
-          <Num label="Outros custos por unidade" name="extra_costs" value={extras} onChange={setExtras} prefix="R$" hint="Qualquer custo que não esteja nos insumos." />
+          <Num label={c.labor} name="labor_minutes" value={labor} onChange={setLabor} suffix="min" hint={c.laborHint} />
+          <Num label={c.extras} name="extra_costs" value={extras} onChange={setExtras} prefix={fmt.symbol} hint={c.extrasHint} />
         </div>
 
         <div>
           <div className="flex items-baseline justify-between">
-            <span className="label">Insumos usados na peça</span>
+            <span className="label">{c.supplies}</span>
             {uses.length > 0 && <span className="tnum text-sm font-semibold text-muted">{money(supCost)}</span>}
           </div>
           <input type="hidden" name="supplies" value={JSON.stringify(usesParsed)} />
           {supplies.length === 0 ? (
             <p className="rounded-xl bg-surface-2 px-4 py-3 text-sm text-muted">
-              Argola de chaveiro, ímã, parafuso, embalagem…{" "}
-              <Link href="/insumos" className="font-semibold text-primary hover:underline">Cadastre seus insumos</Link> para usar aqui.
+              {c.noSupplies}{" "}
+              <Link href="/insumos" className="font-semibold text-primary hover:underline">{c.addSupplies}</Link> {c.toUseHere}
             </p>
           ) : (
             <div className="space-y-2">
@@ -161,7 +164,7 @@ export function CostCalculator({
                 return (
                   <div key={i} className="grid grid-cols-[1fr_90px_auto] items-center gap-2">
                     <select
-                      aria-label="Insumo"
+                      aria-label={c.supply}
                       className="input"
                       value={u.supply_id}
                       onChange={(e) => setUses(uses.map((x, j) => (j === i ? { ...x, supply_id: e.target.value } : x)))}
@@ -172,15 +175,15 @@ export function CostCalculator({
                     </select>
                     <div className="relative">
                       <input
-                        aria-label="Quantidade"
+                        aria-label={c.qty}
                         inputMode="decimal"
                         className="input tnum pr-9"
                         value={u.qty}
                         onChange={(e) => setUses(uses.map((x, j) => (j === i ? { ...x, qty: e.target.value.replace(/[^\d.,]/g, "") } : x)))}
                       />
-                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted">{sup?.unit ?? "un"}</span>
+                      <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-xs text-muted">{sup?.unit ?? c.unit}</span>
                     </div>
-                    <button type="button" onClick={() => setUses(uses.filter((_, j) => j !== i))} className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-negative" aria-label="Remover insumo">
+                    <button type="button" onClick={() => setUses(uses.filter((_, j) => j !== i))} className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-negative" aria-label={c.removeSupply}>
                       <X size={18} />
                     </button>
                   </div>
@@ -191,7 +194,7 @@ export function CostCalculator({
                 onClick={() => setUses([...uses, { supply_id: (supplies.find((x) => !uses.some((u) => u.supply_id === x.id)) ?? supplies[0]).id, qty: "1" }])}
                 className="inline-flex items-center gap-1.5 rounded-xl px-2 py-1.5 text-sm font-semibold text-primary hover:bg-primary-soft"
               >
-                <Plus size={16} /> Adicionar insumo
+                <Plus size={16} /> {c.addSupply}
               </button>
             </div>
           )}
@@ -199,18 +202,18 @@ export function CostCalculator({
 
         <div className="grid gap-4 border-t border-line pt-5 sm:grid-cols-2">
           <div>
-            <label className="label" htmlFor="channel">Onde vai vender</label>
+            <label className="label" htmlFor="channel">{c.channel}</label>
             <select id="channel" className="input" value={channelId} onChange={(e) => setChannelId(e.target.value)}>
               {channels.map((c) => <option key={c.id} value={c.id}>{c.name} ({pct(c.fee_pct)} + {money(c.fee_fixed)})</option>)}
             </select>
           </div>
-          <Num label="Margem desejada" value={margin} onChange={setMargin} suffix="%" />
+          <Num label={c.margin} value={margin} onChange={setMargin} suffix="%" />
         </div>
 
         {printers.length === 0 && (
           <p className="flex items-start gap-2 rounded-xl bg-sand-soft px-4 py-3 text-sm text-ink-2">
             <AlertTriangle size={18} className="mt-px shrink-0" />
-            Sem impressora cadastrada, energia e desgaste ficam fora do cálculo.
+            {c.noPrinterWarn}
           </p>
         )}
       </div>
@@ -219,27 +222,27 @@ export function CostCalculator({
       <div className="space-y-4 lg:sticky lg:top-6 lg:h-fit">
         <div className="card overflow-hidden">
           <div className="bg-[#182B30] p-6 text-[#F5F3EE] dark:bg-[#2B4743]">
-            <p className="text-sm font-semibold text-[#F5F3EE]/70">Preço sugerido</p>
+            <p className="text-sm font-semibold text-[#F5F3EE]/70">{c.suggested}</p>
             <p className="tnum mt-1 text-4xl font-extrabold tracking-tight">
-              {!hasInput ? "—" : suggested ? money(suggested.price) : "Impossível"}
+              {!hasInput ? "—" : suggested ? money(suggested.price) : c.impossible}
             </p>
             {hasInput && suggested && (
               <p className="tnum mt-2 text-sm text-[#F5F3EE]/80">
-                Lucro de <b className="text-[#A9C2B5]">{money(suggested.profit)}</b> por peça ({pct(suggested.marginPct)}) depois de{" "}
-                {money(suggested.fee)} em taxas.
+                {c.profitLead} <b className="text-[#A9C2B5]">{money(suggested.profit)}</b> {c.perPiece(pct(suggested.marginPct))}{" "}
+                {money(suggested.fee)} {c.inFees}
               </p>
             )}
             {hasInput && !suggested && (
-              <p className="mt-2 text-sm text-[#F5F3EE]/80">Comissão do canal + margem passam de 100%. Reduza a margem.</p>
+              <p className="mt-2 text-sm text-[#F5F3EE]/80">{c.tooHigh}</p>
             )}
           </div>
           <div className="p-6">
             <div className="flex items-baseline justify-between">
-              <p className="font-semibold text-muted">Custo total por peça</p>
+              <p className="font-semibold text-muted">{c.totalCost}</p>
               <p className="tnum text-xl font-extrabold">{money(cost.total)}</p>
             </div>
             <button type="button" onClick={() => setShowDetail((v) => !v)} className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-primary">
-              {showDetail ? "Ocultar" : "Ver"} detalhamento
+              {showDetail ? c.hide : c.show}
               <ChevronDown size={16} className={`transition ${showDetail ? "rotate-180" : ""}`} />
             </button>
             {showDetail && (
@@ -257,26 +260,26 @@ export function CostCalculator({
 
         <div className="card p-6">
           <Num
-            label={withPriceField ? "Preço de venda do produto" : "Já tem um preço? Teste aqui"}
+            label={withPriceField ? c.salePrice : c.testPrice}
             name={withPriceField ? "sale_price" : undefined}
             value={myPrice}
             onChange={setMyPrice}
-            prefix="R$"
+            prefix={fmt.symbol}
           />
           {withPriceField && !myPrice && suggested && (
             <button type="button" onClick={() => setMyPrice(toStr(suggested.price))} className="mt-2 text-sm font-semibold text-primary">
-              Usar preço sugerido ({money(suggested.price)})
+              {c.useSuggested(money(suggested.price))}
             </button>
           )}
           {mine && (
             <div className={`mt-4 rounded-xl p-4 ${mine.profit < 0 ? "bg-negative-soft" : "bg-primary-soft"}`}>
               <p className={`text-sm font-semibold ${mine.profit < 0 ? "text-negative" : "text-primary"}`}>
-                {mine.profit < 0 ? "Você está tendo prejuízo" : "Seu lucro por peça"}
+                {mine.profit < 0 ? c.loss : c.yourProfit}
               </p>
               <p className={`tnum mt-1 text-2xl font-extrabold ${mine.profit < 0 ? "text-negative" : "text-primary"}`}>
                 {money(mine.profit)} <span className="text-base font-bold">({pct(mine.marginPct)})</span>
               </p>
-              <p className="tnum mt-1 text-xs text-muted">Taxas do canal: {money(mine.fee)}</p>
+              <p className="tnum mt-1 text-xs text-muted">{c.channelFees(money(mine.fee))}</p>
             </div>
           )}
         </div>

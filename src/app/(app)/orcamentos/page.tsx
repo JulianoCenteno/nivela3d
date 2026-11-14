@@ -3,27 +3,26 @@ import Link from "next/link";
 import { Badge, UpgradeCard } from "@/components/gestao";
 import { Empty, Flash, PageHeader } from "@/components/ui";
 import { getContext } from "@/lib/data";
-import { money } from "@/lib/format";
 import { getQuotes } from "@/lib/gestao-data";
-import { itemsTotals, QUOTE_STATUS } from "@/lib/orders";
-import { fmtDate } from "@/lib/period";
+import { itemsTotals, QUOTE_TONE } from "@/lib/orders";
 import { hasFeature } from "@/lib/plans";
+import { getI18n, getT } from "@/i18n/server";
 
-export const metadata = { title: "Orçamentos" };
+export async function generateMetadata() {
+  return { title: (await getT()).ops.quotes.title };
+}
 
 export default async function QuotesPage({ searchParams }: { searchParams: Promise<{ ok?: string; erro?: string }> }) {
   const sp = await searchParams;
   const { plan } = await getContext();
+  const { t: tt, fmt } = await getI18n();
+  const q_ = tt.ops.quotes;
+  const money = fmt.money;
   if (!hasFeature(plan, "gestao")) {
     return (
       <>
-        <PageHeader title="Orçamentos" />
-        <UpgradeCard
-          plan="Profissional"
-          title="Orçamentos profissionais em segundos"
-          text="Monte o orçamento com as peças do seu catálogo, veja quanto vai sobrar e mande pronto para o WhatsApp do cliente."
-          bullets={["Preço puxado do Raio-X de cada peça", "Mensagem pronta para o WhatsApp", "Controle de enviados, aprovados e recusados"]}
-        />
+        <PageHeader title={q_.title} />
+        <UpgradeCard plan="Profissional" title={q_.lockedTitle} text={q_.lockedText} bullets={q_.lockedBullets} />
       </>
     );
   }
@@ -34,39 +33,39 @@ export default async function QuotesPage({ searchParams }: { searchParams: Promi
   return (
     <>
       <PageHeader
-        title="Orçamentos"
-        description="Monte, envie e acompanhe seus orçamentos até virarem pedido."
+        title={q_.title}
+        description={q_.desc}
         action={
           <Link href="/orcamentos/novo" className="btn-primary">
-            <Plus size={18} /> Novo orçamento
+            <Plus size={18} /> {q_.new}
           </Link>
         }
       />
       <Flash ok={sp.ok} erro={sp.erro} />
       {quotes.length === 0 ? (
-        <Empty icon={<FileText size={28} />} title="Nenhum orçamento ainda" text="Crie o primeiro e mande para o cliente pelo WhatsApp." href="/orcamentos/novo" cta="Criar orçamento" />
+        <Empty icon={<FileText size={28} />} title={q_.emptyTitle} text={q_.emptyText} href="/orcamentos/novo" cta={q_.create} />
       ) : (
         <>
           {open.length > 0 && (
             <p className="mb-4 text-muted">
-              {open.length} {open.length === 1 ? "orçamento aguardando" : "orçamentos aguardando"} resposta ·{" "}
-              <b className="tnum text-ink">{money(openValue)}</b> em negociação
+              {q_.waiting(open.length)} ·{" "}
+              <b className="tnum text-ink">{money(openValue)}</b> {q_.negotiating}
             </p>
           )}
           <ul className="card divide-y divide-line">
             {quotes.map((q) => {
               const t = itemsTotals(q.items, q.discount, q.shipping);
-              const st = QUOTE_STATUS[q.status];
+              const st = { tone: QUOTE_TONE[q.status], label: tt.gestao.quoteStatus[q.status] };
               return (
                 <li key={q.id}>
                   <Link href={`/orcamentos/${q.id}`} className="flex items-center gap-4 px-5 py-4 hover:bg-surface-2">
                     <div className="min-w-0 flex-1">
                       <p className="truncate font-semibold">
-                        <span className="text-muted">nº {q.number} · </span>
+                        <span className="text-muted">{q_.num(q.number)} · </span>
                         {q.customer_name}
                       </p>
                       <p className="truncate text-sm text-muted">
-                        {fmtDate(q.created_at.slice(0, 10))} · {q.items.map((i) => `${i.qty}× ${i.description}`).join(", ")}
+                        {fmt.short(q.created_at)} · {q.items.map((i) => `${i.qty}× ${i.description}`).join(", ")}
                       </p>
                     </div>
                     <div className="shrink-0 text-right">

@@ -1,7 +1,9 @@
 import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { getT } from "@/i18n/server";
 
-export function AuthShell({
+export async function AuthShell({
   title,
   subtitle,
   error,
@@ -14,6 +16,7 @@ export function AuthShell({
   ok?: string;
   children: React.ReactNode;
 }) {
+  const t = await getT();
   return (
     <div className="grid min-h-dvh lg:grid-cols-[1.1fr_1fr]">
       <aside className="relative hidden overflow-hidden bg-[#182B30] p-12 text-[#F5F3EE] lg:flex lg:flex-col">
@@ -22,13 +25,12 @@ export function AuthShell({
         </div>
         <div className="mt-auto max-w-md">
           <p className="text-4xl font-extrabold leading-tight tracking-tight">
-            Cada impressão conta.
+            {t.common.auth.tagline1}
             <br />
-            <span className="text-[#8FA69A]">Cada lucro também.</span>
+            <span className="text-[#8FA69A]">{t.common.auth.tagline2}</span>
           </p>
           <p className="mt-5 text-lg leading-relaxed text-[#F5F3EE]/75">
-            Descubra quanto cobrar, registre suas vendas e veja quanto realmente sobra no seu bolso em
-            cada peça.
+            {t.common.auth.pitch}
           </p>
         </div>
         <svg className="pointer-events-none absolute -right-24 top-24 opacity-[0.07]" width="520" height="520" viewBox="0 0 48 48" fill="none">
@@ -43,7 +45,10 @@ export function AuthShell({
           <span className="lg:invisible">
             <Logo size={28} />
           </span>
-          <ThemeToggle />
+          <div className="flex items-center gap-1">
+            <LanguageSwitcher />
+            <ThemeToggle />
+          </div>
         </div>
         <div className="mx-auto my-auto w-full max-w-sm py-10">
           <h1 className="text-[1.75rem] font-extrabold tracking-tight">{title}</h1>
