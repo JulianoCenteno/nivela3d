@@ -31,15 +31,7 @@ import { LifetimeOffers } from "@/components/LifetimeOffers";
 const XRAY_ICONS = [Search, Calculator, ShieldCheck, TrendingUp];
 const STEP_ICONS = [Printer, Calculator, Receipt];
 const CARD_ICONS = [Printer, Calculator, Smartphone, Sparkles];
-const SLIDE_SRC = [
-  "/landing/cel-calculadora.webp",
-  "/landing/cel-painel.webp",
-  "/landing/cel-insumos.webp",
-  "/landing/cel-produtos.webp",
-  "/landing/cel-vendas.webp",
-  "/landing/cel-impressoras.webp",
-  "/landing/cel-painel-escuro.webp",
-];
+const SLIDE_SRC = ["cel-calculadora", "cel-painel", "cel-insumos", "cel-produtos", "cel-vendas", "cel-impressoras", "cel-painel-escuro"];
 
 function Shot({ src, alt, w = 2880, h = 1800, className = "", priority = false }: { src: string; alt: string; w?: number; h?: number; className?: string; priority?: boolean }) {
   return (
@@ -66,6 +58,8 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
   const L = landing[locale];
   // Fora do Brasil só existe a oferta vitalícia (assinatura em moeda estrangeira não é suportada).
   const lifetime = locale !== "pt" || lifetimeEnabled();
+  // Prints e vídeo do app no idioma da página (fotos sem texto são compartilhadas).
+  const A = locale === "pt" ? "/landing" : `/landing/${locale}`;
   const fmt = makeFmt(locale, DEFAULT_CURRENCY[locale]);
   const offer = lifetimeFor(locale);
   const home = locale === "pt" ? "/" : `/${locale}`;
@@ -75,7 +69,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
     featured: id === "profissional",
   }));
   const LEAK = L.leak;
-  const SLIDES = L.slides.map(([title, text], i) => ({ src: SLIDE_SRC[i], title, text }));
+  const SLIDES = L.slides.map(([title, text], i) => ({ src: `${A}/${SLIDE_SRC[i]}.webp`, title, text }));
   const FAQ = L.faq;
   const UPSELL_FAQ = L.upsellFaq(lifetime);
   const BONUSES = L.bonuses;
@@ -153,7 +147,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
               <Image src="/landing/oficina.webp" alt={L.hero.imgAlt} width={1536} height={1024} className="h-full w-full object-cover object-[60%_50%]" priority sizes="(min-width: 1024px) 560px, 100vw" />
             </div>
             <div className="absolute bottom-0 left-0 w-[33%] max-w-[210px]">
-              <Phone src="/landing/m-calculadora.webp" alt={L.hero.phoneAlt} />
+              <Phone src={`${A}/m-calculadora.webp`} alt={L.hero.phoneAlt} />
             </div>
           </div>
         </section>
@@ -241,7 +235,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
                 );
               })}
             </ol>
-            <Shot src="/landing/calculadora.webp" alt={L.xraySec.shotAlt} />
+            <Shot src={`${A}/calculadora.webp`} alt={L.xraySec.shotAlt} />
           </div>
           <div className="mt-14 grid gap-4 rounded-3xl border border-line bg-surface p-6 sm:grid-cols-3 sm:p-8">
             {L.xraySec.steps.map(([t, d], i) => {
@@ -271,8 +265,8 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
               <div className="mx-auto w-[78%] max-w-[300px] lg:w-full">
                 <div className="overflow-hidden rounded-[2.4rem] border-[7px] border-[#182B30] bg-[#182B30] shadow-[0_30px_70px_-20px_rgba(24,43,48,0.55)]">
                   <video
-                    src="/landing/demo.mp4"
-                    poster="/landing/demo-poster.jpg"
+                    src={`${A}/demo.mp4`}
+                    poster={`${A}/demo-poster.jpg`}
                     autoPlay
                     muted
                     loop
@@ -299,7 +293,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
             </div>
 
             <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
-              <div><Shot src="/landing/painel.webp" alt={L.featSec.dashAlt} /></div>
+              <div><Shot src={`${A}/painel.webp`} alt={L.featSec.dashAlt} /></div>
               <div>
                 <LayoutDashboard className="text-sage" />
                 <h3 className="mt-3 text-2xl font-bold">{L.featSec.dashH}</h3>
@@ -317,7 +311,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
                   {L.featSec.prodP}
                 </p>
               </div>
-              <div className="lg:order-2"><Shot src="/landing/produto-insumos.webp" alt={L.featSec.prodAlt} /></div>
+              <div className="lg:order-2"><Shot src={`${A}/produto-insumos.webp`} alt={L.featSec.prodAlt} /></div>
             </div>
 
             <div className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
