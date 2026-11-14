@@ -41,12 +41,16 @@ export async function middleware(request: NextRequest) {
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
-    return NextResponse.redirect(url);
+    const r = NextResponse.redirect(url);
+    if (landingLocale) r.cookies.set("nivela_locale", landingLocale, { path: "/", maxAge: 31536000, sameSite: "lax" });
+    return r;
   }
   if (user && (path === "/login" || path === "/cadastro" || path === "/")) {
     const url = request.nextUrl.clone();
     url.pathname = "/painel";
-    return NextResponse.redirect(url);
+    const r = NextResponse.redirect(url);
+    if (landingLocale) r.cookies.set("nivela_locale", landingLocale, { path: "/", maxAge: 31536000, sameSite: "lax" });
+    return r;
   }
   return response;
 }
