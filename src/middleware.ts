@@ -7,7 +7,8 @@ const LANDING_LOCALE: Record<string, string> = { "/": "pt", "/oferta": "pt", "/e
 
 export async function middleware(request: NextRequest) {
   // Quem chega pela página em inglês/espanhol já entra no app nesse idioma.
-  const landingLocale = LANDING_LOCALE[request.nextUrl.pathname];
+  const qLang = request.nextUrl.searchParams.get("lang");
+  const landingLocale = LANDING_LOCALE[request.nextUrl.pathname] ?? (qLang === "pt" || qLang === "en" || qLang === "es" ? qLang : undefined);
   if (landingLocale && request.cookies.get("nivela_locale")?.value !== landingLocale) {
     request.cookies.set("nivela_locale", landingLocale);
   }
