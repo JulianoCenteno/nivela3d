@@ -32,6 +32,8 @@ function geoLocale(request: NextRequest, path: string): "pt" | "en" | "es" | nul
     if (country === "BR") return null;
     if (first === "es") return "es";
     if (first === "en") return "en";
+    // Navegador em outro idioma (catalão, alemão…): decide pelo país.
+    if (country) return ES_COUNTRIES.has(country) ? "es" : "en";
     return null;
   }
   if (country === "BR") return "pt";
