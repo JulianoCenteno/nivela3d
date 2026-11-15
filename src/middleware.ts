@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC = ["/en", "/es", "/oferta", "/central3d", "/login", "/cadastro", "/recuperar-senha", "/auth", "/api/webhooks", "/o"];
+const PUBLIC = ["/en", "/es", "/oferta", "/central3d", "/offer3d", "/login", "/cadastro", "/recuperar-senha", "/auth", "/api/webhooks", "/o"];
 
 const LANDING_LOCALE: Record<string, string> = { "/": "pt", "/oferta": "pt", "/en": "en", "/es": "es", "/oferta/en": "en", "/oferta/es": "es" };
 

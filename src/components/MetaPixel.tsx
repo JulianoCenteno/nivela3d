@@ -16,10 +16,14 @@ const VALUES: Record<string, number> = {
   "9AEB53AD": 199, // Iniciante — Anual
   "5DD75D20": 399, // Profissional — Anual
   "4090A86E": 799, // Empresa — Anual
-  // Upsell / downsell da Central 3D (Completo vitalício)
-  E4A58965: 47,
-  "1078750D": 17,
+  // Upsell / downsell dos funis 3D (Completo vitalício) — conta Juliano
+  "4DFFFC24": 47,
+  "291E7628": 17,
+  "60048F74": 19, // EN (US$)
+  "814AC7AC": 9, // EN (US$)
 };
+
+const USD_CODES = new Set(["60048F74", "814AC7AC"]);
 
 type Fbq = (...args: unknown[]) => void;
 
@@ -37,7 +41,7 @@ export function MetaPixel({ page }: { page: "landing" | "upsell" }) {
       const a = (e.target as HTMLElement)?.closest?.("a") as HTMLAnchorElement | null;
       if (!a || !/(pay\.nivela3d\.com\.br|appdigitalhub\.com\.br)\/c\//.test(a.href)) return;
       const code = a.href.split("/c/")[1]?.split(/[?#]/)[0] ?? "";
-      (window as unknown as { fbq?: Fbq }).fbq?.("track", "InitiateCheckout", { value: VALUES[code] ?? 0, currency: "BRL", content_ids: [code] });
+      (window as unknown as { fbq?: Fbq }).fbq?.("track", "InitiateCheckout", { value: VALUES[code] ?? 0, currency: USD_CODES.has(code) ? "USD" : "BRL", content_ids: [code] });
       const src = new URLSearchParams(window.location.search);
       if ([...src.keys()].length) {
         const u = new URL(a.href);
