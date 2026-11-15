@@ -110,11 +110,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
         <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-3.5">
           <Link href={home} aria-label="Nivela 3D"><Logo size={28} /></Link>
           <nav className="hidden items-center gap-7 text-[15px] font-semibold text-ink-2 md:flex">
-            <a href="#como-funciona" className="hover:text-primary">{L.nav.how}</a>
-            <a href="#no-celular" className="hover:text-primary">{L.nav.mobile}</a>
-            <a href="#recursos" className="hover:text-primary">{L.nav.features}</a>
             <a href="#planos" className="hover:text-primary">{L.nav.plans}</a>
-            <a href="#perguntas" className="hover:text-primary">{L.nav.faq}</a>
           </nav>
           <div className="flex items-center gap-2">
             <LandingLangSwitcher locale={locale} upsell={upsell} />
@@ -157,7 +153,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
               <a href="#planos" className="btn-primary px-6 py-3.5 text-base">
                 {L.hero.cta} <ArrowRight size={18} />
               </a>
-              <a href="#como-funciona" className="btn-ghost px-6 py-3.5 text-base">{L.hero.how}</a>
+              <a href="#planos" className="btn-ghost px-6 py-3.5 text-base">{L.hero.how}</a>
             </div>
             <p className="mt-4 text-sm text-muted">{lifetime ? L.hero.lifetimeNote(fmt.money(Number(offer.basico.price.replace(",", ".")))) : L.hero.subNote}</p>
           </div>

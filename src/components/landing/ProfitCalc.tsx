@@ -25,7 +25,7 @@ const COSTS = {
 };
 
 /** Calculadora interativa "quanto você deveria cobrar" da página de vendas. */
-export function ProfitCalc({ labels, currency, locale, perPiece }: { labels: Labels; currency: "BRL" | "USD"; locale: string; perPiece: string }) {
+export function ProfitCalc({ labels, currency, locale, perPiece, ctaHref = "#planos" }: { labels: Labels; currency: "BRL" | "USD"; locale: string; perPiece: string; ctaHref?: string }) {
   const usd = currency === "USD";
   const [g, setG] = useState("85");
   const [h, setH] = useState("4");
@@ -86,7 +86,7 @@ export function ProfitCalc({ labels, currency, locale, perPiece }: { labels: Lab
         ) : (
           <p className="text-lg font-semibold text-positive">{labels.ok}</p>
         )}
-        <a href="#planos" className="btn-primary px-6 py-3.5 text-base">
+        <a href={ctaHref} className="btn-primary px-6 py-3.5 text-base">
           {labels.cta} <ArrowRight size={18} />
         </a>
       </div>

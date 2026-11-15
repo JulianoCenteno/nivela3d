@@ -322,7 +322,7 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
                 <p className="mt-3 text-lg text-muted">{N.calc.p}</p>
               </div>
               <div className="mt-10">
-                <ProfitCalc labels={{ ...N.calc, perPiece: undefined, cta: T.calcCta }} currency={en ? "USD" : "BRL"} locale={en ? "en-US" : "pt-BR"} perPiece={N.calc.perPiece("{v}")} />
+                <ProfitCalc labels={{ ...N.calc, perPiece: undefined, cta: T.calcCta }} currency={en ? "USD" : "BRL"} locale={en ? "en-US" : "pt-BR"} perPiece={N.calc.perPiece("{v}")} ctaHref="#oferta" />
               </div>
             </section>
 

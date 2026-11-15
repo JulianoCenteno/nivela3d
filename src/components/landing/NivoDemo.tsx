@@ -58,8 +58,11 @@ export function NivoDemo({ name, online, chips, answers, typing }: { name: strin
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [auto]);
 
+  // Rola só a caixa de mensagens (nunca a página).
+  const list = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    box.current?.querySelector("[data-end]")?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+    const el = list.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [msgs, busy]);
 
   return (
@@ -71,7 +74,7 @@ export function NivoDemo({ name, online, chips, answers, typing }: { name: strin
           <p className="flex items-center gap-1.5 text-xs opacity-80"><span className="h-2 w-2 rounded-full bg-[#9BE3B4]" />{online}</p>
         </div>
       </div>
-      <div className="h-[340px] space-y-3 overflow-y-auto bg-bg p-5">
+      <div ref={list} className="h-[340px] space-y-3 overflow-y-auto overscroll-contain bg-bg p-5">
         {msgs.map((m, i) => (
           <div key={i} className={`flex ${m.from === "me" ? "justify-end" : "justify-start"}`}>
             <div className={`max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed ${m.from === "me" ? "bg-primary text-on-primary" : "border border-line bg-surface"}`}>
@@ -91,7 +94,6 @@ export function NivoDemo({ name, online, chips, answers, typing }: { name: strin
             </div>
           </div>
         )}
-        <div data-end />
       </div>
       <div className="flex flex-wrap gap-2 border-t border-line p-4">
         {chips.map((c, i) => (
