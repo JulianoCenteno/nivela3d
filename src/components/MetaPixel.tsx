@@ -16,6 +16,9 @@ const VALUES: Record<string, number> = {
   "9AEB53AD": 199, // Iniciante — Anual
   "5DD75D20": 399, // Profissional — Anual
   "4090A86E": 799, // Empresa — Anual
+  // Upsell / downsell da Central 3D (Completo vitalício)
+  E4A58965: 47,
+  "1078750D": 17,
 };
 
 type Fbq = (...args: unknown[]) => void;
