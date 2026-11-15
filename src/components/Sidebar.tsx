@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Bot,
   BarChart3,
   Target,
   Wallet,
@@ -32,6 +31,7 @@ import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useI18n } from "@/i18n/client";
 import { openNivo } from "./Nivo";
+import { NivoAvatar } from "@/components/NivoAvatar";
 
 const NAV = [
   { href: "/painel", key: "painel" as const, icon: LayoutDashboard, owner: true },
@@ -102,9 +102,7 @@ export function Sidebar({
         }}
         className="mb-2 flex w-full items-center gap-3 rounded-xl bg-primary px-3 py-3 text-left text-on-primary transition hover:bg-primary-hover"
       >
-        <span className="rounded-lg bg-white/15 p-1.5">
-          <Bot size={18} />
-        </span>
+        <NivoAvatar size={34} />
         <span>
           <span className="block text-sm font-bold leading-tight">{t.finance.nivo.sideTitle}</span>
           <span className="block text-xs text-on-primary/80">{t.finance.nivo.sideText}</span>

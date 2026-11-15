@@ -1,10 +1,11 @@
 "use client";
 
-import { Bot, Send, X } from "lucide-react";
+import { Send, X } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useRef, useState, useTransition } from "react";
 import { askNivo, type NivoReply } from "@/app/(app)/nivo-actions";
 import { useI18n } from "@/i18n/client";
+import { NivoAvatar } from "@/components/NivoAvatar";
 
 type Msg = { from: "me" | "nivo"; text: string; link?: NivoReply["link"]; chips?: string[] };
 
@@ -90,9 +91,7 @@ export function Nivo({ firstName }: { firstName: string }) {
           className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-primary py-2.5 pl-3 pr-4 font-semibold text-on-primary shadow-lg transition hover:scale-[1.03]"
           aria-label={n.sideTitle}
         >
-          <span className="rounded-full bg-white/15 p-1.5">
-            <Bot size={20} />
-          </span>
+          <NivoAvatar size={34} />
           <span className="hidden text-sm sm:inline">{n.name}</span>
         </button>
       )}
@@ -100,9 +99,7 @@ export function Nivo({ firstName }: { firstName: string }) {
       {open && (
         <div className="fixed inset-x-3 bottom-3 z-50 flex max-h-[80dvh] flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[380px]">
           <div className="flex items-center gap-3 bg-primary px-4 py-3 text-on-primary">
-            <span className="rounded-full bg-white/15 p-2">
-              <Bot size={20} />
-            </span>
+            <NivoAvatar size={40} />
             <div className="flex-1">
               <p className="font-bold leading-tight">
                 {n.name} · {n.role}

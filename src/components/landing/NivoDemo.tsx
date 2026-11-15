@@ -1,7 +1,8 @@
 "use client";
 
-import { Bot, SendHorizontal } from "lucide-react";
+import { SendHorizontal } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { NivoAvatar } from "@/components/NivoAvatar";
 
 function Rich({ text }: { text: string }) {
   return (
@@ -64,7 +65,7 @@ export function NivoDemo({ name, online, chips, answers, typing }: { name: strin
   return (
     <div ref={box} className="overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_30px_80px_-30px_rgba(24,43,48,0.35)]">
       <div className="flex items-center gap-3 bg-primary px-5 py-4 text-on-primary">
-        <span className="rounded-xl bg-white/15 p-2"><Bot size={20} /></span>
+        <NivoAvatar size={42} />
         <div>
           <p className="font-bold">{name}</p>
           <p className="flex items-center gap-1.5 text-xs opacity-80"><span className="h-2 w-2 rounded-full bg-[#9BE3B4]" />{online}</p>

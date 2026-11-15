@@ -40,6 +40,7 @@ import { LifetimeOffers } from "@/components/LifetimeOffers";
 import landing2 from "@/i18n/messages/landing2";
 import { NivoDemo } from "@/components/landing/NivoDemo";
 import { ProfitCalc } from "@/components/landing/ProfitCalc";
+import { NivoAvatar } from "@/components/NivoAvatar";
 
 const TOOL_ICONS = [LayoutDashboard, Calculator, Receipt, Wallet, Target, BarChart3, Boxes, ClipboardList, Bot];
 const SOLUTION_SHOTS = ["painel", "metas", "relatorios"];
@@ -173,7 +174,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
               <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-2"><div className="h-full w-[79%] rounded-full bg-primary" /></div>
             </div>
             <div className="absolute bottom-0 left-[26%] flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-on-primary shadow-lg">
-              <Bot size={18} />
+              <NivoAvatar size={30} />
               <p className="text-sm"><b>{N.badges.nivoQ}</b> {N.badges.nivoA(fmt.money(N.badges.price))}</p>
             </div>
             <div className="absolute bottom-2 left-0 w-[24%] max-w-[150px]">
@@ -325,6 +326,8 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
               <p className="text-sm font-bold uppercase tracking-wider text-sage">{N.nivo.kicker}</p>
               <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.nivo.h2}</h2>
               <p className="mt-4 text-lg leading-relaxed text-muted">{N.nivo.p}</p>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/nivo.svg" alt="Nivo, o assistente do Nivela 3D" width={220} height={220} className="mt-6 h-auto w-40 sm:w-52" />
             </div>
             <NivoDemo name={N.nivo.name} online={N.nivo.online} chips={N.nivo.chips} answers={N.nivo.answers} typing={N.nivo.typing} />
           </div>

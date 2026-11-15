@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="30 12 180 160" role="img" aria-label="Nivo, o assistente do Nivela 3D">
+  <defs>
+    <linearGradient id="nv-head" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2A4A50"/>
+      <stop offset="1" stop-color="#182B30"/>
+    </linearGradient>
+    <linearGradient id="nv-visor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F1C1F"/>
+      <stop offset="1" stop-color="#1D3439"/>
+    </linearGradient>
+    <linearGradient id="nv-nozzle" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#C5B79E"/>
+      <stop offset="0.5" stop-color="#E6DCC6"/>
+      <stop offset="1" stop-color="#B3A486"/>
+    </linearGradient>
+  </defs>
+
+  <!-- bico (hotend) na cabeça -->
+  <rect x="104" y="20" width="32" height="14" rx="4" fill="url(#nv-nozzle)"/>
+  <path d="M108 34h24l-6 12h-12z" fill="url(#nv-nozzle)"/>
+  <circle cx="120" cy="49" r="3.5" fill="#E08A72"/>
+  <path d="M112 25h16" stroke="#8C7E62" stroke-width="2" stroke-linecap="round"/>
+
+  <!-- cabeça -->
+  <rect x="52" y="50" width="136" height="106" rx="36" fill="url(#nv-head)"/>
+  <rect x="58" y="56" width="124" height="20" rx="10" fill="#FFFFFF" opacity="0.06"/>
+  <!-- orelhas -->
+  <rect x="40" y="88" width="16" height="34" rx="8" fill="#8FA69A"/>
+  <rect x="184" y="88" width="16" height="34" rx="8" fill="#8FA69A"/>
+
+  <!-- visor -->
+  <rect x="68" y="72" width="104" height="64" rx="26" fill="url(#nv-visor)"/>
+  <!-- olhos -->
+  <ellipse cx="99" cy="101" rx="10" ry="12" fill="#9BE3B4"/>
+  <ellipse cx="141" cy="101" rx="10" ry="12" fill="#9BE3B4"/>
+  <circle cx="102" cy="97" r="3.2" fill="#F5F3EE"/>
+  <circle cx="144" cy="97" r="3.2" fill="#F5F3EE"/>
+  <!-- sorriso -->
+  <path d="M106 120q14 10 28 0" fill="none" stroke="#9BE3B4" stroke-width="4.5" stroke-linecap="round"/>
+  <!-- bochechas -->
+  <circle cx="82" cy="120" r="5" fill="#E08A72" opacity="0.55"/>
+  <circle cx="158" cy="120" r="5" fill="#E08A72" opacity="0.55"/>
+</svg>

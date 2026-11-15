@@ -1,5 +1,5 @@
 import { requireOwner } from "@/lib/guard";
-import { AlarmClock, AlertTriangle, Bot, Calculator, Check, CircleDollarSign, Coins, CreditCard, Package, Plus, Printer, Receipt, Settings, Spool, Target, Wallet } from "lucide-react";
+import { AlarmClock, AlertTriangle, Calculator, Check, CircleDollarSign, Coins, CreditCard, Package, Plus, Printer, Receipt, Settings, Spool, Target, Wallet } from "lucide-react";
 import { DailyBars, Delta, Donut, Kpi, Progress } from "@/components/finance";
 import { NivoButton } from "@/components/Nivo";
 import { CATEGORY_COLOR, change, dailyRevenue, expensesByCategory, goalProgress, summarize } from "@/lib/finance";
@@ -14,6 +14,7 @@ import { hasFeature } from "@/lib/plans";
 import { monthRange, shiftMonth, todayISO } from "@/lib/period";
 import { getI18n, getT } from "@/i18n/server";
 import { LOCALE_TAG } from "@/i18n/config";
+import { NivoAvatar } from "@/components/NivoAvatar";
 
 export async function generateMetadata() {
   return { title: (await getT()).money.dash.title };
@@ -230,7 +231,7 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
           </section>
 
           <NivoButton className="flex w-full items-center gap-3 rounded-2xl bg-primary p-4 text-left text-on-primary transition hover:bg-primary-hover">
-            <span className="rounded-xl bg-white/15 p-2"><Bot size={20} /></span>
+            <NivoAvatar size={40} />
             <span>
               <span className="block font-bold">{fd.askNivo}</span>
               <span className="block text-xs text-on-primary/80">{tt.finance.nivo.chips[0]} · {tt.finance.nivo.chips[1]}</span>
