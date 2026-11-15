@@ -11,5 +11,5 @@ export const metadata: Metadata = {
 
 export default async function Central3DUpsell({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
   const sp = await searchParams;
-  return <Central3DOffer variant="up" declineUrl={safeDecline(sp.volta)} />;
+  return <Central3DOffer variant="up" declineUrl={safeDecline(sp.volta)} acceptUrl={safeDecline(sp.sim)} />;
 }
