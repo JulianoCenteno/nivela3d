@@ -40,6 +40,7 @@ import { LifetimeOffers } from "@/components/LifetimeOffers";
 import landing2 from "@/i18n/messages/landing2";
 import { NivoDemo } from "@/components/landing/NivoDemo";
 import { ProfitCalc } from "@/components/landing/ProfitCalc";
+import { FloatingNivo } from "@/components/landing/FloatingNivo";
 import { NivoAvatar } from "@/components/NivoAvatar";
 
 const TOOL_TONES = ["bg-primary-soft text-primary", "bg-blue-soft text-blue", "bg-amber-soft text-amber", "bg-rose-soft text-rose", "bg-violet-soft text-violet", "bg-teal-soft text-teal", "bg-amber-soft text-amber", "bg-blue-soft text-blue", "bg-primary-soft text-primary"];
@@ -97,6 +98,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
   return (
     <div className="overflow-x-hidden">
       <MetaPixel page={upsell ? "upsell" : "landing"} />
+      <FloatingNivo text={N.nivo.floatText} cta={N.nivo.floatCta} href="#planos" />
       {upsell && (
         <div className="bg-[#182B30] px-5 py-3 text-center text-[15px] text-[#F5F3EE]">
           <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#8FA69A] align-[-3px] text-[#10191C]"><Check size={13} strokeWidth={3} /></span>
@@ -351,8 +353,8 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
               <div className="mx-auto w-[78%] max-w-[300px] lg:w-full">
                 <div className="overflow-hidden rounded-[2.4rem] border-[7px] border-[#182B30] bg-[#182B30] shadow-[0_30px_70px_-20px_rgba(24,43,48,0.55)]">
                   <video
-                    src={`${A}/demo.mp4`}
-                    poster={`${A}/demo-poster.jpg`}
+                    src={`${A}/anuncio.mp4`}
+                    poster={`${A}/anuncio-poster.jpg`}
                     autoPlay
                     muted
                     loop

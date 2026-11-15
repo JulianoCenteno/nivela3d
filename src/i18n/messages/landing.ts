@@ -123,7 +123,7 @@ const pt = {
     h2: "O Raio-X ali mesmo, do lado da impressora",
     p: "O Nivela 3D foi feito para o celular. Abra no navegador e use como um aplicativo — sem instalar nada.",
     videoAlt: "Vídeo mostrando o Nivela 3D calculando o preço de uma peça no celular",
-    watch: "Veja em 30 segundos",
+    watch: "Veja em 34 segundos",
   },
   featSec: {
     kicker: "Por dentro do app",
@@ -325,7 +325,7 @@ const en: typeof pt = {
     h2: "The X-Ray right there, next to your printer",
     p: "Nivela 3D was built for your phone. Open it in the browser and use it like an app — nothing to install.",
     videoAlt: "Video showing Nivela 3D calculating the price of a part on a phone",
-    watch: "See it in 30 seconds",
+    watch: "See it in 34 seconds",
   },
   featSec: {
     kicker: "Inside the app",
@@ -527,7 +527,7 @@ const es: typeof pt = {
     h2: "La Radiografía ahí mismo, junto a la impresora",
     p: "Nivela 3D está hecho para el celular. Ábrelo en el navegador y úsalo como una app — sin instalar nada.",
     videoAlt: "Video que muestra a Nivela 3D calculando el precio de una pieza en el celular",
-    watch: "Míralo en 30 segundos",
+    watch: "Míralo en 34 segundos",
   },
   featSec: {
     kicker: "Dentro de la app",

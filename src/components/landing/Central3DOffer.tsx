@@ -24,6 +24,7 @@ import landing2 from "@/i18n/messages/landing2";
 import { NivoDemo } from "@/components/landing/NivoDemo";
 import { ProfitCalc } from "@/components/landing/ProfitCalc";
 import { Countdown } from "@/components/landing/Countdown";
+import { FloatingNivo } from "@/components/landing/FloatingNivo";
 import { NivoAvatar } from "@/components/NivoAvatar";
 
 /** Checkouts (Digital Hub) das ofertas exclusivas para quem comprou a Central 3D. */
@@ -176,6 +177,7 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
   return (
     <div className="overflow-x-hidden">
       <MetaPixel page="upsell" />
+      <FloatingNivo text={N.nivo.floatText} cta={N.nivo.floatCta} href="#oferta" />
 
       {/* ---------- Aviso ---------- */}
       <div className="bg-[#B4372B] px-5 py-3 text-center text-[15px] font-bold text-white">

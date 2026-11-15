@@ -48,6 +48,8 @@ const pt = {
       "Você já fez **79%** da meta de R$ 5.000,00.\nFaltam **R$ 1.068,70**, cerca de R$ 66,79 por dia. No ritmo atual você fecha o mês em **157%**. 🚀",
     ],
     typing: "digitando…",
+    floatText: "Oi! Eu sou o Nivo 👋 Quer descobrir quanto você realmente lucra com cada peça?",
+    floatCta: "Ver oferta",
   },
   calc: {
     kicker: "Faça o teste agora",
@@ -141,6 +143,8 @@ const en: typeof pt = {
       "You've reached **79%** of your $2,500.00 goal.\n**$532.50** to go, about $33.28 per day. At this pace you'll finish the month at **157%**. 🚀",
     ],
     typing: "typing…",
+    floatText: "Hi! I'm Nivo 👋 Want to find out how much you really make on every piece?",
+    floatCta: "See the offer",
   },
   calc: {
     kicker: "Try it now",
@@ -234,6 +238,8 @@ const es: typeof pt = {
       "Ya hiciste el **79%** de la meta de USD 2,500.00.\nFaltan **USD 532.50**, unos USD 33.28 por día. A este ritmo cierras el mes en **157%**. 🚀",
     ],
     typing: "escribiendo…",
+    floatText: "¡Hola! Soy Nivo 👋 ¿Quieres descubrir cuánto ganas de verdad con cada pieza?",
+    floatCta: "Ver oferta",
   },
   calc: {
     kicker: "Haz la prueba ahora",
