@@ -1,17 +1,27 @@
 import {
+  AlertTriangle,
   ArrowRight,
+  BarChart3,
+  Bot,
+  Boxes,
+  ClipboardList,
+  Cloud,
+  Monitor,
+  Moon,
+  Tablet,
+  Target,
+  Wallet,
+  X,
   BadgePercent,
   Calculator,
   Check,
   ChevronDown,
   LayoutDashboard,
-  Paperclip,
   Printer,
   Receipt,
   Search,
   ShieldCheck,
   Smartphone,
-  Sparkles,
   TrendingUp,
 } from "lucide-react";
 import Image from "next/image";
@@ -27,10 +37,17 @@ import { makeFmt } from "@/i18n/format";
 import { DEFAULT_CURRENCY } from "@/i18n/config";
 import { LandingLangSwitcher } from "@/components/LandingLangSwitcher";
 import { LifetimeOffers } from "@/components/LifetimeOffers";
+import landing2 from "@/i18n/messages/landing2";
+import { NivoDemo } from "@/components/landing/NivoDemo";
+import { ProfitCalc } from "@/components/landing/ProfitCalc";
+
+const TOOL_ICONS = [LayoutDashboard, Calculator, Receipt, Wallet, Target, BarChart3, Boxes, ClipboardList, Bot];
+const SOLUTION_SHOTS = ["painel", "metas", "relatorios"];
+const DEVICE_ICONS = [Monitor, Cloud, Moon];
+const LOCALE_TAG = { pt: "pt-BR", en: "en-US", es: "es-419" } as const;
 
 const XRAY_ICONS = [Search, Calculator, ShieldCheck, TrendingUp];
 const STEP_ICONS = [Printer, Calculator, Receipt];
-const CARD_ICONS = [Printer, Calculator, Smartphone, Sparkles];
 const SLIDE_SRC = ["cel-calculadora", "cel-painel", "cel-insumos", "cel-produtos", "cel-vendas", "cel-impressoras", "cel-painel-escuro"];
 
 function Shot({ src, alt, w = 2880, h = 1800, className = "", priority = false }: { src: string; alt: string; w?: number; h?: number; className?: string; priority?: boolean }) {
@@ -56,6 +73,8 @@ function Phone({ src, alt, className = "" }: { src: string; alt: string; classNa
 
 export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsell?: boolean; declineUrl?: string; locale?: Locale }) {
   const L = landing[locale];
+  const N = landing2[locale];
+  const usd = locale !== "pt";
   // Fora do Brasil só existe a oferta vitalícia (assinatura em moeda estrangeira não é suportada).
   const lifetime = locale !== "pt" || lifetimeEnabled();
   // Prints e vídeo do app no idioma da página (fotos sem texto são compartilhadas).
@@ -142,14 +161,48 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
             <p className="mt-4 text-sm text-muted">{lifetime ? L.hero.lifetimeNote(fmt.money(Number(offer.basico.price.replace(",", ".")))) : L.hero.subNote}</p>
           </div>
 
-          <div className="relative pb-6 pl-[16%]">
-            <div className="aspect-[5/4] overflow-hidden rounded-3xl">
-              <Image src="/landing/oficina.webp" alt={L.hero.imgAlt} width={1536} height={1024} className="h-full w-full object-cover object-[60%_50%]" priority sizes="(min-width: 1024px) 560px, 100vw" />
+          <div className="relative pb-10 pl-[10%] pt-6">
+            <Shot src={`${A}/painel.webp`} alt={L.hero.imgAlt} priority />
+            <div className="absolute -top-1 right-2 rounded-2xl border border-line bg-surface px-4 py-3 shadow-lg sm:right-6">
+              <p className="text-xs font-semibold text-muted">{N.badges.profit}</p>
+              <p className="tnum text-lg font-extrabold text-positive">{fmt.money(N.badges.profitV)} <span className="text-xs font-bold">↗ {N.badges.profitUp}</span></p>
             </div>
-            <div className="absolute bottom-0 left-0 w-[33%] max-w-[210px]">
-              <Phone src={`${A}/m-calculadora.webp`} alt={L.hero.phoneAlt} />
+            <div className="absolute bottom-24 right-0 hidden w-44 rounded-2xl border border-line bg-surface px-4 py-3 shadow-lg sm:block">
+              <p className="text-xs font-semibold text-muted">{N.badges.goal}</p>
+              <p className="tnum text-lg font-extrabold">79%</p>
+              <div className="mt-1.5 h-2 overflow-hidden rounded-full bg-surface-2"><div className="h-full w-[79%] rounded-full bg-primary" /></div>
+            </div>
+            <div className="absolute bottom-0 left-[26%] flex items-center gap-2 rounded-2xl bg-primary px-4 py-3 text-on-primary shadow-lg">
+              <Bot size={18} />
+              <p className="text-sm"><b>{N.badges.nivoQ}</b> {N.badges.nivoA(fmt.money(N.badges.price))}</p>
+            </div>
+            <div className="absolute bottom-2 left-0 w-[24%] max-w-[150px]">
+              <Phone src={`${A}/m-painel.webp`} alt={L.hero.phoneAlt} />
             </div>
           </div>
+        </section>
+
+        {/* ---------- Dores ---------- */}
+        <section className="mx-auto max-w-6xl px-5 pb-20 lg:pb-24">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-bold uppercase tracking-wider text-[#B4533C] dark:text-[#E08A72]">{N.pains.kicker}</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.pains.h2}</h2>
+          </div>
+          <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {N.pains.items.map(([b, t]) => (
+              <div key={b} className="rounded-2xl border border-line bg-surface p-6">
+                <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-negative-soft text-negative"><AlertTriangle size={20} /></span>
+                <p className="mt-4 text-lg font-bold leading-snug">{b}</p>
+                <p className="mt-1 leading-relaxed text-muted">{t}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-primary px-5 py-12 text-center text-on-primary">
+          <p className="mx-auto max-w-4xl text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl">
+            “{N.banner.a} <span className="opacity-75">{N.banner.b}</span>”
+          </p>
         </section>
 
         {/* ---------- Big Idea + Vazamento Invisível de Lucro ---------- */}
@@ -209,6 +262,18 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
           </p>
         </section>
 
+        {/* ---------- Calculadora interativa ---------- */}
+        <section className="mx-auto max-w-6xl px-5 pt-16 lg:pt-20">
+          <div className="mx-auto max-w-2xl text-center">
+            <p className="text-sm font-bold uppercase tracking-wider text-sage">{N.calc.kicker}</p>
+            <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.calc.h2}</h2>
+            <p className="mt-3 text-lg text-muted">{N.calc.p}</p>
+          </div>
+          <div className="mt-10">
+            <ProfitCalc labels={{ ...N.calc, perPiece: undefined }} currency={usd ? "USD" : "BRL"} locale={LOCALE_TAG[locale]} perPiece={N.calc.perPiece("{v}")} />
+          </div>
+        </section>
+
         {/* ---------- Raio-X do Lucro 3D (mecanismo) ---------- */}
         <section id="como-funciona" className="mx-auto max-w-6xl scroll-mt-20 px-5 py-16 lg:py-24">
           <div className="max-w-2xl">
@@ -253,13 +318,34 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
           </div>
         </section>
 
+        {/* ---------- Assistente Nivo ---------- */}
+        <section className="border-t border-line">
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 py-20 lg:grid-cols-[1fr_1.1fr] lg:py-28">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{N.nivo.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.nivo.h2}</h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted">{N.nivo.p}</p>
+            </div>
+            <NivoDemo name={N.nivo.name} online={N.nivo.online} chips={N.nivo.chips} answers={N.nivo.answers} typing={N.nivo.typing} />
+          </div>
+        </section>
+
         {/* ---------- No celular ---------- */}
         <section id="no-celular" className="scroll-mt-20 border-t border-line bg-surface">
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
             <div className="max-w-2xl">
-              <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.mobileSec.kicker}</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.mobileSec.h2}</h2>
-              <p className="mt-3 text-lg text-muted">{L.mobileSec.p}</p>
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{N.devices.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.devices.h2}</h2>
+              <p className="mt-3 text-lg text-muted">{N.devices.p}</p>
+              <div className="mt-5 flex flex-wrap gap-2">
+                {N.devices.items.map((t, i) => {
+                  const I = DEVICE_ICONS[i];
+                  return (
+                    <span key={t} className="inline-flex items-center gap-2 rounded-full border border-line bg-bg px-3 py-1.5 text-sm font-semibold text-ink-2"><I size={15} className="text-sage" />{t}</span>
+                  );
+                })}
+                <span className="inline-flex items-center gap-2 rounded-full border border-line bg-bg px-3 py-1.5 text-sm font-semibold text-ink-2"><Tablet size={15} className="text-sage" /><Smartphone size={15} className="-ml-1 text-sage" /></span>
+              </div>
             </div>
             <div className="mt-12 grid items-start gap-12 lg:grid-cols-[300px_1fr]">
               <div className="mx-auto w-[78%] max-w-[300px] lg:w-full">
@@ -283,48 +369,70 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
           </div>
         </section>
 
-        {/* ---------- Recursos ---------- */}
+        {/* ---------- Solução + ferramentas ---------- */}
         <section id="recursos" className="scroll-mt-20 border-t border-line">
           <div className="mx-auto max-w-6xl px-5 py-20 lg:py-28">
-            <div className="max-w-2xl">
-              <p className="text-sm font-bold uppercase tracking-wider text-sage">{L.featSec.kicker}</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{L.featSec.h2}</h2>
-              <p className="mt-3 text-lg text-muted">{L.featSec.p}</p>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{N.solution.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.solution.h2}</h2>
+              <p className="mt-3 text-lg text-muted">{N.solution.p}</p>
             </div>
-
-            <div className="mt-14 grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
-              <div><Shot src={`${A}/painel.webp`} alt={L.featSec.dashAlt} /></div>
-              <div>
-                <LayoutDashboard className="text-sage" />
-                <h3 className="mt-3 text-2xl font-bold">{L.featSec.dashH}</h3>
-                <p className="mt-2 leading-relaxed text-muted">
-                  {L.featSec.dashP}
-                </p>
+            {N.solution.blocks.map(([t, d], i) => (
+              <div key={t} className="mt-16 grid items-center gap-10 lg:mt-20 lg:grid-cols-[1.4fr_1fr]">
+                <div className={i % 2 ? "lg:order-2" : ""}><Shot src={`${A}/${SOLUTION_SHOTS[i]}.webp`} alt={t} /></div>
+                <div className={i % 2 ? "lg:order-1" : ""}>
+                  <span className="tnum text-sm font-extrabold text-sage">0{i + 1}</span>
+                  <h3 className="mt-2 text-2xl font-bold sm:text-3xl">{t}</h3>
+                  <p className="mt-3 text-lg leading-relaxed text-muted">{d}</p>
+                </div>
               </div>
-            </div>
+            ))}
 
-            <div className="mt-20 grid items-center gap-10 lg:grid-cols-[1fr_1.4fr]">
-              <div className="lg:order-1">
-                <Paperclip className="text-sage" />
-                <h3 className="mt-3 text-2xl font-bold">{L.featSec.prodH}</h3>
-                <p className="mt-2 leading-relaxed text-muted">
-                  {L.featSec.prodP}
-                </p>
-              </div>
-              <div className="lg:order-2"><Shot src={`${A}/produto-insumos.webp`} alt={L.featSec.prodAlt} /></div>
+            <div className="mt-24 text-center">
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{N.tools.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.tools.h2}</h2>
             </div>
-
-            <div className="mt-20 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {L.featSec.cards.map(([t, d], i) => {
-                const I = CARD_ICONS[i];
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {N.tools.items.map(([t, d], i) => {
+                const I = TOOL_ICONS[i];
                 return (
-                  <div key={t} className="rounded-2xl border border-line bg-bg p-6">
-                    <I className="text-sage" size={22} />
-                    <p className="mt-3 font-bold">{t}</p>
-                    <p className="mt-1 text-sm leading-relaxed text-muted">{d}</p>
+                  <div key={t} className="flex gap-4 rounded-2xl border border-line bg-surface p-5">
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary"><I size={21} /></span>
+                    <div>
+                      <p className="font-bold">{t}</p>
+                      <p className="mt-0.5 text-[15px] leading-relaxed text-muted">{d}</p>
+                    </div>
                   </div>
                 );
               })}
+            </div>
+          </div>
+        </section>
+
+        {/* ---------- Antes e depois ---------- */}
+        <section className="border-t border-line bg-surface">
+          <div className="mx-auto max-w-5xl px-5 py-20 lg:py-28">
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{N.ba.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{N.ba.h2}</h2>
+            </div>
+            <div className="mt-10 grid gap-4 md:grid-cols-2">
+              <div className="rounded-3xl border border-line bg-bg p-6 sm:p-8">
+                <p className="text-lg font-extrabold text-negative">{N.ba.before}</p>
+                <ul className="mt-5 space-y-4">
+                  {N.ba.rows.map(([b]) => (
+                    <li key={b} className="flex gap-3 text-muted"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-negative-soft text-negative"><X size={14} /></span>{b}</li>
+                  ))}
+                </ul>
+              </div>
+              <div className="rounded-3xl bg-primary p-6 text-on-primary sm:p-8">
+                <p className="text-lg font-extrabold">{N.ba.after}</p>
+                <ul className="mt-5 space-y-4">
+                  {N.ba.rows.map(([, a]) => (
+                    <li key={a} className="flex gap-3"><span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-white/20"><Check size={14} /></span>{a}</li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
         </section>
