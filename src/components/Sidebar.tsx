@@ -1,6 +1,10 @@
 "use client";
 
 import {
+  Bot,
+  BarChart3,
+  Target,
+  Wallet,
   BadgePercent,
   Boxes,
   Calculator,
@@ -27,6 +31,7 @@ import { Logo } from "./Logo";
 import { ThemeToggle } from "./ThemeToggle";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { useI18n } from "@/i18n/client";
+import { openNivo } from "./Nivo";
 
 const NAV = [
   { href: "/painel", key: "painel" as const, icon: LayoutDashboard, owner: true },
@@ -34,6 +39,9 @@ const NAV = [
   { href: "/orcamentos", key: "orcamentos" as const, icon: FileText },
   { href: "/pedidos", key: "pedidos" as const, icon: ClipboardList },
   { href: "/vendas", key: "vendas" as const, icon: Receipt },
+  { href: "/despesas", key: "despesas" as const, icon: Wallet, owner: true },
+  { href: "/metas", key: "metas" as const, icon: Target, owner: true },
+  { href: "/relatorios", key: "relatorios" as const, icon: BarChart3, owner: true },
   { href: "/produtos", key: "produtos" as const, icon: Package },
   { href: "/estoque", key: "estoque" as const, icon: Boxes },
   { href: "/impressoras", key: "impressoras" as const, icon: Printer },
@@ -86,6 +94,22 @@ export function Sidebar({
 
   const footer = (
     <div className="mt-4 space-y-1 border-t border-line pt-4">
+      {role === "dono" && <button
+        type="button"
+        onClick={() => {
+          setOpen(false);
+          openNivo();
+        }}
+        className="mb-2 flex w-full items-center gap-3 rounded-xl bg-primary px-3 py-3 text-left text-on-primary transition hover:bg-primary-hover"
+      >
+        <span className="rounded-lg bg-white/15 p-1.5">
+          <Bot size={18} />
+        </span>
+        <span>
+          <span className="block text-sm font-bold leading-tight">{t.finance.nivo.sideTitle}</span>
+          <span className="block text-xs text-on-primary/80">{t.finance.nivo.sideText}</span>
+        </span>
+      </button>}
       <div className="px-3 pb-2">
         <p className="truncate text-sm font-semibold">{userName}</p>
         <p className="text-xs text-muted">{role === "membro" ? tn.teamMember : tn.planLabel(planLabel)}</p>

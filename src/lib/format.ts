@@ -22,6 +22,9 @@ export function parseNum(input: string, fallback = 0): number {
     raw = lastComma > lastDot ? raw.replace(/\./g, "").replace(",", ".") : raw.replace(/,/g, "");
   } else if (lastComma > -1) {
     raw = raw.replace(",", ".");
+  } else if (/^-?[1-9]\d{0,2}(\.\d{3})+$/.test(raw)) {
+    // "5.000" / "12.500" = milhar (ninguém escreve 1,5 como "1.500")
+    raw = raw.replace(/\./g, "");
   }
   const v = Number(raw);
   return Number.isFinite(v) && raw !== "" ? v : fallback;

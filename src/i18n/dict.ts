@@ -9,8 +9,9 @@ import manage from "./messages/manage";
 import products from "./messages/products";
 import content from "./messages/content";
 import landing from "./messages/landing";
+import finance from "./messages/finance";
 
-const AREAS = { common, flash, gestao, ops, money, catalog, manage, products, content, landing } as const;
+const AREAS = { common, flash, gestao, ops, money, catalog, manage, products, content, landing, finance } as const;
 
 type Areas = typeof AREAS;
 export type Dict = { [K in keyof Areas]: Areas[K]["pt"] };

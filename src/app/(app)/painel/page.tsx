@@ -1,14 +1,17 @@
 import { requireOwner } from "@/lib/guard";
-import { AlarmClock, AlertTriangle, Calculator, Check, Package, Printer, Receipt, Settings, Spool } from "lucide-react";
+import { AlarmClock, AlertTriangle, Bot, Calculator, Check, CircleDollarSign, Coins, CreditCard, Package, Plus, Printer, Receipt, Settings, Spool, Target, Wallet } from "lucide-react";
+import { DailyBars, Delta, Donut, Kpi, Progress } from "@/components/finance";
+import { NivoButton } from "@/components/Nivo";
+import { CATEGORY_COLOR, change, dailyRevenue, expensesByCategory, goalProgress, summarize } from "@/lib/finance";
 import Link from "next/link";
 import { MonthNav } from "@/components/MonthNav";
-import { PageHeader, Stat } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
 import { saleTotals } from "@/lib/calc";
-import { getContext, getMaterials, getPrinters, getProducts, getSales, getSettings, getSupplies } from "@/lib/data";
+import { getContext, getExpenses, getMaterials, getPrinters, getProducts, getSales, getSettings, getSupplies } from "@/lib/data";
 import { getOrders } from "@/lib/gestao-data";
 import { deadlineInfo, deadlineText } from "@/lib/orders";
 import { hasFeature } from "@/lib/plans";
-import { monthRange, todayISO } from "@/lib/period";
+import { monthRange, shiftMonth, todayISO } from "@/lib/period";
 import { getI18n, getT } from "@/i18n/server";
 import { LOCALE_TAG } from "@/i18n/config";
 
@@ -23,14 +26,25 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
   const d_ = tt.money.dash;
   const { money, number, pct } = fmt;
   const period = monthRange(sp.mes, LOCALE_TAG[locale]);
-  const [{ profile }, sales, printers, materials, products, settings] = await Promise.all([
+  const prevP = monthRange(shiftMonth(period.ym, -1), LOCALE_TAG[locale]);
+  const [{ profile }, sales, printers, materials, products, settings, expenses, prevSales, prevExpenses] = await Promise.all([
     getContext(),
     getSales(period.from, period.to),
     getPrinters(),
     getMaterials(),
     getProducts(),
     getSettings(),
+    getExpenses(period.from, period.to),
+    getSales(prevP.from, prevP.to),
+    getExpenses(prevP.from, prevP.to),
   ]);
+  const fd = tt.finance.dash;
+  const S = summarize(sales, expenses);
+  const P = summarize(prevSales, prevExpenses);
+  const days = dailyRevenue(sales, period.from, period.to);
+  const split = expensesByCategory(expenses);
+  const goal = goalProgress(S.revenue, settings.goal_revenue, todayISO(), period.from, period.to);
+  const dpct = (v: number) => pct(Math.round(v));
 
   const rows = sales.map((s) => ({
     ...s,
@@ -53,7 +67,6 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     }),
     { revenue: 0, fees: 0, cost: 0, profit: 0, units: 0 },
   );
-  const margin = sum.revenue > 0 ? (sum.profit / sum.revenue) * 100 : 0;
 
   // Lucro por categoria
   const byCat = new Map<string, number>();
@@ -78,6 +91,8 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
     { done: materials.length > 0, label: d_.steps.filament, href: "/materiais", icon: Spool },
     { done: products.length > 0, label: d_.steps.product, href: "/produtos/novo", icon: Package },
     { done: sales.length > 0, label: d_.steps.sale, href: "/vendas", icon: Receipt },
+    { done: expenses.length > 0 || prevExpenses.length > 0, label: d_.steps.expense, href: "/despesas", icon: Wallet },
+    { done: settings.goal_revenue > 0, label: d_.steps.goal, href: "/metas", icon: Target },
   ];
   const pending = steps.filter((s) => !s.done).length;
 
@@ -151,16 +166,77 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
         </section>
       )}
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Stat label={d_.revenue} value={money(sum.revenue)} hint={d_.pieces(number(sum.units))} />
-        <Stat label={d_.fees} value={money(sum.fees)} />
-        <Stat label={d_.costs} value={money(sum.cost)} />
-        <Stat
-          label={d_.profit}
-          value={money(sum.profit)}
-          hint={sum.revenue > 0 ? d_.margin(pct(margin)) : undefined}
-          tone={sum.profit < 0 ? "negative" : sum.profit > 0 ? "positive" : undefined}
-        />
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Kpi highlight icon={<CircleDollarSign size={20} />} label={d_.revenue} value={money(S.revenue)} delta={<Delta value={change(S.revenue, P.revenue)} fmtPct={dpct} />} hint={d_.pieces(number(S.units))} />
+        <Kpi icon={<Coins size={20} />} label={fd.netProfit} value={money(S.netProfit)} tone={S.netProfit < 0 ? "negative" : S.netProfit > 0 ? "positive" : undefined} delta={<Delta value={change(S.netProfit, P.netProfit)} fmtPct={dpct} />} hint={S.revenue > 0 ? d_.margin(pct(Math.round(S.marginPct))) : undefined} />
+        <Kpi icon={<CreditCard size={20} />} label={fd.expenses} value={money(S.cost + S.fees + S.expenses)} delta={<Delta value={change(S.cost + S.fees + S.expenses, P.cost + P.fees + P.expenses)} fmtPct={dpct} invert />} />
+        <Kpi icon={<Target size={20} />} label={fd.roi} value={`${number(Math.round(S.roi * 100) / 100)}x`} delta={<Delta value={change(S.roi, P.roi)} fmtPct={dpct} />} />
+      </div>
+
+      <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
+        <section className="card p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-bold">{fd.evolution}</h2>
+            <div className="flex gap-2">
+              <Link href="/vendas" className="btn-ghost inline-flex items-center gap-1 px-3 py-1.5 text-sm"><Plus size={14} /> {fd.newSale}</Link>
+              <Link href="/despesas" className="btn-ghost inline-flex items-center gap-1 px-3 py-1.5 text-sm"><Plus size={14} /> {fd.newExpense}</Link>
+            </div>
+          </div>
+          <dl className="mt-4 grid grid-cols-3 gap-3 text-sm">
+            <div><dt className="text-muted">{fd.orders}</dt><dd className="tnum text-lg font-extrabold">{S.orders}</dd></div>
+            <div><dt className="text-muted">{fd.ticket}</dt><dd className="tnum text-lg font-extrabold">{money(S.orders ? S.revenue / S.orders : 0)}</dd></div>
+            <div><dt className="text-muted">{fd.margin}</dt><dd className={`tnum text-lg font-extrabold ${S.marginPct < 0 ? "text-negative" : "text-positive"}`}>{pct(Math.round(S.marginPct * 10) / 10)}</dd></div>
+          </dl>
+          <div className="mt-5">
+            <DailyBars days={days} fmtMoney={money} fmtDay={(iso) => (iso ? fmt.short(iso).slice(0, 5) : "")} />
+          </div>
+        </section>
+
+        <div className="space-y-6">
+          <section className="card p-6">
+            <h2 className="font-bold">{fd.expenseSplit}</h2>
+            <div className="mt-4 flex items-center gap-5">
+              <Donut size={130} parts={split.map(([c, v]) => ({ label: tt.finance.cat[c], value: v, color: CATEGORY_COLOR[c] }))} center={money(S.expenses)} sub={fd.total} />
+              {split.length === 0 ? (
+                <p className="text-sm text-muted">{tt.finance.expenses.empty}</p>
+              ) : (
+                <ul className="flex-1 space-y-1.5 text-sm">
+                  {split.slice(0, 5).map(([c, v]) => (
+                    <li key={c} className="flex items-center gap-2">
+                      <span className="h-2 w-2 rounded-full" style={{ background: CATEGORY_COLOR[c] }} />
+                      <span className="flex-1 truncate text-ink-2">{tt.finance.cat[c]}</span>
+                      <span className="tnum font-semibold">{pct(Math.round((v / (S.expenses || 1)) * 100))}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </section>
+
+          <section className="card p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="font-bold">{fd.goal}</h2>
+              <Link href="/metas" className="text-sm font-semibold text-primary hover:underline">{settings.goal_revenue > 0 ? tt.finance.goals.edit : fd.setGoal}</Link>
+            </div>
+            {settings.goal_revenue > 0 ? (
+              <>
+                <p className="mt-3 text-sm"><span className="tnum text-xl font-extrabold">{money(S.revenue)}</span> <span className="text-muted">{tt.finance.goals.of(money(settings.goal_revenue))}</span></p>
+                <div className="mt-2"><Progress pct={goal.pct} /></div>
+                <p className="mt-3 rounded-xl bg-primary-soft p-3 text-sm text-ink-2">{goal.left <= 0 ? fd.goalDone : fd.goalLeft(money(goal.left), money(goal.perDay), goal.daysLeft)}</p>
+              </>
+            ) : (
+              <p className="mt-3 text-sm text-muted">{fd.noGoal}</p>
+            )}
+          </section>
+
+          <NivoButton className="flex w-full items-center gap-3 rounded-2xl bg-primary p-4 text-left text-on-primary transition hover:bg-primary-hover">
+            <span className="rounded-xl bg-white/15 p-2"><Bot size={20} /></span>
+            <span>
+              <span className="block font-bold">{fd.askNivo}</span>
+              <span className="block text-xs text-on-primary/80">{tt.finance.nivo.chips[0]} · {tt.finance.nivo.chips[1]}</span>
+            </span>
+          </NivoButton>
+        </div>
       </div>
 
       {rows.length === 0 ? (

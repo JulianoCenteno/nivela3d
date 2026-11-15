@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Nivo } from "@/components/Nivo";
 import { Sidebar } from "@/components/Sidebar";
 import { getContext } from "@/lib/data";
 import { planInfo } from "@/lib/plans";
@@ -35,6 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         )}
         <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-8 sm:py-10">{children}</main>
+        {role === "dono" && <Nivo firstName={(profile?.name || "").split(" ")[0]} />}
       </div>
     </div>
   );

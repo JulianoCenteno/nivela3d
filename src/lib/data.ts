@@ -9,6 +9,8 @@ export interface Settings {
   labor_per_hour: number;
   failure_rate_pct: number;
   default_margin_pct: number;
+  goal_revenue: number;
+  goal_profit: number;
 }
 export interface PrinterRow {
   id: string;
@@ -111,6 +113,8 @@ export async function getSettings(): Promise<Settings> {
     "labor_per_hour",
     "failure_rate_pct",
     "default_margin_pct",
+    "goal_revenue",
+    "goal_profit",
   ]);
   return (
     s ?? {
@@ -120,8 +124,29 @@ export async function getSettings(): Promise<Settings> {
       labor_per_hour: 20,
       failure_rate_pct: 10,
       default_margin_pct: 50,
+      goal_revenue: 0,
+      goal_profit: 0,
     }
   );
+}
+
+export interface ExpenseRow {
+  id: string;
+  description: string;
+  category: string;
+  amount: number;
+  spent_at: string;
+}
+
+/** Despesas do negócio no período (vazio se a tabela ainda não existir). */
+export async function getExpenses(from?: string, to?: string) {
+  const { supabase } = await getContext();
+  let q = supabase.from("expenses").select("*").order("spent_at", { ascending: false }).order("created_at", { ascending: false });
+  if (from) q = q.gte("spent_at", from);
+  if (to) q = q.lte("spent_at", to);
+  const { data, error } = await q.limit(2000);
+  if (error) return [];
+  return nums<ExpenseRow>(data, ["amount"]);
 }
 
 export async function getPrinters() {
