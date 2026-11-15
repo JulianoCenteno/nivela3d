@@ -13,16 +13,28 @@
   --text: #182b30;
   --text-2: #343b40;
   --muted: #6b7378;
-  --primary: #4f6359;
-  --primary-hover: #435449;
-  --primary-soft: #e6ece8;
+  --primary: #1f6b5c;
+  --primary-hover: #185a4d;
+  --primary-soft: #e0efe9;
   --on-primary: #ffffff;
-  --sage: #647a70;
+  --primary-2: #2c8c78;
+  --sage: #4f8a78;
   --sand: #c5b79e;
   --sand-soft: #f1ebdf;
-  --positive: #3f7a5a;
-  --negative: #b4533f;
-  --negative-soft: #f6e4df;
+  --positive: #1e9e63;
+  --negative: #d24a3c;
+  --negative-soft: #fbe6e3;
+  /* cores de apoio (ícones, gráficos, destaques) */
+  --blue: #2f6fed;
+  --blue-soft: #e5edfd;
+  --amber: #e0961b;
+  --amber-soft: #fcf0d9;
+  --violet: #7a5ae0;
+  --violet-soft: #eee9fc;
+  --rose: #e0524a;
+  --rose-soft: #fce7e5;
+  --teal: #12a38a;
+  --teal-soft: #dbf3ee;
 }
 
 .dark {
@@ -33,16 +45,27 @@
   --text: #f5f3ee;
   --text-2: #dcd9d1;
   --muted: #9aa8a8;
-  --primary: #8fa69a;
-  --primary-hover: #a3b8ad;
-  --primary-soft: #23383a;
-  --on-primary: #10191c;
-  --sage: #8fa69a;
+  --primary: #5cc3a6;
+  --primary-hover: #74d0b6;
+  --primary-soft: #1d3d3a;
+  --on-primary: #0d1a1c;
+  --primary-2: #3aa88c;
+  --sage: #8fc1b0;
   --sand: #c5b79e;
   --sand-soft: #2a3532;
-  --positive: #7fbf98;
-  --negative: #e08a74;
-  --negative-soft: #3a2723;
+  --positive: #5fd39a;
+  --negative: #f08a78;
+  --negative-soft: #3d2622;
+  --blue: #7aa5ff;
+  --blue-soft: #1e2d4a;
+  --amber: #f2b54d;
+  --amber-soft: #3a2f1a;
+  --violet: #a98cff;
+  --violet-soft: #2c2547;
+  --rose: #f58a80;
+  --rose-soft: #422523;
+  --teal: #4fd6bd;
+  --teal-soft: #17383a;
 }
 
 @theme inline {
@@ -63,6 +86,17 @@
   --color-positive: var(--positive);
   --color-negative: var(--negative);
   --color-negative-soft: var(--negative-soft);
+  --color-primary-2: var(--primary-2);
+  --color-blue: var(--blue);
+  --color-blue-soft: var(--blue-soft);
+  --color-amber: var(--amber);
+  --color-amber-soft: var(--amber-soft);
+  --color-violet: var(--violet);
+  --color-violet-soft: var(--violet-soft);
+  --color-rose: var(--rose);
+  --color-rose-soft: var(--rose-soft);
+  --color-teal: var(--teal);
+  --color-teal-soft: var(--teal-soft);
   --font-sans: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
 }
 

@@ -169,9 +169,9 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Kpi highlight icon={<CircleDollarSign size={20} />} label={d_.revenue} value={money(S.revenue)} delta={<Delta value={change(S.revenue, P.revenue)} fmtPct={dpct} />} hint={d_.pieces(number(S.units))} />
-        <Kpi icon={<Coins size={20} />} label={fd.netProfit} value={money(S.netProfit)} tone={S.netProfit < 0 ? "negative" : S.netProfit > 0 ? "positive" : undefined} delta={<Delta value={change(S.netProfit, P.netProfit)} fmtPct={dpct} />} hint={S.revenue > 0 ? d_.margin(pct(Math.round(S.marginPct))) : undefined} />
-        <Kpi icon={<CreditCard size={20} />} label={fd.expenses} value={money(S.cost + S.fees + S.expenses)} delta={<Delta value={change(S.cost + S.fees + S.expenses, P.cost + P.fees + P.expenses)} fmtPct={dpct} invert />} />
-        <Kpi icon={<Target size={20} />} label={fd.roi} value={`${number(Math.round(S.roi * 100) / 100)}x`} delta={<Delta value={change(S.roi, P.roi)} fmtPct={dpct} />} />
+        <Kpi accent="green" icon={<Coins size={20} />} label={fd.netProfit} value={money(S.netProfit)} tone={S.netProfit < 0 ? "negative" : S.netProfit > 0 ? "positive" : undefined} delta={<Delta value={change(S.netProfit, P.netProfit)} fmtPct={dpct} />} hint={S.revenue > 0 ? d_.margin(pct(Math.round(S.marginPct))) : undefined} />
+        <Kpi accent="rose" icon={<CreditCard size={20} />} label={fd.expenses} value={money(S.cost + S.fees + S.expenses)} delta={<Delta value={change(S.cost + S.fees + S.expenses, P.cost + P.fees + P.expenses)} fmtPct={dpct} invert />} />
+        <Kpi accent="violet" icon={<Target size={20} />} label={fd.roi} value={`${number(Math.round(S.roi * 100) / 100)}x`} delta={<Delta value={change(S.roi, P.roi)} fmtPct={dpct} />} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-[1.6fr_1fr]">
@@ -223,14 +223,14 @@ export default async function DashboardPage({ searchParams }: { searchParams: Pr
               <>
                 <p className="mt-3 text-sm"><span className="tnum text-xl font-extrabold">{money(S.revenue)}</span> <span className="text-muted">{tt.finance.goals.of(money(settings.goal_revenue))}</span></p>
                 <div className="mt-2"><Progress pct={goal.pct} /></div>
-                <p className="mt-3 rounded-xl bg-primary-soft p-3 text-sm text-ink-2">{goal.left <= 0 ? fd.goalDone : fd.goalLeft(money(goal.left), money(goal.perDay), goal.daysLeft)}</p>
+                <p className="mt-3 rounded-xl bg-blue-soft p-3 text-sm text-ink-2">{goal.left <= 0 ? fd.goalDone : fd.goalLeft(money(goal.left), money(goal.perDay), goal.daysLeft)}</p>
               </>
             ) : (
               <p className="mt-3 text-sm text-muted">{fd.noGoal}</p>
             )}
           </section>
 
-          <NivoButton className="flex w-full items-center gap-3 rounded-2xl bg-primary p-4 text-left text-on-primary transition hover:bg-primary-hover">
+          <NivoButton className="flex w-full items-center gap-3 rounded-2xl bg-gradient-to-r from-primary to-primary-2 p-4 text-left text-on-primary shadow-[0_14px_30px_-14px_rgba(31,107,92,0.6)] transition hover:brightness-110">
             <NivoAvatar size={40} />
             <span>
               <span className="block font-bold">{fd.askNivo}</span>

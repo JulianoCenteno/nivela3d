@@ -9,14 +9,14 @@ export const isExpenseCategory = (v: unknown): v is ExpenseCategory =>
 
 /** Cores das categorias no gráfico de rosca. */
 export const CATEGORY_COLOR: Record<ExpenseCategory, string> = {
-  filamento: "#2F6B5A",
-  energia: "#D69E2E",
-  anuncios: "#6B5BD6",
-  taxas: "#2B9DB0",
-  manutencao: "#C2563B",
-  embalagem: "#8A9A5B",
-  frete: "#5B7FA6",
-  equipamento: "#9C6B98",
+  filamento: "#12A38A",
+  energia: "#E0961B",
+  anuncios: "#7A5AE0",
+  taxas: "#2F6FED",
+  manutencao: "#E0524A",
+  embalagem: "#3FB4D8",
+  frete: "#3B5BDB",
+  equipamento: "#C05AB8",
   outros: "#9AA3A0",
 };
 

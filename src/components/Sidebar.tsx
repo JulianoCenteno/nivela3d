@@ -81,7 +81,7 @@ export function Sidebar({
             href={href}
             onClick={() => setOpen(false)}
             className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-[15px] font-semibold transition ${
-              active ? "bg-primary-soft text-primary" : "text-ink-2 hover:bg-surface-2"
+              active ? "bg-primary text-on-primary shadow-[0_8px_18px_-8px_rgba(31,107,92,0.6)]" : "text-ink-2 hover:bg-surface-2"
             }`}
           >
             <Icon size={19} strokeWidth={active ? 2.3 : 1.9} />
@@ -100,7 +100,7 @@ export function Sidebar({
           setOpen(false);
           openNivo();
         }}
-        className="mb-2 flex w-full items-center gap-3 rounded-xl bg-primary px-3 py-3 text-left text-on-primary transition hover:bg-primary-hover"
+        className="mb-2 flex w-full items-center gap-3 rounded-xl bg-gradient-to-r from-primary to-primary-2 px-3 py-3 text-left text-on-primary transition hover:brightness-110"
       >
         <NivoAvatar size={34} />
         <span>

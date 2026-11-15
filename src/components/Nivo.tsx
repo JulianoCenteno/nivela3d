@@ -88,7 +88,7 @@ export function Nivo({ firstName }: { firstName: string }) {
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-primary py-2.5 pl-3 pr-4 font-semibold text-on-primary shadow-lg transition hover:scale-[1.03]"
+          className="fixed bottom-5 right-5 z-40 flex items-center gap-2 rounded-full bg-gradient-to-r from-primary to-primary-2 py-2.5 pl-3 pr-4 font-semibold text-on-primary shadow-lg transition hover:scale-[1.03]"
           aria-label={n.sideTitle}
         >
           <NivoAvatar size={34} />
@@ -98,7 +98,7 @@ export function Nivo({ firstName }: { firstName: string }) {
 
       {open && (
         <div className="fixed inset-x-3 bottom-3 z-50 flex max-h-[80dvh] flex-col overflow-hidden rounded-2xl border border-line bg-surface shadow-2xl sm:inset-x-auto sm:right-5 sm:bottom-5 sm:w-[380px]">
-          <div className="flex items-center gap-3 bg-primary px-4 py-3 text-on-primary">
+          <div className="flex items-center gap-3 bg-gradient-to-r from-primary to-primary-2 px-4 py-3 text-on-primary">
             <NivoAvatar size={40} />
             <div className="flex-1">
               <p className="font-bold leading-tight">

@@ -30,6 +30,7 @@ import { NivoAvatar } from "@/components/NivoAvatar";
 export const C3D_UPSELL = "https://appdigitalhub.com.br/c/4DFFFC24";
 export const C3D_DOWNSELL = "https://appdigitalhub.com.br/c/291E7628";
 
+const TOOL_TONES = ["bg-primary-soft text-primary", "bg-blue-soft text-blue", "bg-amber-soft text-amber", "bg-rose-soft text-rose", "bg-violet-soft text-violet", "bg-teal-soft text-teal", "bg-amber-soft text-amber", "bg-blue-soft text-blue", "bg-primary-soft text-primary"];
 const TOOL_ICONS = [LayoutDashboard, Calculator, Receipt, Wallet, Target, BarChart3, Boxes, ClipboardList, Bot];
 
 /** Checkouts em dólar (STL Católico em inglês). */
@@ -338,7 +339,7 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
                     const I = TOOL_ICONS[i];
                     return (
                       <div key={t} className="flex gap-4 rounded-2xl border border-line bg-bg p-5">
-                        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-soft text-primary"><I size={21} /></span>
+                        <span className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${TOOL_TONES[i]}`}><I size={21} /></span>
                         <div>
                           <p className="font-bold">{t}</p>
                           <p className="mt-0.5 text-[15px] leading-relaxed text-muted">{d}</p>
