@@ -9,6 +9,18 @@ const LANDING_LOCALE: Record<string, string> = { "/": "pt", "/oferta": "pt", "/e
 const ES_COUNTRIES = new Set([
   "MX", "ES", "AR", "CO", "CL", "PE", "UY", "PY", "BO", "EC", "VE", "CR", "PA", "DO", "PR", "GT", "HN", "SV", "NI", "CU", "GQ",
 ]);
+/** Moeda inicial do app pelo país (o usuário pode trocar em Configurações). */
+const EURO = new Set(["ES", "PT", "FR", "DE", "IT", "NL", "BE", "AT", "IE", "FI", "GR", "LU", "SK", "SI", "EE", "LV", "LT", "MT", "CY", "HR"]);
+const COUNTRY_CURRENCY: Record<string, string> = {
+  BR: "BRL", US: "USD", MX: "MXN", AR: "ARS", CO: "COP", CL: "CLP", PE: "PEN", UY: "UYU", PY: "PYG", GB: "GBP", CA: "CAD", AU: "AUD",
+};
+function currencyFor(country: string): string {
+  if (!country) return "";
+  if (EURO.has(country)) return "EUR";
+  return COUNTRY_CURRENCY[country] ?? "USD";
+}
+const CUR_OPTS = { path: "/", maxAge: 31536000, sameSite: "lax" as const };
+
 const BOT_UA = /bot|crawl|spider|slurp|facebookexternalhit|facebookcatalog|meta-externalagent|embedly|preview|lighthouse|headless/i;
 const SALES_PATH: Record<string, Record<"pt" | "en" | "es", string>> = {
   "/": { pt: "/", en: "/en", es: "/es" },
@@ -77,8 +89,12 @@ export async function middleware(request: NextRequest) {
   if (landingLocale && request.cookies.get("nivela_locale")?.value !== landingLocale) {
     request.cookies.set("nivela_locale", landingLocale);
   }
+  // Primeira visita: moeda do app pelo país do visitante (só se ele ainda não escolheu uma).
+  const autoCurrency = request.cookies.get("nivela_currency") ? "" : currencyFor((request.headers.get("x-vercel-ip-country") || "").toUpperCase());
+  if (autoCurrency) request.cookies.set("nivela_currency", autoCurrency);
   let response = NextResponse.next({ request });
   if (landingLocale) response.cookies.set("nivela_locale", landingLocale, { path: "/", maxAge: 31536000, sameSite: "lax" });
+  if (autoCurrency) response.cookies.set("nivela_currency", autoCurrency, CUR_OPTS);
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -90,6 +106,7 @@ export async function middleware(request: NextRequest) {
           list.forEach(({ name, value }) => request.cookies.set(name, value));
           response = NextResponse.next({ request });
           if (landingLocale) response.cookies.set("nivela_locale", landingLocale, { path: "/", maxAge: 31536000, sameSite: "lax" });
+          if (autoCurrency) response.cookies.set("nivela_currency", autoCurrency, CUR_OPTS);
           list.forEach(({ name, value, options }) => response.cookies.set(name, value, options));
         },
       },
@@ -108,6 +125,7 @@ export async function middleware(request: NextRequest) {
     url.pathname = "/login";
     const r = NextResponse.redirect(url);
     if (landingLocale) r.cookies.set("nivela_locale", landingLocale, { path: "/", maxAge: 31536000, sameSite: "lax" });
+    if (autoCurrency) r.cookies.set("nivela_currency", autoCurrency, CUR_OPTS);
     return r;
   }
   if (user && (path === "/login" || path === "/cadastro" || path === "/")) {

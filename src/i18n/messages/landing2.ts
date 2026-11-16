@@ -88,6 +88,8 @@ const pt = {
     h2: "Funciona no computador, no tablet e no celular",
     p: "Nada para instalar. Abra no navegador, lance a venda na feira, responda o orçamento no WhatsApp e confira o lucro no fim do dia.",
     items: ["Sem instalação", "Dados salvos na nuvem", "Tema claro e escuro"],
+    curTitle: "",
+    curNote: "",
   },
   ba: {
     kicker: "Antes e depois",
@@ -183,6 +185,8 @@ const en: typeof pt = {
     h2: "Works on computer, tablet and phone",
     p: "Nothing to install. Open it in your browser, log a sale at the fair, answer a quote on WhatsApp and check your profit at the end of the day.",
     items: ["No installation", "Data saved in the cloud", "Light and dark theme"],
+    curTitle: "Works in your currency",
+    curNote: "The app starts in your country's currency, and you can change it anytime in Settings. Prices on this page are in US dollars; your bank converts them automatically at checkout.",
   },
   ba: {
     kicker: "Before and after",
@@ -278,6 +282,8 @@ const es: typeof pt = {
     h2: "Funciona en la computadora, la tablet y el celular",
     p: "Nada que instalar. Ábrelo en el navegador, registra la venta en la feria, responde el presupuesto por WhatsApp y revisa la ganancia al final del día.",
     items: ["Sin instalación", "Datos guardados en la nube", "Tema claro y oscuro"],
+    curTitle: "Funciona con tu moneda",
+    curNote: "La app empieza en la moneda de tu país y puedes cambiarla cuando quieras en Configuración. Los precios de esta página están en dólares (USD); tu banco hace la conversión automáticamente al pagar.",
   },
   ba: {
     kicker: "Antes y después",

@@ -348,6 +348,17 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
                 })}
                 <span className="inline-flex items-center gap-2 rounded-full border border-line bg-bg px-3 py-1.5 text-sm font-semibold text-ink-2"><Tablet size={15} className="text-sage" /><Smartphone size={15} className="-ml-1 text-sage" /></span>
               </div>
+              {N.devices.curTitle && (
+                <div className="mt-6 rounded-2xl border border-line bg-bg p-4">
+                  <p className="font-bold">{N.devices.curTitle}</p>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {["€ EUR", "$ MXN", "$ ARS", "$ COP", "$ CLP", "S/ PEN", "$ UYU", "₲ PYG", "$ USD", "£ GBP", "$ CAD", "$ AUD"].map((c) => (
+                      <span key={c} className="tnum rounded-lg bg-surface-2 px-2 py-1 text-xs font-bold text-ink-2">{c}</span>
+                    ))}
+                  </div>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{N.devices.curNote}</p>
+                </div>
+              )}
             </div>
             <div className="mt-12 grid items-start gap-12 lg:grid-cols-[300px_1fr]">
               <div className="mx-auto w-[78%] max-w-[300px] lg:w-full">
