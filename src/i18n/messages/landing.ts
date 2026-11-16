@@ -406,7 +406,7 @@ const en: typeof pt = {
 const es: typeof pt = {
   meta: {
     title: "Nivela 3D — Descubre cuánto te queda de verdad en cada impresión",
-    desc: "Vender más no significa ganar más. Con la Radiografía de Ganancia 3D encuentras los costos ocultos, cobras el precio justo y ves la ganancia real de cada pieza. Desde US$ 9.90, pago único y acceso de por vida.",
+    desc: "Vender más no significa ganar más. Con la Radiografía de Ganancia 3D encuentras los costos ocultos, cobras el precio justo y ves la ganancia real de cada pieza. Desde US$ 5.70, pago único y acceso de por vida.",
     upsellTitle: "Nivela 3D — Oferta para quien acaba de comprar",
     upsellDesc: "Ya tienes los archivos. Ahora descubre cuánto te queda de verdad en cada pieza que imprimas.",
   },

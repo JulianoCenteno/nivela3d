@@ -154,9 +154,9 @@ const LIFETIME_BY_LOCALE: Record<Locale, LifetimeOffer> = {
     symbol: "$",
   },
   es: {
-    basico: { price: "9.90", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO_ES },
-    completo: { price: "27.00", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO_ES },
-    upgrade: { price: "14.70", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE_ES },
+    basico: { price: "5.70", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_BASICO_ES },
+    completo: { price: "14.70", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_COMPLETO_ES },
+    upgrade: { price: "9.70", href: process.env.NEXT_PUBLIC_CHECKOUT_VITALICIO_UPGRADE_ES },
     currency: "USD",
     symbol: "US$",
   },
