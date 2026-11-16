@@ -163,6 +163,7 @@ const pt = {
     guarA: (lifetime: boolean): string => (lifetime ? "Os dois planos têm" : "Todos os planos têm"),
     guarB: "7 dias de garantia",
     guarC: ": se não gostar, você pede o reembolso.",
+    cards: "",
   },
   bonusSec: {
     kicker: "Bônus inclusos",
@@ -366,6 +367,7 @@ const en: typeof pt = {
     guarA: (lifetime: boolean) => (lifetime ? "Both plans come with a" : "All plans come with a"),
     guarB: "7-day guarantee",
     guarC: ": if you don't like it, just ask for a refund.",
+    cards: "We accept Visa and Mastercard credit cards from any country · Secure payment by Stripe",
   },
   bonusSec: {
     kicker: "Bonuses included",
@@ -569,6 +571,7 @@ const es: typeof pt = {
     guarA: (lifetime: boolean) => (lifetime ? "Los dos planes tienen" : "Todos los planes tienen"),
     guarB: "7 días de garantía",
     guarC: ": si no te gusta, pides el reembolso.",
+    cards: "Aceptamos tarjetas de crédito Visa y Mastercard de cualquier país · Pago seguro con Stripe",
   },
   bonusSec: {
     kicker: "Bonos incluidos",

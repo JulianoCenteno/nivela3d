@@ -502,6 +502,16 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
             <p className="mt-10 text-center text-muted">
               {L.plansSec.guarA(lifetime)} <b className="text-ink">{L.plansSec.guarB}</b>{L.plansSec.guarC}
             </p>
+            {L.plansSec.cards ? (
+              <div className="mt-4 flex flex-wrap items-center justify-center gap-3 text-sm text-muted">
+                <span className="rounded-md border border-line bg-white px-2 py-0.5 text-xs font-extrabold italic tracking-wide text-[#1a1f71]">VISA</span>
+                <span className="flex items-center rounded-md border border-line bg-white px-2 py-1" aria-label="Mastercard">
+                  <span className="h-3.5 w-3.5 rounded-full bg-[#eb001b]" />
+                  <span className="-ml-1.5 h-3.5 w-3.5 rounded-full bg-[#f79e1b] opacity-90" />
+                </span>
+                <span>{L.plansSec.cards}</span>
+              </div>
+            ) : null}
           </div>
         </section>
 
