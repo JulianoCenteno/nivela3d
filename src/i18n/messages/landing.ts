@@ -254,6 +254,7 @@ const en: typeof pt = {
     ],
   ],
   faq: [
+    ["Can I use it in my currency (euro, pound, peso…)?", "Yes. The app works in 13 currencies: euro, pound, Canadian and Australian dollars, Mexican, Argentine, Colombian and Chilean pesos, and more. It starts in your country's currency and you can change it anytime in Settings. Only the plan payment is charged in US dollars, and your bank converts it."],
     ["Do I need to install anything?", "No. Nivela 3D runs right in your browser, on computer and phone. Just create your account and start."],
     ["Does it work with my printer?", "Yes. It works with filament (FDM) and resin printers. It comes with a list of the main models — Bambu Lab, Creality, Elegoo, Anycubic, Prusa and more — with power consumption already filled in."],
     ["What is the 3D Profit X-Ray?", "It's the Nivela 3D method to see how much you really keep from every print: reveal all the costs of a part, price it with the right margin, check the real profit of each sale and find out which products are worth it."],
@@ -456,6 +457,7 @@ const es: typeof pt = {
     ],
   ],
   faq: [
+    ["¿Puedo usarlo en mi moneda (euro, peso, sol…)?", "Sí. La app funciona en 13 monedas: euro, peso mexicano, argentino, colombiano, chileno y uruguayo, sol, guaraní, dólar y más. Empieza sola en la moneda de tu país y puedes cambiarla cuando quieras en Configuración. Solo el pago del plan se cobra en dólares, y tu banco hace la conversión."],
     ["¿Necesito instalar algo?", "No. Nivela 3D funciona directo en el navegador, en la computadora y en el celular. Solo crea tu cuenta y empieza."],
     ["¿Funciona con mi impresora?", "Sí. Funciona con impresoras de filamento (FDM) y de resina. Incluye una lista con los principales modelos — Bambu Lab, Creality, Elegoo, Anycubic, Prusa y otros — con el consumo eléctrico ya cargado."],
     ["¿Qué es la Radiografía de Ganancia 3D?", "Es el método de Nivela 3D para ver cuánto te queda de verdad en cada impresión: revelar todos los costos de la pieza, ponerle precio con el margen correcto, revisar la ganancia real de cada venta y descubrir qué productos valen la pena."],

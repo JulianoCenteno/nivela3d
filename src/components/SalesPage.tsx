@@ -159,6 +159,12 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
               <a href="#planos" className="btn-ghost px-6 py-3.5 text-base">{L.hero.how}</a>
             </div>
             <p className="mt-4 text-sm text-muted">{lifetime ? L.hero.lifetimeNote(fmt.money(Number(offer.basico.price.replace(",", ".")))) : L.hero.subNote}</p>
+            {N.devices.curTitle && (
+              <p className="mt-3 inline-flex flex-wrap items-center gap-1.5 rounded-xl bg-primary-soft px-3 py-2 text-sm font-semibold text-primary">
+                <span>🌎 {N.devices.curTitle}:</span>
+                <span className="tnum font-bold">€ EUR · $ MXN · $ ARS · $ COP · $ CLP · S/ PEN · $ USD</span>
+              </p>
+            )}
           </div>
 
           <div className="relative pb-10 pl-[10%] pt-6">
