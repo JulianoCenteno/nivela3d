@@ -137,7 +137,7 @@ function Shot({ src, alt }: { src: string; alt: string }) {
 }
 
 /**
- * Upsell (R$ 47) e downsell (R$ 17) do Nivela 3D para quem acabou de comprar a Central 3D.
+ * Upsell (R$ 29,90) e downsell (R$ 16,90) do Nivela 3D para quem acabou de comprar a Central 3D.
  * Estrutura: aviso → dores → solução → Nivo → calculadora → ferramentas → antes/depois → oferta → garantia → FAQ.
  */
 export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }: { variant: "up" | "down"; declineUrl?: string; acceptUrl?: string; locale?: "pt" | "en" }) {
@@ -147,8 +147,8 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
   const A = en ? "/landing/en" : "/landing";
   const N = landing2[locale];
   const brl = (v: number) => v.toLocaleString(en ? "en-US" : "pt-BR", { style: "currency", currency: en ? "USD" : "BRL" });
-  const price = en ? (up ? 19 : 9) : up ? 47 : 17;
-  const from = en ? (up ? 97 : 19) : up ? 197 : 47;
+  const price = en ? (up ? 19 : 9) : up ? 29.9 : 16.9;
+  const from = en ? (up ? 97 : 19) : up ? 197 : 29.9;
   const off = Math.round((1 - price / from) * 100);
   // Dentro do funil do Digital Hub (página externa), os botões usam os links da própria etapa:
   // "Sim, quero" cobra em 1 clique (cartão) ou gera Pix; "Não, obrigado" segue para o downsell/acesso.

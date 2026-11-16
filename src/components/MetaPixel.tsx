@@ -17,8 +17,8 @@ const VALUES: Record<string, number> = {
   "5DD75D20": 399, // Profissional — Anual
   "4090A86E": 799, // Empresa — Anual
   // Upsell / downsell dos funis 3D (Completo vitalício) — conta Juliano
-  "4DFFFC24": 47,
-  "291E7628": 17,
+  "4DFFFC24": 29.9,
+  "291E7628": 16.9,
   "60048F74": 19, // EN (US$)
   "814AC7AC": 9, // EN (US$)
 };
