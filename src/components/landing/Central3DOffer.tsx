@@ -26,6 +26,7 @@ import { ProfitCalc } from "@/components/landing/ProfitCalc";
 import { Countdown } from "@/components/landing/Countdown";
 import { FloatingNivo } from "@/components/landing/FloatingNivo";
 import { NivoAvatar } from "@/components/NivoAvatar";
+import { FunnelTracker } from "@/components/landing/FunnelTracker";
 
 /** Checkouts (Digital Hub) das ofertas exclusivas para quem comprou a Central 3D. */
 export const C3D_UPSELL = "https://appdigitalhub.com.br/c/4DFFFC24";
@@ -218,14 +219,14 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
   const total = T.stack.reduce((a, [, v]) => a + v, 0);
 
   const Cta = ({ className = "" }: { className?: string }) => (
-    <a href={href} className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2F8F5B] px-6 py-5 text-lg font-extrabold text-white shadow-[0_14px_30px_-10px_rgba(47,143,91,0.7)] transition hover:bg-[#287D4F] sm:text-xl ${className}`}>
+    <a href={href} data-fe="yes" className={`inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-[#2F8F5B] px-6 py-5 text-lg font-extrabold text-white shadow-[0_14px_30px_-10px_rgba(47,143,91,0.7)] transition hover:bg-[#287D4F] sm:text-xl ${className}`}>
       {T.cta(brl(price))} <ArrowRight size={22} />
     </a>
   );
 
   const Decline = () =>
     decline ? (
-      <a href={decline} className="mt-4 block text-center text-[15px] text-muted underline underline-offset-4 hover:text-ink">
+      <a href={decline} data-fe="no" className="mt-4 block text-center text-[15px] text-muted underline underline-offset-4 hover:text-ink">
         {declineText}
       </a>
     ) : null;
@@ -233,6 +234,7 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
   return (
     <div className="overflow-x-hidden">
       <MetaPixel page="upsell" />
+      <FunnelTracker step={up ? "upsell" : "downsell"} locale={locale} funnel={acceptUrl?.split("/c/")[1]?.split(/[?#]/)[0]} />
       <FloatingNivo text={N.nivo.floatText} cta={N.nivo.floatCta} href="#oferta" />
 
       {/* ---------- Aviso ---------- */}
@@ -589,7 +591,7 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
             <p className="mx-auto mt-4 max-w-lg text-lg text-[#F5F3EE]/70">{T.finalP(brl(price))}</p>
             <div className="mx-auto mt-8 max-w-md"><Cta /></div>
             {decline && (
-              <a href={decline} className="mt-5 block text-sm text-[#F5F3EE]/60 underline underline-offset-4 hover:text-[#F5F3EE]">{declineText}</a>
+              <a href={decline} data-fe="no" className="mt-5 block text-sm text-[#F5F3EE]/60 underline underline-offset-4 hover:text-[#F5F3EE]">{declineText}</a>
             )}
           </div>
         </section>
