@@ -43,14 +43,14 @@ const TXT = {
     waitUp: "⚠️ ESPERE! Seu pedido ainda não terminou. Não feche esta página.",
     waitDown: "⏳ ÚLTIMA CHANCE: esta oferta não vai aparecer de novo.",
     stepApproved: "Compra aprovada", stepUp: "Oferta exclusiva", stepDown: "Última oferta", stepAccess: "Acesso",
-    tag: "Oferta exclusiva para quem acabou de comprar",
-    h1a: "Você já tem os arquivos. Agora descubra ", h1b: "quanto realmente lucra", h1c: " com cada peça.",
-    heroP: "O Nivela 3D calcula o preço certo, controla vendas, despesas e estoque, mostra sua meta do mês e ainda tem o Nivo, um assistente que responde com os seus números.",
-    once: "Pagamento único · acesso vitalício", heroCta: "Quero aproveitar", dashAlt: "Painel financeiro do Nivela 3D",
-    downH1a: "Você recusou… então vou te fazer uma proposta que ", downH1b: "não vou repetir.",
-    downP: "O mesmo Nivela 3D Completo, com todas as ferramentas e acesso vitalício, por menos que um rolo de filamento.",
+    tag: "Oferta exclusiva · só aparece agora",
+    h1a: "Você vai imprimir essas peças. Mas vai saber ", h1b: "se está lucrando ou pagando para trabalhar?", h1c: "",
+    heroP: "A maioria cobra pelo peso do filamento e esquece energia, desgaste da impressora, falhas, a própria hora, embalagem e taxas. Resultado: vende, se cansa e o dinheiro some. O Raio-X do Lucro 3D do Nivela mostra cada custo escondido, o preço exato que deixa lucro e quanto sobrou de verdade em cada venda.",
+    once: "Pagamento único · acesso vitalício", heroCta: "Quero parar de perder dinheiro", dashAlt: "Painel financeiro do Nivela 3D",
+    downH1a: "Tudo bem recusar. Só não continue ", downH1b: "imprimindo no prejuízo.",
+    downP: "O mesmo Nivela 3D Completo, com o Raio-X do Lucro 3D e acesso vitalício, por menos que um rolo de filamento. Uma única peça com o preço certo já paga o app.",
     from: "De", forOnly: "por apenas", oneTime: "pagamento único", expires: "Expira em",
-    direct: "Deixa eu ser direto", ifClose: "Se fechar esta página, isso continua acontecendo:",
+    direct: "Deixa eu ser direto", ifClose: "Se fechar esta página, o dinheiro continua escapando:",
     calcCta: "Quero parar de perder dinheiro", videoAlt: "Vídeo do Nivela 3D no celular",
     sameKicker: "Mesmo produto completo", sameH2: "Nada foi tirado. Só o preço caiu.",
     colWhat: "O que você recebe", colPrev: "Oferta anterior", colNow: "Agora", guar7: "7 dias de garantia", price: "Preço",
@@ -62,6 +62,34 @@ const TXT = {
     faqH: "Perguntas frequentes",
     finalA: "Cada impressão conta.", finalB: "Cada lucro também.",
     finalP: (v: string) => `Leve o Nivela 3D Completo hoje por ${v}, pagamento único.`,
+    pains: {
+      kicker: "Seja sincero com você",
+      h2: "Você imprime, vende, trabalha até tarde… e cadê o dinheiro?",
+      items: [
+        ["Cobra pelo peso do filamento", "e dá de presente a energia, o desgaste, as falhas e as suas horas. A peça sai mais barata do que custa."],
+        ["Fecha o mês com a conta igual ou pior", "entrou dinheiro, saiu dinheiro, e você não faz ideia de para onde foi."],
+        ["A Shopee deposita menos do que você esperava", "porque comissão e frete comeram sua margem sem avisar."],
+        ["Cada impressão que falha é dinheiro no lixo", "e você nunca soma isso no preço das peças que vende."],
+        ["Responde orçamento no chute", "com medo de cobrar caro e perder o cliente… ou de cobrar barato e trabalhar de graça."],
+        ["Sente que o negócio não cresce", "e já acha que impressão 3D não dá dinheiro. O problema não é a impressora: é não enxergar os números."],
+      ] as [string, string][],
+    },
+    banner: { a: "Não é que impressão 3D não dá dinheiro.", b: "É que o seu dinheiro escapa por onde você não vê." },
+    mech: {
+      kicker: "O problema tem nome",
+      name: "Vazamento Invisível de Lucro",
+      p: "É todo o dinheiro que fica fora da conta quando você precifica só pelo filamento. Cada item parece pequeno. Somados, decidem se você está lucrando ou pagando para trabalhar. E quanto mais você vende, maior o buraco.",
+      costs: ["Filamento", "Energia elétrica", "Desgaste da impressora", "Impressões que falham", "Sua hora de trabalho", "Embalagem e acessórios", "Taxas e frete do marketplace"],
+      solKicker: "O mecanismo que fecha o vazamento",
+      solName: "Raio-X do Lucro 3D",
+      solP: "O Nivela 3D passa cada peça por quatro etapas e mostra, em números, quanto ficou no seu bolso:",
+      steps: [
+        ["Revela", "todos os custos escondidos da peça, um por um."],
+        ["Precifica", "com a margem que você quer, já com a taxa do canal onde vende."],
+        ["Protege", "cada venda: você vê na hora se um desconto ou uma taxa comeu o lucro."],
+        ["Multiplica", "mostrando quais peças dão dinheiro e quais só dão trabalho."],
+      ] as [string, string][],
+    },
     cta: (v: string) => `SIM! QUERO O NIVELA 3D POR ${v}`,
     declineUp: "Não, obrigado. Prefiro continuar calculando meus preços no chute.",
     declineDown: "Vou recusar esta oferta para sempre.",
@@ -84,14 +112,14 @@ const TXT = {
     waitUp: "⚠️ WAIT! Your order isn't complete yet. Don't close this page.",
     waitDown: "⏳ LAST CHANCE: this offer won't show up again.",
     stepApproved: "Purchase approved", stepUp: "Exclusive offer", stepDown: "Final offer", stepAccess: "Access",
-    tag: "Exclusive offer for new customers",
-    h1a: "You already have the files. Now find out ", h1b: "how much you really make", h1c: " on every print.",
-    heroP: "Nivela 3D calculates the right price, tracks sales, expenses and stock, shows your monthly goal, and comes with Nivo, an assistant that answers with your own numbers.",
-    once: "One-time payment · lifetime access", heroCta: "Claim this offer", dashAlt: "Nivela 3D financial dashboard",
-    downH1a: "You said no… so here's an offer ", downH1b: "I won't repeat.",
-    downP: "The same Nivela 3D Complete, every tool and lifetime access, for less than a spool of filament.",
+    tag: "Exclusive offer · shown only now",
+    h1a: "You're going to print these pieces. But will you know ", h1b: "if you're making money or paying to work?", h1c: "",
+    heroP: "Most makers price by filament weight and forget electricity, printer wear, failed prints, their own time, packaging and fees. The result: you sell, you get tired, and the money disappears. Nivela's 3D Profit X-Ray reveals every hidden cost, the exact price that leaves a profit, and what you really kept on each sale.",
+    once: "One-time payment · lifetime access", heroCta: "I want to stop losing money", dashAlt: "Nivela 3D financial dashboard",
+    downH1a: "It's okay to say no. Just don't keep ", downH1b: "printing at a loss.",
+    downP: "The same Nivela 3D Complete, with the 3D Profit X-Ray and lifetime access, for less than a spool of filament. One piece priced right pays for the app.",
     from: "From", forOnly: "for only", oneTime: "one-time payment", expires: "Expires in",
-    direct: "Let me be direct", ifClose: "If you close this page, this keeps happening:",
+    direct: "Let me be straight with you", ifClose: "If you close this page, the money keeps leaking:",
     calcCta: "I want to stop losing money", videoAlt: "Nivela 3D on a phone",
     sameKicker: "Same complete product", sameH2: "Nothing was removed. Only the price dropped.",
     colWhat: "What you get", colPrev: "Previous offer", colNow: "Now", guar7: "7-day guarantee", price: "Price",
@@ -103,6 +131,34 @@ const TXT = {
     faqH: "Frequently asked questions",
     finalA: "Every print counts.", finalB: "Every profit too.",
     finalP: (v: string) => `Get Nivela 3D Complete today for ${v}, one-time payment.`,
+    pains: {
+      kicker: "Be honest with yourself",
+      h2: "You print, you sell, you work late… so where's the money?",
+      items: [
+        ["You price by filament weight", "and give away the electricity, wear, failed prints and your hours. The piece sells for less than it costs."],
+        ["You end the month with the same balance or worse", "money came in, money went out, and you have no idea where it went."],
+        ["Etsy pays out less than you expected", "because fees and shipping ate your margin without warning."],
+        ["Every failed print is money in the trash", "and you never add it to the price of the pieces you do sell."],
+        ["You quote by gut feeling", "afraid of charging too much and losing the customer… or too little and working for free."],
+        ["You feel the business isn't growing", "and you're starting to think 3D printing doesn't pay. The problem isn't the printer: it's not seeing the numbers."],
+      ] as [string, string][],
+    },
+    banner: { a: "It's not that 3D printing doesn't pay.", b: "It's that your money leaks where you can't see it." },
+    mech: {
+      kicker: "The problem has a name",
+      name: "The Invisible Profit Leak",
+      p: "It's all the money left out when you price by filament alone. Each item looks small. Added up, they decide whether you're making money or paying to work. And the more you sell, the bigger the hole.",
+      costs: ["Filament", "Electricity", "Printer wear", "Failed prints", "Your time", "Packaging and add-ons", "Marketplace fees and shipping"],
+      solKicker: "The mechanism that plugs the leak",
+      solName: "3D Profit X-Ray",
+      solP: "Nivela 3D runs every piece through four steps and shows, in numbers, what ended up in your pocket:",
+      steps: [
+        ["Reveal", "every hidden cost of the piece, one by one."],
+        ["Price", "with the margin you want, already including your sales channel's fee."],
+        ["Protect", "every sale: see instantly if a discount or a fee ate your profit."],
+        ["Multiply", "by showing which pieces make money and which only make work."],
+      ] as [string, string][],
+    },
     cta: (v: string) => `YES! I WANT NIVELA 3D FOR ${v}`,
     declineUp: "No thanks. I'd rather keep guessing my prices.",
     declineDown: "I'll pass on this offer forever.",
@@ -261,11 +317,11 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
         <section className="border-t border-line bg-surface">
           <div className="mx-auto max-w-6xl px-5 py-16 lg:py-20">
             <div className="mx-auto max-w-2xl text-center">
-              <p className="text-sm font-bold uppercase tracking-wider text-[#B4372B]">{up ? N.pains.kicker : T.direct}</p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{up ? N.pains.h2 : T.ifClose}</h2>
+              <p className="text-sm font-bold uppercase tracking-wider text-[#B4372B]">{up ? T.pains.kicker : T.direct}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{up ? T.pains.h2 : T.ifClose}</h2>
             </div>
             <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {(up ? N.pains.items : N.pains.items.slice(0, 3)).map(([b, t]) => (
+              {(up ? T.pains.items : T.pains.items.slice(0, 3)).map(([b, t]) => (
                 <div key={b} className="rounded-2xl border border-line bg-bg p-6">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-negative-soft text-negative"><AlertTriangle size={20} /></span>
                   <p className="mt-4 text-lg font-bold leading-snug">{b}</p>
@@ -278,8 +334,42 @@ export function Central3DOffer({ variant, declineUrl, acceptUrl, locale = "pt" }
 
         <section className="bg-primary px-5 py-12 text-center text-on-primary">
           <p className="mx-auto max-w-4xl text-2xl font-extrabold leading-snug tracking-tight sm:text-3xl">
-            “{N.banner.a} <span className="opacity-75">{N.banner.b}</span>”
+            “{T.banner.a} <span className="opacity-75">{T.banner.b}</span>”
           </p>
+        </section>
+
+        {/* ---------- Mecanismo: problema + solução ---------- */}
+        <section className="mx-auto max-w-6xl px-5 py-16 lg:py-24">
+          <div className="grid gap-10 lg:grid-cols-2">
+            <div className="rounded-3xl border border-[#F2C9C2] bg-[#FDF3F1] p-7 sm:p-9">
+              <p className="text-sm font-bold uppercase tracking-wider text-[#B4372B]">{T.mech.kicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{T.mech.name}</h2>
+              <p className="mt-4 text-lg leading-relaxed text-ink-2">{T.mech.p}</p>
+              <ul className="mt-6 flex flex-wrap gap-2">
+                {T.mech.costs.map((c, i) => (
+                  <li key={c} className={`rounded-full px-3 py-1.5 text-sm font-bold ${i === 0 ? "bg-white text-ink" : "bg-[#B4372B] text-white"}`}>
+                    {i === 0 ? "✓ " : "✗ "}{c}
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="rounded-3xl border border-line bg-surface p-7 sm:p-9">
+              <p className="text-sm font-bold uppercase tracking-wider text-sage">{T.mech.solKicker}</p>
+              <h2 className="mt-2 text-3xl font-extrabold tracking-tight sm:text-4xl">{T.mech.solName}</h2>
+              <p className="mt-4 text-lg leading-relaxed text-muted">{T.mech.solP}</p>
+              <ol className="mt-6 space-y-4">
+                {T.mech.steps.map(([t, d], i) => (
+                  <li key={t} className="flex gap-4">
+                    <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-primary text-base font-extrabold text-on-primary">{i + 1}</span>
+                    <p className="pt-1 text-[17px] leading-snug"><b>{t}</b> {d}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+          <div className="mx-auto mt-10 max-w-md">
+            <Cta />
+          </div>
         </section>
 
         {up && (

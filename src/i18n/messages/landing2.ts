@@ -207,18 +207,18 @@ const en: typeof pt = {
 const es: typeof pt = {
   badges: { profit: "Ganancia neta", goal: "Meta del mes", nivoQ: "Nivo:", nivoA: (v) => `Cobra ${v}`, profitV: 619.67, profitUp: "35%", price: 20.02 },
   pains: {
-    kicker: "Sé sincero",
-    h2: "¿Cuántas de estas ya viviste?",
+    kicker: "Sé sincero contigo",
+    h2: "Imprimes, vendes, trabajas hasta tarde… ¿y dónde está el dinero?",
     items: [
-      ["Cobras por el peso del filamento", "y te olvidas de la luz, el desgaste, las fallas y tu hora de trabajo."],
-      ["Cierras el mes sin saber cuánto quedó", "entró dinero, salió dinero, y la ganancia real nadie la sabe."],
-      ["Vendes en Mercado Libre o marketplaces", "pero no sabes cuánto se comen la comisión y el envío de cada pieza."],
-      ["Anotas todo en un cuaderno o planilla", "que nunca está al día cuando un cliente pide un presupuesto."],
-      ["Compras filamento sin control", "y te enteras de que se acabó en medio de una impresión."],
-      ["No tienes ninguna meta", "y no sabes si el negocio está creciendo o solo te da trabajo."],
+      ["Cobras por el peso del filamento", "y regalas la luz, el desgaste, las fallas y tus horas. La pieza sale más barata de lo que te cuesta."],
+      ["Cierras el mes con la cuenta igual o peor", "entró dinero, salió dinero, y no tienes idea de a dónde se fue."],
+      ["Mercado Libre te deposita menos de lo que esperabas", "porque la comisión y el envío se comieron tu margen sin avisar."],
+      ["Cada impresión fallida es dinero a la basura", "y nunca la sumas al precio de las piezas que sí vendes."],
+      ["Respondes presupuestos a ojo", "con miedo de cobrar caro y perder al cliente… o de cobrar barato y trabajar gratis."],
+      ["Sientes que el negocio no crece", "y ya piensas que la impresión 3D no da dinero. El problema no es la impresora: es no ver los números."],
     ],
   },
-  banner: { a: "Quien no conoce su ganancia", b: "trabaja gratis sin darse cuenta." },
+  banner: { a: "No es que la impresión 3D no dé dinero.", b: "Es que tu dinero se escapa por donde no lo ves." },
   solution: {
     kicker: "La solución",
     h2: "Todo lo que un negocio de impresión 3D necesita, en un solo lugar",
