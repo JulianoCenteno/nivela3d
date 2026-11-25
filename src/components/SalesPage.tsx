@@ -42,6 +42,7 @@ import { NivoDemo } from "@/components/landing/NivoDemo";
 import { ProfitCalc } from "@/components/landing/ProfitCalc";
 import { FloatingNivo } from "@/components/landing/FloatingNivo";
 import { NivoAvatar } from "@/components/NivoAvatar";
+import { ExitTrialPopup } from "@/components/landing/ExitTrialPopup";
 
 const TOOL_TONES = ["bg-primary-soft text-primary", "bg-blue-soft text-blue", "bg-amber-soft text-amber", "bg-rose-soft text-rose", "bg-violet-soft text-violet", "bg-teal-soft text-teal", "bg-amber-soft text-amber", "bg-blue-soft text-blue", "bg-primary-soft text-primary"];
 const TOOL_ICONS = [LayoutDashboard, Calculator, Receipt, Wallet, Target, BarChart3, Boxes, ClipboardList, Bot];
@@ -99,6 +100,7 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
     <div className="overflow-x-hidden">
       <MetaPixel page={upsell ? "upsell" : "landing"} />
       <FloatingNivo text={N.nivo.floatText} cta={N.nivo.floatCta} href="#planos" />
+      {!upsell && <ExitTrialPopup t={L.plansSec.exit} href="/cadastro?teste=1" />}
       {upsell && (
         <div className="bg-[#182B30] px-5 py-3 text-center text-[15px] text-[#F5F3EE]">
           <span className="mr-2 inline-flex h-5 w-5 items-center justify-center rounded-full bg-[#8FA69A] align-[-3px] text-[#10191C]"><Check size={13} strokeWidth={3} /></span>
@@ -512,6 +514,17 @@ export function SalesPage({ upsell = false, declineUrl, locale = "pt" }: { upsel
                 <span>{L.plansSec.cards}</span>
               </div>
             ) : null}
+            {!upsell && (
+              <div className="mx-auto mt-12 max-w-3xl rounded-3xl border-2 border-dashed border-primary/40 bg-primary-soft/40 p-7 text-center sm:p-9">
+                <span className="inline-block rounded-full bg-primary px-3 py-1 text-xs font-extrabold uppercase tracking-wider text-on-primary">{L.plansSec.trial.badge}</span>
+                <h3 className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">{L.plansSec.trial.title}</h3>
+                <p className="mx-auto mt-3 max-w-xl text-lg leading-relaxed text-muted">{L.plansSec.trial.p}</p>
+                <a href="/cadastro?teste=1" className="mx-auto mt-6 inline-flex items-center justify-center gap-2 rounded-2xl border-2 border-primary bg-surface px-7 py-4 text-lg font-extrabold text-primary transition hover:bg-primary hover:text-on-primary">
+                  {L.plansSec.trial.cta} →
+                </a>
+                <p className="mt-3 text-sm text-muted">{L.plansSec.trial.note}</p>
+              </div>
+            )}
           </div>
         </section>
 

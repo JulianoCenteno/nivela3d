@@ -30,7 +30,7 @@ const pt = {
   banner: {
     inactive: "Sua assinatura não está ativa. Você pode consultar seus dados, mas não cadastrar novos.",
     seePlans: "Ver planos",
-    trial: (d: number) => `Teste grátis: ${d === 1 ? "falta 1 dia" : `faltam ${d} dias`}.`,
+    trial: (h: number) => `Teste grátis: ${h <= 1 ? "falta menos de 1 hora" : `faltam ${h} horas`}.`,
     subscribe: "Assinar agora",
   },
   actions: {
@@ -75,6 +75,7 @@ const pt = {
     noAccount: "Ainda não tem conta?",
     createAccount: "Criar conta",
     signUpSubtitle: "Comece a calcular seus preços em poucos minutos.",
+    trialSubtitle: "Teste grátis: crie sua conta e veja a plataforma por dentro, sem cartão.",
     yourName: "Seu nome",
     sameEmailHint: "Já comprou? Use o mesmo e-mail da compra para liberar seu plano automaticamente.",
     minChars: "Mínimo de 8 caracteres.",
@@ -132,7 +133,7 @@ const en: typeof pt = {
   banner: {
     inactive: "Your plan isn't active. You can view your data, but you can't add new records.",
     seePlans: "See plans",
-    trial: (d: number) => `Free trial: ${d === 1 ? "1 day left" : `${d} days left`}.`,
+    trial: (h: number) => `Free trial: ${h <= 1 ? "less than 1 hour left" : `${h} hours left`}.`,
     subscribe: "Get access",
   },
   actions: {
@@ -176,6 +177,7 @@ const en: typeof pt = {
     noAccount: "Don't have an account?",
     createAccount: "Create account",
     signUpSubtitle: "Start pricing your prints in a few minutes.",
+    trialSubtitle: "Free trial: create your account and explore the platform inside, no card needed.",
     yourName: "Your name",
     sameEmailHint: "Already bought? Use the same email from your purchase to unlock your plan automatically.",
     minChars: "At least 8 characters.",
@@ -233,7 +235,7 @@ const es: typeof pt = {
   banner: {
     inactive: "Tu plan no está activo. Puedes consultar tus datos, pero no registrar nuevos.",
     seePlans: "Ver planes",
-    trial: (d: number) => `Prueba gratis: ${d === 1 ? "queda 1 día" : `quedan ${d} días`}.`,
+    trial: (h: number) => `Prueba gratis: ${h <= 1 ? "queda menos de 1 hora" : `quedan ${h} horas`}.`,
     subscribe: "Obtener acceso",
   },
   actions: {
@@ -278,6 +280,7 @@ const es: typeof pt = {
     noAccount: "¿Aún no tienes cuenta?",
     createAccount: "Crear cuenta",
     signUpSubtitle: "Empieza a calcular tus precios en pocos minutos.",
+    trialSubtitle: "Prueba gratis: crea tu cuenta y mira la plataforma por dentro, sin tarjeta.",
     yourName: "Tu nombre",
     sameEmailHint: "¿Ya compraste? Usa el mismo correo de la compra para activar tu plan automáticamente.",
     minChars: "Mínimo 8 caracteres.",

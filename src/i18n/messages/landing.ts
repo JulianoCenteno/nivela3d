@@ -164,6 +164,20 @@ const pt = {
     guarB: "7 dias de garantia",
     guarC: ": se não gostar, você pede o reembolso.",
     cards: "",
+    trial: {
+      badge: "Teste grátis",
+      title: "Ainda em dúvida? Teste grátis antes de comprar.",
+      p: "Crie sua conta e veja o Nivela 3D por dentro: cadastre sua impressora, faça o Raio-X de uma peça e descubra seu lucro real. Sem cartão, sem compromisso.",
+      cta: "Quero testar grátis",
+      note: "Sem cartão de crédito · Acesso na hora",
+    },
+    exit: {
+      kicker: "Espera! Antes de sair…",
+      title: "Teste o Nivela 3D grátis",
+      p: "Veja a plataforma por dentro e descubra quanto você realmente lucra em cada peça. Sem cartão.",
+      cta: "Quero testar grátis",
+      close: "Agora não",
+    },
   },
   bonusSec: {
     kicker: "Bônus inclusos",
@@ -368,6 +382,20 @@ const en: typeof pt = {
     guarB: "7-day guarantee",
     guarC: ": if you don't like it, just ask for a refund.",
     cards: "We accept Visa and Mastercard credit cards from any country · Secure payment by Stripe",
+    trial: {
+      badge: "Free trial",
+      title: "Still not sure? Try it free before you buy.",
+      p: "Create your account and see Nivela 3D inside: add your printer, run the 3D Profit X-Ray on a piece and find out your real profit. No card, no commitment.",
+      cta: "Start my free trial",
+      note: "No credit card · Instant access",
+    },
+    exit: {
+      kicker: "Wait! Before you go…",
+      title: "Try Nivela 3D for free",
+      p: "See the platform inside and find out how much you really make on every print. No card needed.",
+      cta: "Start my free trial",
+      close: "Not now",
+    },
   },
   bonusSec: {
     kicker: "Bonuses included",
@@ -572,6 +600,20 @@ const es: typeof pt = {
     guarB: "7 días de garantía",
     guarC: ": si no te gusta, pides el reembolso.",
     cards: "Aceptamos tarjetas de crédito Visa y Mastercard de cualquier país · Pago seguro con Stripe",
+    trial: {
+      badge: "Prueba gratis",
+      title: "¿Todavía con dudas? Pruébalo gratis antes de comprar.",
+      p: "Crea tu cuenta y mira Nivela 3D por dentro: registra tu impresora, haz la Radiografía de una pieza y descubre tu ganancia real. Sin tarjeta, sin compromiso.",
+      cta: "Quiero probar gratis",
+      note: "Sin tarjeta de crédito · Acceso inmediato",
+    },
+    exit: {
+      kicker: "¡Espera! Antes de irte…",
+      title: "Prueba Nivela 3D gratis",
+      p: "Mira la plataforma por dentro y descubre cuánto ganas de verdad en cada pieza. Sin tarjeta.",
+      cta: "Quiero probar gratis",
+      close: "Ahora no",
+    },
   },
   bonusSec: {
     kicker: "Bonos incluidos",

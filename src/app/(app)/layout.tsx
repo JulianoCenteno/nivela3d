@@ -15,8 +15,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   let trialLeft: number | null = null;
   if (plan === "teste" && profile?.created_at) {
-    const end = new Date(profile.created_at).getTime() + 7 * 864e5;
-    trialLeft = Math.max(0, Math.ceil((end - Date.now()) / 864e5));
+    const end = new Date(profile.created_at).getTime() + 24 * 36e5;
+    trialLeft = Math.max(0, Math.ceil((end - Date.now()) / 36e5));
   }
 
   return (

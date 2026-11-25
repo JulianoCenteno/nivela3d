@@ -39,6 +39,10 @@ export function MetaPixel({ page }: { page: "landing" | "upsell" }) {
 
     const onClick = (e: MouseEvent) => {
       const a = (e.target as HTMLElement)?.closest?.("a") as HTMLAnchorElement | null;
+      if (a && /\/cadastro\?teste=1/.test(a.href)) {
+        (window as unknown as { fbq?: Fbq }).fbq?.("track", "Lead", { content_name: "Teste grátis" });
+        return;
+      }
       if (!a || !/(pay\.nivela3d\.com\.br|appdigitalhub\.com\.br)\/c\//.test(a.href)) return;
       const code = a.href.split("/c/")[1]?.split(/[?#]/)[0] ?? "";
       (window as unknown as { fbq?: Fbq }).fbq?.("track", "InitiateCheckout", { value: VALUES[code] ?? 0, currency: USD_CODES.has(code) ? "USD" : "BRL", content_ids: [code] });

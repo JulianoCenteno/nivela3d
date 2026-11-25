@@ -8,11 +8,11 @@ export async function generateMetadata() {
   return { title: (await getT()).common.auth.createAccount };
 }
 
-export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ erro?: string }> }) {
+export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ erro?: string; teste?: string }> }) {
   const sp = await searchParams;
   const a = (await getT()).common.auth;
   return (
-    <AuthShell title={a.createAccount} subtitle={a.signUpSubtitle} error={sp.erro}>
+    <AuthShell title={a.createAccount} subtitle={sp.teste ? a.trialSubtitle : a.signUpSubtitle} error={sp.erro}>
       <form action={signUp} className="space-y-4">
         <div>
           <label className="label" htmlFor="name">{a.yourName}</label>
