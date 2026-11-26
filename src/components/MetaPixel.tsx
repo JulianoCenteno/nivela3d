@@ -3,7 +3,7 @@
 import Script from "next/script";
 import { useEffect } from "react";
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1446277194358187";
+const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "1381823073837635";
 
 const VALUES: Record<string, number> = {
   A79133B6: 19.9, // Iniciante
